@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="pedidos-main"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Todos Los Pedidos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let order of orderData">
+      <ion-card>
+        <img src="../../../assets/img/placeholder-image.png">
+        <ion-card-header>
+          <ion-card-title>
+            <p>Numero Pedido: {{order.order_number}}</p>
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Enviar a: {{order.ship_to}}</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -1,0 +1,118 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon slot="icon-only" name="log-out"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Dashboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+  <div *ngIf="checkInStatusFalse">
+    <div class="menu-central">
+      <ion-row>
+        <ion-col no-padding>
+          <ion-button  color="light" float-right class="round" disabled>
+            <img src="../../../assets/icon/clientes.png" alt="">
+          </ion-button>
+        </ion-col>
+        <ion-col no-padding>
+          <ion-button  color="light" class="round" disabled>
+            <img src="../../../assets/icon/cotizaciones.png" alt="">
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row class="space-row">
+        <ion-col no-padding>
+          <ion-button  color="light" float-right class="round" disabled>
+            <img src="../../../assets/icon/pedidos.png" alt="">
+          </ion-button>
+        </ion-col>
+        <ion-col no-padding>
+          <ion-button color="light" class="round" disabled>
+            <img src="../../../assets/icon/agenda.png" alt="">
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row class="space-row">
+        <ion-col no-padding>
+          <ion-button  color="light" float-right class="round" disabled>
+            <img src="../../../assets/icon/agenda.png" alt="">
+          </ion-button>
+        </ion-col>
+        <ion-col no-padding>
+          <ion-button color="light" class="round" disabled>
+            <img src="../../../assets/icon/productos.png" alt="">
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col no-padding>
+          <ion-button  color="light" float-right class="round" (click)="checkIn()">
+            <img src="../../../assets/icon/check-in.png" alt="">
+          </ion-button>
+        </ion-col>
+        <ion-col no-padding>
+          <ion-button color="light" class="round" disabled>
+            <img src="../../../assets/icon/productos.png" alt="">
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </div>
+  </div>
+  <div *ngIf="checkInStatusTrue">
+    <div class="menu-central">
+      <ion-row>
+        <ion-col no-padding>
+          <ion-button color="light" float-right class="round" routerLink="/contacts">
+            <ion-icon  name="people"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col no-padding>
+          <ion-button  color="light" class="round">
+            <img src="../../../assets/icon/cotizaciones.png" alt="">
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row class="space-row">
+        <ion-col no-padding>
+          <ion-button  color="light" float-right class="round" routerLink="/pedidos-main">
+            <img src="../../../assets/icon/pedidos.png" alt="">
+          </ion-button>
+        </ion-col>
+        <ion-col no-padding>
+          <ion-button color="light" class="round">
+            <img src="../../../assets/icon/agenda.png" alt="">
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row class="space-row">
+        <ion-col no-padding>
+          <ion-button  color="light" float-right class="round">
+            <img src="../../../assets/icon/agenda.png" alt="">
+          </ion-button>
+        </ion-col>
+        <ion-col no-padding>
+          <ion-button  color="light" class="round">
+            <img src="../../../assets/icon/productos.png" alt="">
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col no-padding>
+          <ion-button  color="light" float-right class="round" (click)="checkOut()">
+            <img src="../../../assets/icon/check-out.png" alt="">
+          </ion-button>
+        </ion-col>
+        <ion-col no-padding>
+            <ion-button  color="light" class="round">
+              <img src="../../../assets/icon/productos.png" alt="">
+            </ion-button>
+          </ion-col>
+      </ion-row>
+    </div>
+  </div>
+</ion-content>

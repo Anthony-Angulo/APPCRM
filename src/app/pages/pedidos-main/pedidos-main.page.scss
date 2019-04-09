@@ -1,0 +1,40 @@
+.center{
+    margin-top: 25% ;
+    margin-left: 28%;
+}
+.footer{
+    margin-top: 22%;
+    display:inline-block;
+    position:relative;
+}
+
+.footer ion-button{
+    position:absolute;
+    top:20px;
+    left:200px;
+    font-size:25px;
+}
+
+.footer{
+    .addpedido{
+        position:absolute;
+        height: 20%;
+        top:150px;
+        left:310px;
+        border-radius: 20px;
+    }
+    .notificacion{
+        position:absolute;
+        height: 20%;
+        top:150px;
+        left:550px;
+        border-radius: 20px;
+    }
+    .app{
+        position:absolute;
+        height: 20%;
+        top:150px;
+        left:70px;
+        border-radius: 20px;
+    }
+}

@@ -1,0 +1,163 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="entrega-pedido"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Pedidos CCFN</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-row>
+    <ion-col>
+      <h1>Forma de Pago</h1>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label>Tipo de Pago</ion-label>
+        <ion-select [(ngModel)]="pago_id" okText="Aceptar" cancelText="Cancelar" name="pago_id"
+          placeholder="Select One">
+          <ion-select-option *ngFor="let pag of pagoList" [value]="pag.id">{{pag.name}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+    <ion-col>
+      <ion-item>
+        <ion-label>Documento</ion-label>
+        <ion-select [(ngModel)]="documento_id" okText="Aceptar" cancelText="Cancelar" name="documento_id"
+          placeholder="Select One">
+          <ion-select-option *ngFor="let documento of documentList" [value]="documento.id">
+            {{documento.name}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label>Ruta</ion-label>
+        <ion-select [(ngModel)]="ruta_id" okText="Aceptar" cancelText="Cancelar" name="ruta_id"
+          placeholder="Select One">
+          <ion-select-option *ngFor="let ruta of rutasList" [value]="ruta.id">{{ruta.name}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+    <ion-col>
+      <ion-item>
+        <ion-label>Moneda</ion-label>
+        <ion-select [(ngModel)]="currency_id" okText="Aceptar" cancelText="Cancelar" name="currency_id"
+          placeholder="Select One" (ionChange)="calcularTotalSelect($event)">
+          <ion-select-option *ngFor="let moneda of currencyList" [value]="moneda.id">{{moneda.code}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label position="floating">Observaciones</ion-label>
+        <ion-textarea></ion-textarea>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <h1>Recepcion Producto</h1>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label>Fecha Recepcion</ion-label>
+        <ion-datetime [(ngModel)]="fecha_recepcion" displayFormat="YYYY DD MM" placeholder="Select Date"></ion-datetime>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label>Despues de</ion-label>
+        <ion-select [(ngModel)]="despues_id" okText="Aceptar" cancelText="Cancelar" name="despues_id"
+          placeholder="Select One">
+          <ion-select-option *ngFor="let despues of horasDespuesList" [value]="despues.id">{{despues.hora}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+    <ion-col>
+      <ion-item>
+        <ion-label>Antes de</ion-label>
+        <ion-select [(ngModel)]="antes_id" okText="Aceptar" cancelText="Cancelar" name="antes_id"
+          placeholder="Select One">
+          <ion-select-option *ngFor="let antes of horasAntesList" [value]="antes.id">{{antes.hora}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label position="floating">Observaciones</ion-label>
+        <ion-textarea></ion-textarea>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <h1>Detalle Pedido</h1>
+    </ion-col>
+  </ion-row>
+  <ion-list>
+    <ion-item *ngFor="let product of products">
+      <ion-thumbnail slot="start">
+        <img src="../../../assets/img/placeholder-product.png">
+      </ion-thumbnail>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-subtitle>
+            {{product.codigo}}
+          </ion-card-subtitle>
+          <ion-card-title>
+            {{product.name}}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Price: {{product.price}}<br>
+          Cantidad: {{product.quantity}}
+        </ion-card-content>
+      </ion-card>
+    </ion-item>
+  </ion-list>
+  <ion-item *ngIf="totalMN != 0">
+    <ion-list>
+      <ion-item>
+        <h1>SubTotal: ${{totalMN}}</h1>
+      </ion-item>
+      <ion-item>
+        <h1>Envio: 0</h1>
+      </ion-item>
+      <ion-item>
+        <h1>Total: ${{totalMN}}</h1>
+      </ion-item>
+    </ion-list>
+  </ion-item>
+    <ion-item *ngIf="totalUSD !=0">
+      <ion-list>
+        <ion-item>
+          <h1>SubTotal: ${{totalUSD}}</h1>
+        </ion-item>
+        <ion-item>
+          <h1>Envio: 0</h1>
+        </ion-item>
+        <ion-item>
+          <h1>Total: ${{totalUSD}}</h1>
+        </ion-item>
+      </ion-list>
+    </ion-item>
+    <ion-button expand="block" class="round" (click)="generarPedido()">Crear Pedido</ion-button>
+</ion-content>

@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Pedidos CCFN</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-row>
+    <ion-col>
+      <img src="../../../assets/img/tienda.png" alt="">
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col style="text-align: center;font-size: 56px">
+      <h1>Pedidos CCFN</h1>
+    </ion-col>
+  </ion-row>
+  <div class="center">
+    <ion-row>
+      <ion-col>
+        <img src="../../../assets/img/pedidos-phone.png" alt="">
+      </ion-col>
+    </ion-row>
+  </div>
+  <div class="footer">
+    <ion-row>
+      <ion-col>
+        <img src="../../../assets/img/pedidos-footer.png" alt="">
+        <ion-button class="round" size="large" expand="block" color="light" routerLink="/all-orders">
+          <ion-icon name="clipboard"></ion-icon>Todos los Pedidos
+        </ion-button>
+        <ion-button color="light" class="addpedido" fill="outline" routerLink="/generate-pedido">
+          <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+        </ion-button>
+        <ion-button class="notificacion" color="light" fill="outline">
+          <ion-icon slot="icon-only" name="notifications"></ion-icon>
+          <ion-badge color="danger">66</ion-badge>
+        </ion-button>
+        <ion-button class="app" fill="outline" color="light" routerLink="/dashboard">
+          <ion-icon name="apps"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
+</ion-content>

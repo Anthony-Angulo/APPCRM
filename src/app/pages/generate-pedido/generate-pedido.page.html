@@ -1,0 +1,111 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="pedidos-main"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Pedidos CCFN</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-item>
+    <ion-searchbar id="clientSearchBar" placeholder="Buscar Cliente" debounce="500" (ionInput)="searchContacts($event);" clear-icon>
+    </ion-searchbar>
+  </ion-item>
+  <ion-list *ngIf="list">
+    <ion-item color="light" *ngFor="let contact of list" (click)="addContact(contact.id)" detail>
+      {{contact.nombre_reducido}}
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf="contactOrder">
+    <ion-item *ngFor="let contact of contactOrder">
+      <ion-card color="light">
+        <img src="../../../assets/img/placeholder-image.png">
+        <ion-card-header>
+          <ion-card-subtitle>{{contact.full_name}}</ion-card-subtitle>
+          <ion-card-title>{{contact.nombre_reducido}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Codigo Cliente: {{contact.codigo_protevs}}</p>
+          <p>Tienda: {{contact.tienda}}</p>
+          <p>Direccion: {{contact.street}} {{contact.colonia}}, {{contact.city}} {{contact.state}}
+            {{contact.zip_code}}
+          </p>
+        </ion-card-content>
+      </ion-card>
+    </ion-item>
+  </ion-list>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label>Status</ion-label>
+        <ion-select [(ngModel)]="status_id" okText="Aceptar" cancelText="Cancelar" name="status_id"
+          placeholder="Select One">
+          <ion-select-option *ngFor="let stat of statusList" [value]="stat.id">{{stat.name}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+    <ion-col>
+      <ion-item>
+        <ion-label>Fecha Pedido</ion-label>
+        <ion-datetime [(ngModel)]="fecha_creacion" displayFormat="YYYY DD MM" placeholder="Select Date"></ion-datetime>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label>Sucursal</ion-label>
+        <ion-select [(ngModel)]="sucursal_id" okText="Aceptar" cancelText="Cancelar" name="sucursal_id"
+          placeholder="Select One">
+          <ion-select-option *ngFor="let suc of sucursalList" [value]="suc.id">{{suc.nombre_sucursal}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-item>
+    <ion-searchbar placeholder="Buscar Producto" (ionInput)="searchProducts($event);">
+    </ion-searchbar>
+  </ion-item>
+  <ion-list *ngIf="listProducts">
+    <ion-item color="light" *ngFor="let product of listProducts" (click)="addProduct(product.id)" detail>
+      {{product.name}}
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-row>
+      <ion-col>
+          <ion-item *ngFor="let product of productOrder">
+              <ion-thumbnail slot="start">
+                <img src="../../../assets/img/placeholder-product.png">
+              </ion-thumbnail>
+              <ion-card>
+                <ion-card-header>
+                  <ion-card-subtitle>
+                    {{product.product_codigo}}
+                    <ion-button color="light" (click)="eliminarProducto(product)">
+                      <ion-icon name="trash" slot="icon-only"></ion-icon>
+                    </ion-button>
+                  </ion-card-subtitle>
+                  <ion-card-title>
+                    {{product.product_name}}
+                  </ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                  Price: {{product.product_price}}<br>
+                  stock: {{product.product_stock}}<br>
+                  Cantidad: <ion-icon name="remove-circle" (click)="decrement(product)">
+                  </ion-icon>
+                  {{product.quantity}}
+                  <ion-icon name="add-circle" (click)="increment(product)"></ion-icon>
+                  Total: ${{product.subtotal}}
+                </ion-card-content>
+              </ion-card>
+            </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-button expand="block" class="round" (click)="entregaPedido()">Continuar</ion-button>
+  </ion-list>
+</ion-content>
