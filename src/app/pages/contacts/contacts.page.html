@@ -15,45 +15,21 @@
         <ion-searchbar color="light" (ionInput)="searchContacts($event);" animated></ion-searchbar>
       </ion-toolbar>
     </ion-col>
-  </ion-row>.
-  <div *ngIf="contactList">
-    <ion-list *ngIf="sinFiltrar">
-      <ion-item *ngFor="let contact of contactList">
-        <ion-card color="light">
-          <img src="../../../assets/img/placeholder-image.png">
-          <ion-card-header>
-            <ion-card-subtitle>{{contact.full_name}}</ion-card-subtitle>
-            <ion-card-title>{{contact.nombre_reducido}}</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <p>Codigo Cliente: {{contact.codigo_protevs}}</p>
-            <p>Tienda: {{contact.tienda}}</p>
-            <p>Direccion: {{contact.street}} {{contact.colonia}}, {{contact.city}} {{contact.state}}
-              {{contact.zip_code}}
-            </p>
-          </ion-card-content>
-        </ion-card>
-      </ion-item>
-    </ion-list>
-  </div>
-  <div *ngIf="list">
-    <ion-list *ngIf="conFiltrar">
-      <ion-item *ngFor="let contact of list">
-        <ion-card color="light">
-          <img src="../../../assets/img/card-img.jpg">
-          <ion-card-header>
-            <ion-card-subtitle>{{contact.full_name}}</ion-card-subtitle>
-            <ion-card-title>{{contact.nombre_reducido}}</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <p>Codigo Cliente: {{contact.codigo_protevs}}</p>
-            <p>Tienda: {{contact.tienda}}</p>
-            <p>Direccion: {{contact.street}} {{contact.colonia}}, {{contact.city}} {{contact.state}}
-              {{contact.zip_code}}
-            </p>
-          </ion-card-content>
-        </ion-card>
-      </ion-item>
-    </ion-list>
-  </div>
+  </ion-row>
+    <ion-item *ngFor="let contact of list">
+      <ion-card color="light">
+        <img src="../../../assets/img/placeholder-image.png">
+        <ion-card-header>
+          <ion-card-subtitle>{{contact.full_name}}</ion-card-subtitle>
+          <ion-card-title>{{contact.nombre_reducido}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Codigo Cliente: {{contact.codigo_protevs}}</p>
+          <p>Tienda: {{contact.tienda}}</p>
+          <p>Direccion: {{contact.street}} {{contact.colonia}}, {{contact.city}} {{contact.state}}
+            {{contact.zip_code}}
+          </p>
+        </ion-card-content>
+      </ion-card>
+    </ion-item>
 </ion-content>

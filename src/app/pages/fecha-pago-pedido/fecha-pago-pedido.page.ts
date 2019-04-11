@@ -64,11 +64,9 @@ export class FechaPagoPedidoPage implements OnInit {
   documento_id: number = 0;
   currency_id: number = 0;
   total: number = 0;
-  totalMN: number = 0;
-  totalUSD: number = 0;
+  subtotal: number;
   order_n: number = 0;
   orderAux: any = [];
-  owned_name: any = [];
 
   url = 'http://192.168.0.41';
 
@@ -104,45 +102,35 @@ export class FechaPagoPedidoPage implements OnInit {
     });
 
     this.storage.get(this.storageHorasAntes).then(val => {
-      var index: any;
       this.horasAntesList = val;
-
-      for (index in this.horasAntesList) {
-        if (this.horasAntesList[index].id == '11') {
-          this.antes_id = this.horasAntesList[index].id;
-        }
-      }
+      var id_filtered = this.horasAntesList.find(hora => hora.id == '11');
+      this.antes_id = id_filtered.id
     });
 
     this.storage.get(this.storageHorasDespues).then(val => {
-      var index: any;
       this.horasDespuesList = val;
-
-      for (index in this.horasDespuesList) {
-        if (this.horasDespuesList[index].id == '1') {
-          this.despues_id = this.horasDespuesList[index].id;
-        }
-      }
+      var id_filtered = this.horasDespuesList.find(hora => hora.id == '1');
+      this.despues_id = id_filtered.id
     });
 
-    this.formData.owned_by_id = this.datos.contact[0].owned_by_id;
-    this.formData.tienda_id = this.datos.contact[0].tienda;
-    this.formData.customer_number = this.datos.contact[0].codigo_protevs;
-    this.formData.contact_id = this.datos.contact[0].id;
-    this.formData.bill_street = this.datos.contact[0].street;
-    this.formData.bill_country = this.datos.contact[0].country;
-    this.formData.bill_zip_code = this.datos.contact[0].zip_code;
-    this.formData.ship_street = this.datos.contact[0].street;
-    this.formData.ship_country = this.datos.contact[0].coutrtry;
-    this.formData.ship_state = this.datos.contact[0].state;
-    this.formData.bill_state = this.datos.contact[0].state;
-    this.formData.ship_zip_code = this.datos.contact[0].zip_code;
-    this.formData.bill_city = this.datos.contact[0].city;
-    this.formData.ship_city = this.datos.contact[0].city;
-    this.formData.bill_to = this.datos.contact[0].full_name;
-    this.formData.bill_tax_number = this.datos.contact[0].colonia;
-    this.formData.ship_to = this.datos.contact[0].full_name;
-    this.formData.ship_tax_number = this.datos.contact[0].colonia;
+    this.formData.owned_by_id = this.datos.contact.owned_by_id;
+    this.formData.tienda_id = this.datos.contact.tienda;
+    this.formData.customer_number = this.datos.contact.codigo_protevs;
+    this.formData.contact_id = this.datos.contact.id;
+    this.formData.bill_street = this.datos.contact.street;
+    this.formData.bill_country = this.datos.contact.country;
+    this.formData.bill_zip_code = this.datos.contact.zip_code;
+    this.formData.ship_street = this.datos.contact.street;
+    this.formData.ship_country = this.datos.contact.coutrtry;
+    this.formData.ship_state = this.datos.contact.state;
+    this.formData.bill_state = this.datos.contact.state;
+    this.formData.ship_zip_code = this.datos.contact.zip_code;
+    this.formData.bill_city = this.datos.contact.city;
+    this.formData.ship_city = this.datos.contact.city;
+    this.formData.bill_to = this.datos.contact.full_name;
+    this.formData.bill_tax_number = this.datos.contact.colonia;
+    this.formData.ship_to = this.datos.contact.full_name;
+    this.formData.ship_tax_number = this.datos.contact.colonia;
 
     this.http.get(this.url + '/api/orderNumber')
       .subscribe((data: any) => {
@@ -150,54 +138,36 @@ export class FechaPagoPedidoPage implements OnInit {
         this.order_n = parseInt(this.orderAux[0].order_number, 10);
         this.formData.order_number = this.order_n + 1;
       });
-
-    this.getDatosProducts(this.datos);
-  }
-
-  getDatosProducts(data) {
-
-    for (var i = 0; i < data.products.length; i++) {
-
-      this.products.push({
-        codigo: data.products[i].product_codigo,
-        name: data.products[i].product_name,
-        price: data.products[i].product_price,
-        quantity: data.products[i].quantity,
-      });
-    }
   }
 
   calcularTotalSelect(event) {
+    
     this.calcularTotal(this.datos);
   }
 
   calcularTotal(data: any) {
 
+    this.subtotal = 0;
     this.total = 0;
-    this.totalMN = 0;
-    this.totalUSD = 0;
 
-    for (var i = 0; i < data.products.length; i++) {
-      if (this.currency_id == 62) {
+    if (this.currency_id == 62) {
+      for (var i = 0; i < data.products.length; i++) {
         if (data.products[i].product_moneda == "MN") {
-          this.total = data.products[i].subtotal + this.total;
-          this.totalMN = this.total;
+          this.total += data.products[i].subtotal;
         } else {
-          this.total = (data.products[i].subtotal * 18.50) + this.total;
-          this.totalMN = this.total;
+          this.total += (data.products[i].subtotal * 18.50);
         }
-      } else {
-        if (this.currency_id == 96) {
-          if (data.products[i].product_moneda == "DL") {
-            this.total = data.products[i].subtotal + this.total;
-            this.totalUSD = this.total;
-          } else {
-            this.total = (data.products[i].subtotal / 18.50) + this.total;
-            this.totalUSD = this.total;
-          }
+      }
+    } else if(this.currency_id == 96) {
+      for (var i = 0; i < data.products.length; i++) {
+        if (data.products[i].product_moneda == "DL") {
+          this.total += data.products[i].subtotal;
+        } else {
+          this.total += (data.products[i].subtotal / 18.50);
         }
       }
     }
+    this.subtotal = this.total;
   }
 
   public generarPedido() {
@@ -216,7 +186,7 @@ export class FechaPagoPedidoPage implements OnInit {
       .subscribe((data: any) => {
 
         this.idPedido = JSON.parse(data);
-
+    
         this.guardarPosicionPedido();
 
         this.guardarOrderRows(this.idPedido.token);
@@ -245,10 +215,9 @@ export class FechaPagoPedidoPage implements OnInit {
   }
 
   public guardarOrderRows(order_id) {
-
+    this.formDataOrderRows.order_id = order_id;
     for (var i = 0; i < this.datos.products.length; i++) {
 
-      this.formDataOrderRows.order_id = order_id;
       this.formDataOrderRows.product_name = this.datos.products[i].product_name;
       this.formDataOrderRows.price = this.datos.products[i].product_price;
       this.formDataOrderRows.quantity = this.datos.products[i].quantity;
@@ -262,7 +231,7 @@ export class FechaPagoPedidoPage implements OnInit {
 
   public guardarPosicionPedido() {
 
-    this.geolocation.getCurrentPosition().then(resp => {
+    this.geolocation.getCurrentPosition({ timeout: 600000, enableHighAccuracy: true }).then(resp => {
 
       this.formDataTrack.movimiento_id = 3;
 

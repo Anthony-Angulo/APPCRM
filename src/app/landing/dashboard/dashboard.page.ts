@@ -25,6 +25,8 @@ export class DashboardPage implements OnInit {
   watch: any = 0;
   userid: any = 0;
   valor: any = 0;
+  longitud
+  latitud
 
   constructor(
     private authService: AuthenticationService,
@@ -52,7 +54,9 @@ export class DashboardPage implements OnInit {
         })
       }
     });
-
+    this.storage.get("USER_ID").then(val=>{
+      this.userid=val;
+    });
     this.offlineData.getDataOffline();
 
   }
@@ -60,29 +64,55 @@ export class DashboardPage implements OnInit {
   checkIn() {
     this.geolocation.getCurrentPosition({ timeout: 600000, enableHighAccuracy: true }).then((resp) => {
       this.formData = {
-        user_id: this.userid.replace('"', ''), movimiento_id: 1,
-        latitud: resp.coords.latitude, longitud: resp.coords.longitude, order_number: ''
+        user_id: this.userid.replace('"', ''),
+        movimiento_id: 1,
+        latitud: resp.coords.latitude,
+        longitud: resp.coords.longitude,
+        order_number: ''
       };
-      this.http.post(this.url + '/api/usertrck', this.formData).subscribe((resp: any) => {
-        console.log(JSON.parse(resp));
-      });
+      this.latitud = resp.coords.latitude;
+      this.longitud = resp.coords.longitude;
+      this.checkInStatusFalse = false;
+      this.checkInStatusTrue = true;
+      this.checkInRuta();
+      // this.http.post(this.url + '/api/usertrck', this.formData).subscribe((resp: any) => {
+      //   console.log(JSON.parse(resp));
+      // });
+      
+    }).catch((error) => {
+      console.log('Error getting location', error);
     });
-    this.checkInStatusFalse = false;
-    this.checkInStatusTrue = true;
-    this.checkInRuta();
   }
 
   checkInRuta() {
-    this.watch = this.geolocation.watchPosition({ timeout: 600000 }).subscribe((resp: any) => {
-      this.storage.get('USER_ID').then((val: any) => {
-        this.formData.user_id = val.replace('"', '');
-        this.formData.movimiento_id = 7;
-        this.formData.latitud = resp.coords.latitude;
-        this.formData.longitud = resp.coords.longitude;
-        this.http.post(this.url + '/api/usertrck', this.formData).subscribe((resp: any) => {
-          console.log(JSON.parse(resp));
-        });
-      });
+    this.watch = this.geolocation.watchPosition().subscribe((resp: any) => {
+      var R = 6378.137; // Radius of earth in KM
+      var dLat = resp.coords.latitude * Math.PI / 180 - this.latitud * Math.PI / 180;
+      var dLon = resp.coords.longitude * Math.PI / 180 - this.longitud * Math.PI / 180;
+      var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(this.latitud * Math.PI / 180) * Math.cos(resp.coords.latitude * Math.PI / 180) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      var distanciaKilometros = R * c;
+      if(distanciaKilometros > 1){
+        this.longitud = resp.coords.longitude;
+        this.latitud = resp.coords.latitude;
+        console.log(distanciaKilometros + " " + this.longitud + " " + this.latitud)
+      }
+
+
+
+      // this.storage.get('USER_ID').then((val: any) => {
+      //   this.formData.user_id = val.replace('"', '');
+      //   this.formData.movimiento_id = 7;
+      //   this.formData.latitud = resp.coords.latitude;
+      //   this.formData.longitud = resp.coords.longitude;
+      //   this.http.post(this.url + '/api/usertrck', this.formData).subscribe((resp: any) => {
+      //     console.log(JSON.parse(resp));
+      //   });
+      // });
+
+
     });
   }
 

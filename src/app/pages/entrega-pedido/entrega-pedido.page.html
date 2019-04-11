@@ -11,24 +11,22 @@
   <ion-row>
     <ion-col>
      <h1>Direccion de Envio</h1>
-      <ion-item *ngFor="let contacto of contact">
-        <ion-card>
-          <img src="../../../assets/img/card-img.jpg">
-          <ion-card-header>
-            <ion-card-title>
-              {{contacto.contact_name}}
-            </ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            Calle: {{contacto.contact_street}}<br>
-            Colonia: {{contacto.contact_colonia}}<br>
-            Cuidad: {{contacto.contact_city}} <br>
-            Estado: {{contacto.contact_state}} <br>
-            Pais: {{contacto.contact_country}} <br>
-            Codigo Postal: {{contacto.contact_zipcode}}
-          </ion-card-content>
-        </ion-card>
-      </ion-item>
+      <ion-card>
+        <img src="../../../assets/img/card-img.jpg">
+        <ion-card-header>
+          <ion-card-title>
+            {{datos.contact.full_name}}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Calle: {{datos.contact.street}}<br>
+          Colonia: {{datos.contact.colonia}}<br>
+          Cuidad: {{datos.contact.city}} <br>
+          Estado: {{datos.contact.state}} <br>
+          Pais: {{datos.contact.country}} <br>
+          Codigo Postal: {{datos.contact.zip_code}}
+        </ion-card-content>
+      </ion-card>
     </ion-col>
   </ion-row>
   <ion-row class="map">

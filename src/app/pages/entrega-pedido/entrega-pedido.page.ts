@@ -19,16 +19,15 @@ import {  Router } from '@angular/router';
 export class EntregaPedidoPage {
   map: GoogleMap;
   datos: any;
-  contact: any=[];
   constructor(public platform: Platform, private router: Router, private navExtras: NavExtrasServiceService) { }
 
-  ngAfterViewInit() {
+  ngOnInit(){
     this.datos = this.navExtras.getExtras();
-    console.log(this.datos);
+  }
+  ngAfterViewInit() {
     this.platform.ready().then(() => {
       this.loadMap();
     });
-    this.datosContact(this.datos);
   }
 
   async loadMap() {
@@ -58,20 +57,6 @@ export class EntregaPedidoPage {
       alert('clicked');
     });
   }
-
- datosContact(data: any){
-  this.contact.push({
-    contact_id: data.contact[0].id,
-        contact_zipcode: data.contact[0].zip_code,
-        contact_name: data.contact[0].full_name,
-        contact_street: data.contact[0].street,
-        contact_colonia: data.contact[0].colonia,
-        contact_city: data.contact[0].city,
-        contact_state: data.contact[0].state,
-        contact_country: data.contact[0].country,
-        contact_owned_by_id: data.contact[0].owned_by_id,
-  });
- }
 
  navMetodoPedidos(){
   this.router.navigate(['fecha-pago-pedido']);

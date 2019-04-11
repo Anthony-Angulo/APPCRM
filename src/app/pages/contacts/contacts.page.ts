@@ -10,18 +10,9 @@ import { Validators } from '@angular/forms';
 })
 export class ContactsPage implements OnInit {
 
-  contactList: any = [];
-  paginationList: any = [];
+  contactList: any = [];x
   list: any = [];
 
-  incrementarRegistros: number = 5;
-  inicioRegistro: number = 1;
-
-  sinFiltrar: boolean = false;
-  conFiltrar: boolean = false;
-
-  user_id: string = 'USER_ID';
-  url = 'http://192.168.0.41';
   storageContacts: string = 'contacts';
 
   constructor(private http: HttpClient, private storage: Storage) { }
@@ -29,6 +20,7 @@ export class ContactsPage implements OnInit {
   ngOnInit() {
     this.storage.get(this.storageContacts).then(val => {
       this.contactList = val;
+      this.list = val;
     });
   }
 
@@ -38,11 +30,8 @@ export class ContactsPage implements OnInit {
       this.list = this.contactList.filter((item) => {
         return (item.nombre_reducido.toLowerCase().indexOf(valor.toLowerCase()) > -1);
       })
-      this.sinFiltrar = false;
-      this.conFiltrar = true;
     } else {
-      this.list = '';
-      this.sinFiltrar = true;
+      this.list = this.contactList;
     }
   }
 }

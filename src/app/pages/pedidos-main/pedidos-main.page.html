@@ -18,31 +18,42 @@
       <h1>Pedidos CCFN</h1>
     </ion-col>
   </ion-row>
-  <div class="center">
-    <ion-row>
-      <ion-col>
-        <img src="../../../assets/img/pedidos-phone.png" alt="">
-      </ion-col>
-    </ion-row>
-  </div>
-  <div class="footer">
-    <ion-row>
-      <ion-col>
-        <img src="../../../assets/img/pedidos-footer.png" alt="">
-        <ion-button class="round" size="large" expand="block" color="light" routerLink="/all-orders">
-          <ion-icon name="clipboard"></ion-icon>Todos los Pedidos
-        </ion-button>
-        <ion-button color="light" class="addpedido" fill="outline" routerLink="/generate-pedido">
-          <ion-icon slot="icon-only" name="add-circle"></ion-icon>
-        </ion-button>
-        <ion-button class="notificacion" color="light" fill="outline">
-          <ion-icon slot="icon-only" name="notifications"></ion-icon>
-          <ion-badge color="danger">66</ion-badge>
-        </ion-button>
-        <ion-button class="app" fill="outline" color="light" routerLink="/dashboard">
-          <ion-icon name="apps"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </div>
+  <ion-row style="height: 75%; align-items: center">
+    <ion-col style="text-align: center">
+      <img src="../../../assets/img/pedidos-phone.png" alt="">
+    </ion-col>
+  </ion-row>
 </ion-content>
+
+<ion-footer no-shadow >
+  <ion-toolbar position="bottom"  no-padding>
+    <div class="footer" style="height:200px;" >
+        <div style="width:100%;position:absolute;z-index:1" >
+          <img src="../../../assets/img/pedidos-footer.png" alt="">
+        </div>  
+        <div style="position:relative;top:20px;z-index:2;text-align: center">
+          <ion-button class="round" size="large" color="light" routerLink="/all-orders">
+            <ion-icon name="clipboard"></ion-icon>Todos los Pedidos
+          </ion-button>
+          <ion-row style="height:100px;align-items: center">
+            <ion-col style="text-align: center">
+              <ion-button style="border-radius: 20px;height:60px;width:85px;" fill="outline" color="light" routerLink="/dashboard">
+                <ion-icon name="apps"></ion-icon>
+              </ion-button>
+            </ion-col>
+            <ion-col style="text-align: center">
+              <ion-button style="border-radius: 20px;height:60px;width:85px;" color="light" fill="outline" routerLink="/generate-pedido">
+                <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+              </ion-button>
+            </ion-col>
+            <ion-col style="text-align: center">
+              <ion-button style="border-radius: 20px;height:60px;width:85px;" color="light" fill="outline">
+                <ion-icon slot="icon-only" name="notifications"></ion-icon>
+                <ion-badge color="danger">66</ion-badge>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </div>
+      </div>
+  </ion-toolbar>
+</ion-footer>

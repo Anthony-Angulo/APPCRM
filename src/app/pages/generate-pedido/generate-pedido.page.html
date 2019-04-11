@@ -18,22 +18,20 @@
     </ion-item>
   </ion-list>
   <ion-list *ngIf="contactOrder">
-    <ion-item *ngFor="let contact of contactOrder">
-      <ion-card color="light">
-        <img src="../../../assets/img/placeholder-image.png">
-        <ion-card-header>
-          <ion-card-subtitle>{{contact.full_name}}</ion-card-subtitle>
-          <ion-card-title>{{contact.nombre_reducido}}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <p>Codigo Cliente: {{contact.codigo_protevs}}</p>
-          <p>Tienda: {{contact.tienda}}</p>
-          <p>Direccion: {{contact.street}} {{contact.colonia}}, {{contact.city}} {{contact.state}}
-            {{contact.zip_code}}
-          </p>
-        </ion-card-content>
-      </ion-card>
-    </ion-item>
+    <ion-card color="light">
+      <img src="../../../assets/img/placeholder-image.png">
+      <ion-card-header>
+        <ion-card-subtitle>{{contactOrder.full_name}}</ion-card-subtitle>
+        <ion-card-title>{{contactOrder.nombre_reducido}}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Codigo Cliente: {{contactOrder.codigo_protevs}}</p>
+        <p>Tienda: {{contactOrder.tienda}}</p>
+        <p>Direccion: {{contactOrder.street}} {{contactOrder.colonia}}, {{contactOrder.city}} {{contactOrder.state}}
+          {{contactOrder.zip_code}}
+        </p>
+      </ion-card-content>
+    </ion-card>
   </ion-list>
   <ion-row>
     <ion-col>
@@ -41,7 +39,8 @@
         <ion-label>Status</ion-label>
         <ion-select [(ngModel)]="status_id" okText="Aceptar" cancelText="Cancelar" name="status_id"
           placeholder="Select One">
-          <ion-select-option *ngFor="let stat of statusList" [value]="stat.id">{{stat.name}}
+          <ion-select-option *ngFor="let stat of statusList" [value]="stat.id">
+            {{stat.name}}
           </ion-select-option>
         </ion-select>
       </ion-item>
@@ -59,7 +58,8 @@
         <ion-label>Sucursal</ion-label>
         <ion-select [(ngModel)]="sucursal_id" okText="Aceptar" cancelText="Cancelar" name="sucursal_id"
           placeholder="Select One">
-          <ion-select-option *ngFor="let suc of sucursalList" [value]="suc.id">{{suc.nombre_sucursal}}
+          <ion-select-option *ngFor="let suc of sucursalList" [value]="suc.id">
+            {{suc.nombre_sucursal}}
           </ion-select-option>
         </ion-select>
       </ion-item>

@@ -113,51 +113,38 @@
     </ion-col>
   </ion-row>
   <ion-list>
-    <ion-item *ngFor="let product of products">
+    <ion-item *ngFor="let product of datos.products">
       <ion-thumbnail slot="start">
         <img src="../../../assets/img/placeholder-product.png">
       </ion-thumbnail>
       <ion-card>
         <ion-card-header>
           <ion-card-subtitle>
-            {{product.codigo}}
+            {{product.product_codigo}}
           </ion-card-subtitle>
           <ion-card-title>
-            {{product.name}}
+            {{product.product_name}}
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          Price: {{product.price}}<br>
+          Price: {{product.product_price}}<br>
           Cantidad: {{product.quantity}}
         </ion-card-content>
       </ion-card>
     </ion-item>
   </ion-list>
-  <ion-item *ngIf="totalMN != 0">
+  <ion-item *ngIf="currency_id != 0">
     <ion-list>
       <ion-item>
-        <h1>SubTotal: ${{totalMN}}</h1>
+        <h1>SubTotal: ${{subtotal}}</h1>
       </ion-item>
       <ion-item>
         <h1>Envio: 0</h1>
       </ion-item>
       <ion-item>
-        <h1>Total: ${{totalMN}}</h1>
+        <h1>Total: ${{total}}</h1>
       </ion-item>
     </ion-list>
   </ion-item>
-    <ion-item *ngIf="totalUSD !=0">
-      <ion-list>
-        <ion-item>
-          <h1>SubTotal: ${{totalUSD}}</h1>
-        </ion-item>
-        <ion-item>
-          <h1>Envio: 0</h1>
-        </ion-item>
-        <ion-item>
-          <h1>Total: ${{totalUSD}}</h1>
-        </ion-item>
-      </ion-list>
-    </ion-item>
-    <ion-button expand="block" class="round" (click)="generarPedido()">Crear Pedido</ion-button>
+  <ion-button expand="block" class="round" (click)="generarPedido()">Crear Pedido</ion-button>
 </ion-content>

@@ -21,13 +21,12 @@ export class GeneratePedidoPage implements OnInit {
   storageStatus: string = 'status';
   storageSucursal: string = 'sucursal';
   contactList: any = [];
-  contactOrder: any = [];
+  contactOrder: any;
   productOrder: any = [];
   productList: any = [];
   statusList: any = [];
   sucursalList: any = [];
   listProducts: any = [];
-  listAux: any;
   list: any = [];
   sucursal: any = [];
   status: any = [];
@@ -37,7 +36,6 @@ export class GeneratePedidoPage implements OnInit {
   sucursal_id: number = 0;
   subtotal: number = 0;
   total: number = 0;
-  totalSummary: number = 0;
   url = 'http://192.168.0.41';
 
   constructor(
@@ -59,27 +57,16 @@ export class GeneratePedidoPage implements OnInit {
     });
 
     this.storage.get(this.storageStatus).then(val => {
-      var index: any;
       this.statusList = val;
-
-      for (index in this.statusList) {
-        if (this.statusList[index].id == '1') {
-          this.status_id = this.statusList[index].id;
-        }
-      }
+      var id_filtered = this.statusList.find(status => status.id == '1');
+      this.status_id = id_filtered.id
     });
 
     this.storage.get(this.storageSucursal).then(val => {
-      var index: any;
       this.sucursalList = val;
-
-      for (index in this.sucursalList) {
-        if (this.sucursalList[index].id == '1') {
-          this.sucursal_id = this.sucursalList[index].id;
-        }
-      }
+      var id_filtered = this.sucursalList.find(sucursal => sucursal.id == '1');
+      this.sucursal_id = id_filtered.id
     });
-
   }
 
   public searchContacts(val: any) {
@@ -95,46 +82,34 @@ export class GeneratePedidoPage implements OnInit {
 
   public searchProducts(val: any) {
     let valor2 = val.target.value;
-    if (valor2.length > 3 && valor2.trim() != '') {
+    if (valor2.length > 1 && valor2.trim() != '') {
       this.listProducts = this.productList.filter((item) => {
-        return (item.name.toLowerCase().indexOf(valor2.toLowerCase()) > -1);
+        var in_list = this.productOrder.some(product => product.product_name == item.name)
+        return (item.name.toLowerCase().indexOf(valor2.toLowerCase()) > -1) && !in_list;
       })
     } else {
-      this.listProducts = '';
+      this.listProducts = [];
     }
   }
 
   public addContact(id: any) {
-    var index: any;
-
-    for (index in this.contactList) {
-      if (this.contactList[index].id == id) {
-        this.contactOrder[0] = this.contactList[index];
-      }
-    }
+    this.contactOrder = this.contactList.find(contact => contact.id == id);
     this.list = '';
   }
 
   public addProduct(id: any) {
-    var index: any;
-
-    for (index in this.productList) {
-      if (this.productList[index].id == id) {
-        this.productOrder.push({
-          product_codigo: this.productList[index].codigoProtevs,
-          product_name: this.productList[index].name,
-          product_price: this.productList[index].price,
-          product_stock: this.productList[index].stock,
-          product_UM: this.productList[index].UM_mayoreo,
-          product_moneda: this.productList[index].moneda_mayoreo,
-          quantity: 1,
-          subtotal: 0,
-        });
-        break;
-      }
-      console.log(this.productOrder);
-    }
-    this.listProducts = '';
+    var product = this.productList.find(product => product.id == id);
+    this.productOrder.push({
+      product_codigo: product.codigoProtevs,
+      product_name: product.name,
+      product_price: product.price,
+      product_stock: product.stock,
+      product_UM: product.UM_mayoreo,
+      product_moneda: product.moneda_mayoreo,
+      quantity: 1,
+      subtotal: product.price,
+    });
+    this.listProducts = [];
   }
 
   eliminarProducto(product) {
@@ -164,7 +139,7 @@ export class GeneratePedidoPage implements OnInit {
     };
 
     this.navExtras.setExtras(myData);
-    if(this.contactOrder.length > 0 && this.productOrder.length > 0){
+    if(this.contactOrder != null && this.productOrder.length > 0){
       this.router.navigate(['entrega-pedido']);
     }else{
       Swal.fire({
