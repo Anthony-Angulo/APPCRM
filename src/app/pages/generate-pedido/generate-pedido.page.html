@@ -3,17 +3,19 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="pedidos-main"></ion-back-button>
     </ion-buttons>
-    <ion-title>Pedidos CCFN</ion-title>
+    <ion-title *ngIf="datos.pedido">Pedidos CCFN</ion-title>
+    <ion-title *ngIf="!datos.pedido">Cotizaciones CCFN</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
   <ion-item>
-    <ion-searchbar id="clientSearchBar" placeholder="Buscar Cliente" debounce="500" (ionInput)="searchContacts($event);" clear-icon>
+    <ion-searchbar placeholder="Buscar Cliente" debounce="500" (ionInput)="searchContacts($event);" clear-icon>
     </ion-searchbar>
+    <ion-button (click)="scanQr()">QR</ion-button>
   </ion-item>
-  <ion-list *ngIf="list">
-    <ion-item color="light" *ngFor="let contact of list" (click)="addContact(contact.id)" detail>
+  <ion-list *ngIf="contactListsearchBar">
+    <ion-item color="light" *ngFor="let contact of contactListsearchBar" (click)="addContact(contact.id)" detail>
       {{contact.nombre_reducido}}
     </ion-item>
   </ion-list>
@@ -36,28 +38,9 @@
   <ion-row>
     <ion-col>
       <ion-item>
-        <ion-label>Status</ion-label>
-        <ion-select [(ngModel)]="status_id" okText="Aceptar" cancelText="Cancelar" name="status_id"
-          placeholder="Select One">
-          <ion-select-option *ngFor="let stat of statusList" [value]="stat.id">
-            {{stat.name}}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-    </ion-col>
-    <ion-col>
-      <ion-item>
-        <ion-label>Fecha Pedido</ion-label>
-        <ion-datetime [(ngModel)]="fecha_creacion" displayFormat="YYYY DD MM" placeholder="Select Date"></ion-datetime>
-      </ion-item>
-    </ion-col>
-  </ion-row>
-  <ion-row>
-    <ion-col>
-      <ion-item>
         <ion-label>Sucursal</ion-label>
         <ion-select [(ngModel)]="sucursal_id" okText="Aceptar" cancelText="Cancelar" name="sucursal_id"
-          placeholder="Select One">
+          placeholder="Select One" (ionChange)="cambioSucursal($event)">
           <ion-select-option *ngFor="let suc of sucursalList" [value]="suc.id">
             {{suc.nombre_sucursal}}
           </ion-select-option>
@@ -66,46 +49,90 @@
     </ion-col>
   </ion-row>
   <ion-item>
-    <ion-searchbar placeholder="Buscar Producto" (ionInput)="searchProducts($event);">
-    </ion-searchbar>
+    <ion-searchbar #clientSearchBar placeholder="Buscar Producto" (ionInput)="searchProducts($event);"></ion-searchbar>
   </ion-item>
-  <ion-list *ngIf="listProducts">
-    <ion-item color="light" *ngFor="let product of listProducts" (click)="addProduct(product.id)" detail>
+  <ion-list *ngIf="productListsearchBar">
+    <ion-item color="light" *ngFor="let product of productListsearchBar" (click)="addProduct(product.id)" detail>
       {{product.name}}
     </ion-item>
   </ion-list>
   <ion-list>
-    <ion-row>
-      <ion-col>
-          <ion-item *ngFor="let product of productOrder">
-              <ion-thumbnail slot="start">
-                <img src="../../../assets/img/placeholder-product.png">
-              </ion-thumbnail>
-              <ion-card>
-                <ion-card-header>
-                  <ion-card-subtitle>
-                    {{product.product_codigo}}
-                    <ion-button color="light" (click)="eliminarProducto(product)">
-                      <ion-icon name="trash" slot="icon-only"></ion-icon>
-                    </ion-button>
-                  </ion-card-subtitle>
-                  <ion-card-title>
-                    {{product.product_name}}
-                  </ion-card-title>
-                </ion-card-header>
-                <ion-card-content>
-                  Price: {{product.product_price}}<br>
-                  stock: {{product.product_stock}}<br>
-                  Cantidad: <ion-icon name="remove-circle" (click)="decrement(product)">
-                  </ion-icon>
-                  {{product.quantity}}
-                  <ion-icon name="add-circle" (click)="increment(product)"></ion-icon>
-                  Total: ${{product.subtotal}}
-                </ion-card-content>
-              </ion-card>
-            </ion-item>
+    <ion-row *ngFor="let product of productOrder">
+      <ion-col size="3" size-lg>
+        <ion-thumbnail>
+          <img src="../../../assets/img/placeholder-product.png">
+        </ion-thumbnail>
+      </ion-col>
+      <ion-col size="9" size-lg size="12" size-sm>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>
+              {{product.product_codigo}}
+              <ion-button style="float: right;" color="light" (click)="eliminarProducto(product)">
+                <ion-icon name="trash" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-card-subtitle>
+            <ion-card-title>
+              {{product.product_name}}
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            Price: {{product.product_price}}<br>
+            stock: {{product.product_stock}}<br>
+            Cantidad:
+            <ion-icon style="font-size: 20px;" name="remove-circle" (click)="decrement(product)"></ion-icon>
+            {{product.quantity}}
+            <ion-icon style="font-size: 20px;" name="add-circle" (click)="increment(product)"></ion-icon>
+            Subtotal: ${{product.subtotal.toFixed(2)}}
+            Impuestos: ${{product.impuestos_total.toFixed(2)}}
+            Total: ${{product.total.toFixed(2)}}
+          </ion-card-content>
+        </ion-card>
       </ion-col>
     </ion-row>
-    <ion-button expand="block" class="round" (click)="entregaPedido()">Continuar</ion-button>
+    <ion-item>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title *ngIf="!dolaresCard">Precio en Pesos</ion-card-title>
+          <ion-card-title *ngIf="dolaresCard">Precio en Dolares</ion-card-title>
+          <ion-button tappable (click)="dolaresCard = !dolaresCard" >
+            <div *ngIf="!dolaresCard">
+              Cambiar para dolares
+            </div>
+            <div *ngIf="dolaresCard">
+              Cambiar para pesos
+            </div>
+          </ion-button>
+        </ion-card-header>
+        <ion-card-content *ngIf="!dolaresCard">
+          <ion-list>
+            <ion-item>
+              <h1>SubTotal: ${{subtotal.toFixed(2)}}</h1>
+            </ion-item>
+            <ion-item>
+              <h1>Impuestos: ${{impuestos.toFixed(2)}}</h1>
+            </ion-item>
+            <ion-item>
+              <h1>Total: ${{total.toFixed(2)}}</h1>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+        <ion-card-content *ngIf="dolaresCard">
+          <ion-list>
+            <ion-item>
+              <h1>SubTotalDolares: ${{subtotalDolares.toFixed(2)}}</h1>
+            </ion-item>
+            <ion-item>
+              <h1>ImpuestosDolares: ${{impuestosDolares.toFixed(2)}}</h1>
+            </ion-item>
+            <ion-item>
+              <h1>TotalDolares: ${{totalDolares.toFixed(2)}}</h1>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
+    </ion-item>
+    <ion-button [disabled]="!contactOrder || !productOrder?.length " expand="block" class="round" (click)="entregaPedido()">Continuar</ion-button>
   </ion-list>
 </ion-content>

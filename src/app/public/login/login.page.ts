@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from 'src/app/services/authentication.service';
+import { AuthService } from 'src/app/services/authentication.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { AlertController } from '@ionic/angular';
+
+const URL = 'http://192.168.101.23';
 
 @Component({
   selector: 'app-login',
@@ -9,28 +14,50 @@ import { HttpClient } from '@angular/common/http';
 })
 export class LoginPage implements OnInit {
 
+  errorMessage: string = '';
 
-  formData = {email: '', password: ''};
-  url = 'http://192.168.0.41';
-  dato: any;
+  formData = {
+    email: '',
+    password: ''
+  };
+
+  authState$: Observable<boolean>;
+  return: string = '';
 
   constructor(
-    private http: HttpClient, 
-    private authService: AuthenticationService
+    private http: HttpClient,
+    public alertController: AlertController,
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute,
     ) { }
 
   login(){
-    console.log(this.formData);
-     this.http.post(this.url + '/api/login',this.formData)
-     .subscribe((data: any) =>{
-      this.dato = JSON.parse(data);
-      if(this.dato.status){
-        this.authService.login(this.dato.id,this.dato.token);
+
+    this.http.post(URL + '/api/login', this.formData).subscribe((data: any) =>{
+      if(data.status){
+        this.authService.login(data.id, data.token, data.name).then(
+          _ => this.router.navigateByUrl(this.return)
+        );
+      }else{
+        this.presentAlert()
       }
      });
-  }  
+  }
+
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      header: 'Login',
+      message: 'Credenciales Invalidas.',
+      buttons: ['OK']
+    });
+
+    await alert.present();
+  }
 
   ngOnInit() {
+    // Get the query params
+    this.route.queryParams.subscribe(params => this.return = params['return'] || '/dashboard');
   }
 
 }

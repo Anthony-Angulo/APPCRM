@@ -8,19 +8,19 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor="let order of orderData">
+  <ion-virtual-scroll [items]="orderData">
+    <ion-item *virtualItem="let order" (click)="goToDetail(order)">
       <ion-card>
         <img src="../../../assets/img/placeholder-image.png">
         <ion-card-header>
           <ion-card-title>
-            <p>Numero Pedido: {{order.order_number}}</p>
+            <p>Numero Pedido: {{order.order.order_number}}</p>
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <p>Enviar a: {{order.ship_to}}</p>
+          <p>Enviar a: {{order.order.ship_to}}</p>
         </ion-card-content>
       </ion-card>
     </ion-item>
-  </ion-list>
+  </ion-virtual-scroll>
 </ion-content>

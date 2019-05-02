@@ -1,9 +1,10 @@
 <ion-header>
   <ion-toolbar color="primary">
-      <ion-buttons slot="start">
-          <ion-back-button defaultHref="generate-pedido"></ion-back-button>
-        </ion-buttons>
-    <ion-title>Pedidos CCFN</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="generate-pedido"></ion-back-button>
+    </ion-buttons>
+    <ion-title *ngIf="datos.pedido">Pedidos CCFN</ion-title>
+    <ion-title *ngIf="!datos.pedido">Cotizaciones CCFN</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -31,8 +32,13 @@
   </ion-row>
   <ion-row class="map">
     <ion-col>
-      <div id="map_canvas" style="height: 650px;width: 650px;display:block;margin: 0 auto;"></div>
+      <div [hidden]="!datos.contact.longitud"  id="map_canvas" style="height: 650px;width: 650px;display:block;margin: 0 auto;"></div>
+      <div [hidden]="datos.contact.longitud">
+        <ion-button size="default" (click)="updateGeolocation(datos.contact.id)">
+          Agregar Geolocalizacion
+        </ion-button>
+      </div>
     </ion-col>
   </ion-row>
-  <ion-button expand="block" class="round" (click)="navMetodoPedidos()">Continuar</ion-button>
+  <ion-button [hidden]="!datos.contact.longitud" expand="block" class="round" (click)="navMetodoPedidos()">Continuar</ion-button>
 </ion-content>

@@ -1,0 +1,57 @@
+<ion-header no-border>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cotizaciones CCFN</ion-title>
+  </ion-toolbar>
+  <img style="width:100%;" src="../../../assets/icon/market.png" alt="">
+</ion-header>
+  
+<ion-content>
+  <ion-row style="height: 25% !important;">
+    <ion-col style="width: auto !important;height: 75% !important;">
+      <h1>Cotizaciones CCFN</h1>
+    </ion-col>
+  </ion-row>
+  <ion-row style="height: 75% !important;">
+    <ion-col>
+      <img style="width: auto !important;height: 75% !important;"src="../../../assets/img/pedidos-phone.png" alt="">
+    </ion-col>
+  </ion-row>
+</ion-content>
+  
+<ion-footer no-shadow style="height:20%;">
+  <ion-toolbar position="bottom" no-padding>
+    <div style="position:absolute;z-index:1" >
+      <img style="height: max-content;"src="../../../assets/img/pedidos-footer.png" alt="">
+    </div>  
+    <div style="position:relative;z-index:2;">
+      <ion-row style="padding-top: 3%">
+        <ion-col>
+          <ion-button size="{{button_size}}" color="light" routerLink="/cotizaciones">
+            <ion-icon name="clipboard"></ion-icon>Todas las cotizaciones
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row style="height: -webkit-fill-available">
+        <ion-col >
+          <ion-button style="--border-radius: 20px;" size="{{button_size}}" fill="outline" color="light" routerLink="/dashboard">
+            <ion-icon name="apps"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button style="--border-radius: 20px;" size="{{button_size}}" color="light" fill="outline"  (click)="goTo()">
+            <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button style="--border-radius: 20px;" size="{{button_size}}" color="light" fill="outline">
+            <ion-icon slot="icon-only" name="notifications"></ion-icon>
+            <ion-badge color="danger">66</ion-badge>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </div>
+  </ion-toolbar>
+</ion-footer>

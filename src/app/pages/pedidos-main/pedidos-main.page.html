@@ -1,59 +1,57 @@
-<ion-header>
+<ion-header no-border>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="dashboard"></ion-back-button>
     </ion-buttons>
     <ion-title>Pedidos CCFN</ion-title>
   </ion-toolbar>
+  <img style="width:100%;" src="../../../assets/icon/market.png" alt="">
 </ion-header>
 
 <ion-content>
-  <ion-row>
-    <ion-col>
-      <img src="../../../assets/img/tienda.png" alt="">
-    </ion-col>
-  </ion-row>
-  <ion-row>
-    <ion-col style="text-align: center;font-size: 56px">
+  <ion-row style="height: 25% !important;">
+    <ion-col style="width: auto !important;height: 75% !important;">
       <h1>Pedidos CCFN</h1>
     </ion-col>
   </ion-row>
-  <ion-row style="height: 75%; align-items: center">
-    <ion-col style="text-align: center">
-      <img src="../../../assets/img/pedidos-phone.png" alt="">
+  <ion-row style="height: 75% !important;">
+    <ion-col>
+      <img style="width: auto !important;height: 75% !important;"src="../../../assets/icon/Bag.png" alt="">
     </ion-col>
   </ion-row>
 </ion-content>
 
-<ion-footer no-shadow >
-  <ion-toolbar position="bottom"  no-padding>
-    <div class="footer" style="height:200px;" >
-        <div style="width:100%;position:absolute;z-index:1" >
-          <img src="../../../assets/img/pedidos-footer.png" alt="">
-        </div>  
-        <div style="position:relative;top:20px;z-index:2;text-align: center">
-          <ion-button class="round" size="large" color="light" routerLink="/all-orders">
+<ion-footer no-shadow style="height:20%;">
+  <ion-toolbar position="bottom" no-padding>
+    <div style="position:absolute;z-index:1" >
+      <img style="height: max-content;"src="../../../assets/img/pedidos-footer.png" alt="">
+    </div>  
+    <div style="position:relative;z-index:2;">
+      <ion-row style="padding-top: 3%">
+        <ion-col>
+          <ion-button size="{{button_size}}" color="light" routerLink="/all-orders">
             <ion-icon name="clipboard"></ion-icon>Todos los Pedidos
           </ion-button>
-          <ion-row style="height:100px;align-items: center">
-            <ion-col style="text-align: center">
-              <ion-button style="border-radius: 20px;height:60px;width:85px;" fill="outline" color="light" routerLink="/dashboard">
-                <ion-icon name="apps"></ion-icon>
-              </ion-button>
-            </ion-col>
-            <ion-col style="text-align: center">
-              <ion-button style="border-radius: 20px;height:60px;width:85px;" color="light" fill="outline" routerLink="/generate-pedido">
-                <ion-icon slot="icon-only" name="add-circle"></ion-icon>
-              </ion-button>
-            </ion-col>
-            <ion-col style="text-align: center">
-              <ion-button style="border-radius: 20px;height:60px;width:85px;" color="light" fill="outline">
-                <ion-icon slot="icon-only" name="notifications"></ion-icon>
-                <ion-badge color="danger">66</ion-badge>
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </div>
-      </div>
+        </ion-col>
+      </ion-row>
+      <ion-row style="height: -webkit-fill-available">
+        <ion-col >
+          <ion-button style="--border-radius: 20px;" size="{{button_size}}" fill="outline" color="light" routerLink="/dashboard">
+            <ion-icon name="apps"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button style="--border-radius: 20px;" size="{{button_size}}" color="light" fill="outline" (click)="goTo()">
+            <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button style="--border-radius: 20px;" size="{{button_size}}" color="light" fill="outline">
+            <ion-icon slot="icon-only" name="notifications"></ion-icon>
+            <ion-badge color="danger">66</ion-badge>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </div>
   </ion-toolbar>
 </ion-footer>

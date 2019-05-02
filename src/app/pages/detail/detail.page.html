@@ -1,0 +1,145 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button  *ngIf="!isorder" defaultHref="cotizaciones"></ion-back-button>
+      <ion-back-button  *ngIf="isorder" defaultHref="all-orders"></ion-back-button>
+    </ion-buttons>
+    <ion-title *ngIf="isorder">Pedidos CCFN</ion-title>
+    <ion-title *ngIf="!isorder">Cotizaciones CCFN</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-row>
+    <ion-col>
+      <h1>Forma de Pago</h1>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label>Tipo de Pago: {{pago?.name}}</ion-label>
+      </ion-item>
+    </ion-col>
+    <ion-col>
+      <ion-item>
+        <ion-label>Documento: {{documento?.name}}</ion-label>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label>Ruta: {{ruta?.name}}</ion-label>
+      </ion-item>
+    </ion-col>
+    <ion-col>
+      <ion-item>
+        <ion-label>Moneda: {{currency?.name}}</ion-label>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <h1>Recepcion Producto</h1>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label>Fecha Recepcion: {{order.order.fecha_de_recepcion| date: "yyyy/MM/dd"}} </ion-label>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label>Despues de {{hora_despues?.hora}}</ion-label>
+      </ion-item>
+    </ion-col>
+    <ion-col>
+      <ion-item>
+        <ion-label>Antes de {{hora_antes?.hora}}</ion-label>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <h1>Detalle Pedido</h1>
+    </ion-col>
+  </ion-row>
+  <ion-list>
+    <ion-row *ngFor="let product of order.rows">
+      <ion-col size="3" size-lg>
+        <ion-thumbnail>
+          <img src="../../../assets/img/placeholder-product.png">
+        </ion-thumbnail>
+      </ion-col>
+      <ion-col size="9" size-lg size="12" size-sm>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>
+              {{product.product_codigo}}
+            </ion-card-subtitle>
+            <ion-card-title>
+              {{product.product_name}}
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            Price: {{product.price}}<br>
+            Cantidad: {{product.quantity}}
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-row>
+    <ion-col>
+      <h1>Direccion de Envio</h1>
+      <ion-card>
+        <img src="../../../assets/img/card-img.jpg">
+        <ion-card-header>
+          <ion-card-title>
+            {{contact.full_name}}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Calle: {{contact.street}}<br>
+          Colonia: {{contact.colonia}}<br>
+          Cuidad: {{contact.city}} <br>
+          Estado: {{contact.state}} <br>
+          Pais: {{contact.country}} <br>
+          Codigo Postal: {{contact.zip_code}}
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+  <ion-row class="map">
+    <ion-col>
+      <div id="map_canvas" style="height: 650px;width: 650px;display:block;margin: 0 auto;"></div>
+    </ion-col>
+  </ion-row>
+
+  <ion-item>
+    <ion-list>
+      <ion-item>
+        <h1>SubTotal: ${{subtotal.toFixed(2)}}</h1>
+      </ion-item>
+      <ion-item>
+        <h1>Impuestos: ${{impuestos.toFixed(2)}}</h1>
+      </ion-item>
+      <ion-item>
+        <h1>Total: ${{total}}</h1>
+      </ion-item>
+    </ion-list>
+  </ion-item>
+  <div *ngIf="!isorder">
+    <ion-button expand="block" class="round" (click)="crearPedido()">
+      Crear Pedido
+    </ion-button>
+    <ion-button expand="block" class="round" (click)="borrarCotizacion()">
+      Borrar Cotizacion
+    </ion-button>
+  </div>
+
+</ion-content>

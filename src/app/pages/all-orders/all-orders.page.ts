@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
+import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
+import { Router } from '@angular/router';
+
+const ORDERS_KEY = 'orders';
 
 @Component({
   selector: 'app-all-orders',
@@ -8,18 +11,23 @@ import { Storage } from '@ionic/storage';
   styleUrls: ['./all-orders.page.scss'],
 })
 export class AllOrdersPage implements OnInit {
-  url: string = 'http://192.168.0.41';
+
   orderData: any=[];
 
-  constructor(private http: HttpClient, private storage: Storage) { }
+  constructor(
+    private storage: Storage,
+    private router: Router,
+    private navExtras: NavExtrasServiceService) { }
 
   ngOnInit() {
-    this.storage.get('USER_ID').then((val) => {
-      this.http.get(this.url + '/api/order/' +val)
-      .subscribe((data: any)=>{
-        this.orderData = JSON.parse(data);
-      });
+    this.storage.get(ORDERS_KEY).then((val) => {
+      this.orderData = val;
     });
+  }
+
+  goToDetail(order){
+    this.navExtras.setExtras({order:order, isorder:true});
+    this.router.navigate(['detail']);
   }
 
 }

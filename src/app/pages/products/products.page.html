@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Productos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <img style="width:100%;" src="../../../assets/img/tienda.png" alt="">
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label>Sucursal</ion-label>
+        <ion-select [(ngModel)]="sucursal_id" okText="Aceptar" cancelText="Cancelar" name="sucursal_id"
+          placeholder="Select One" (ionChange)="cambioSucursal($event)">
+          <ion-select-option *ngFor="let suc of sucursalList" [value]="suc.id">
+            {{suc.nombre_sucursal}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-toolbar>
+        <ion-searchbar color="light" #productSearchBar (ionInput)="searchProducts($event);" animated></ion-searchbar>
+      </ion-toolbar>
+    </ion-col>
+  </ion-row>
+  <ion-virtual-scroll [items]="productListsearchBar">
+    <ion-row *virtualItem="let product">
+      <ion-col size="3" size-lg>
+      <ion-thumbnail>
+        <img src="../../../assets/img/placeholder-product.png">
+      </ion-thumbnail>
+    </ion-col>
+    <ion-col size="9" size-lg size="12" size-sm>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-subtitle>
+            {{product.codigoProtevs}}
+          </ion-card-subtitle>
+          <ion-card-title>
+            {{product.name}}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Price: {{product.price}} {{product.moneda_mayoreo}}<br>
+          stock: {{product.stock}}<br>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+  </ion-virtual-scroll>
+</ion-content>

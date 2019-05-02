@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Platform } from '@ionic/angular';
+import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
+import {  Router } from '@angular/router';
 
 @Component({
   selector: 'app-pedidos-main',
@@ -7,9 +10,29 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PedidosMainPage implements OnInit {
 
-  constructor() { }
+  button_size: string;
+  screen_width: number;
+
+  constructor(
+    public plt: Platform,
+    private navExtras: NavExtrasServiceService,
+    private router: Router,) { 
+    plt.ready().then((readySource) => {
+      this.screen_width = plt.width();
+    });
+  }
 
   ngOnInit() {
+    if(this.screen_width < 550){
+      this.button_size='default'
+    }
+    else {
+      this.button_size='large'
+    }
+  }
+  goTo() {
+    this.navExtras.setExtras({'pedido':true});
+    this.router.navigate(['generate-pedido']);
   }
 
 }

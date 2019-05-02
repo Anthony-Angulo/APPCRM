@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { HttpClient } from '@angular/common/http';
+import { AuthService } from 'src/app/services/authentication.service';
 import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network/ngx';
-import { Router } from '@angular/router';
 import { OfflineDataService } from 'src/app/services/offline-data.service';
-import Swal from 'sweetalert2';
+import { SaveDataService } from 'src/app/services/save-data.service';
+import { LocationTrackerService  } from '../../services/location-tracker.service';
+
+const R = 6378.137; // Radius of earth in KM
 
 @Component({
   selector: 'app-dashboard',
@@ -15,13 +16,16 @@ import Swal from 'sweetalert2';
 })
 export class DashboardPage implements OnInit {
 
-  checkInStatusFalse: boolean = true;
-  checkInStatusTrue: boolean = false;
+  checkInStatus: boolean = false;
 
-  formData = { user_id: '', movimiento_id: 0, latitud: 0, longitud: 0, order_number: '' };
-  storageFormData = 'formData';
+  formData = { 
+    user_id: '', 
+    movimiento_id: 0,
+    latitud: 0,
+    longitud: 0,
+    order_number: ''
+  };
 
-  url = 'http://192.168.0.41';
   watch: any = 0;
   userid: any = 0;
   valor: any = 0;
@@ -29,64 +33,62 @@ export class DashboardPage implements OnInit {
   latitud
 
   constructor(
-    private authService: AuthenticationService,
+    private authService: AuthService,
     private offlineData: OfflineDataService,
+    private saveData: SaveDataService,
     private geolocation: Geolocation,
-    private http: HttpClient,
+    public locationTracker: LocationTrackerService,
     private storage: Storage,
-    private network: Network,
-    private router: Router) { }
+    private network: Network) { }
 
   ngOnInit() {
 
     this.network.onConnect().subscribe(() => {
-      if (this.storage.get(this.storageFormData) === null) {
-        Swal.fire({
-
-          title: "Conexion Encontrada. Sin Pedidos Pendientes.",
-          type: "success",
-          confirmButtonText: "Enterado."
-
-        });
-      } else {
-        this.storage.get(this.storageFormData).then(val => {
-
-        })
-      }
+        this.saveData.saveStorage()
     });
+
     this.storage.get("USER_ID").then(val=>{
-      this.userid=val;
+      this.userid = val;
     });
+
+    this.storage.get("check-in").then(val=>{
+      this.checkInStatus = val;
+    });
+
     this.offlineData.getDataOffline();
 
   }
 
+
+
   checkIn() {
-    this.geolocation.getCurrentPosition({ timeout: 600000, enableHighAccuracy: true }).then((resp) => {
-      this.formData = {
-        user_id: this.userid.replace('"', ''),
-        movimiento_id: 1,
-        latitud: resp.coords.latitude,
-        longitud: resp.coords.longitude,
-        order_number: ''
-      };
-      this.latitud = resp.coords.latitude;
-      this.longitud = resp.coords.longitude;
-      this.checkInStatusFalse = false;
-      this.checkInStatusTrue = true;
-      this.checkInRuta();
-      // this.http.post(this.url + '/api/usertrck', this.formData).subscribe((resp: any) => {
-      //   console.log(JSON.parse(resp));
-      // });
+    this.locationTracker.startTracking();
+    
+    // this.geolocation.getCurrentPosition({ timeout: 600000, enableHighAccuracy: true }).then((resp) => {
+    //   this.formData = {
+    //     user_id: this.userid.replace('"', ''),
+    //     movimiento_id: 1,
+    //     latitud: resp.coords.latitude,
+    //     longitud: resp.coords.longitude,
+    //     order_number: ''
+    //   };
+    //   this.latitud = resp.coords.latitude;
+    //   this.longitud = resp.coords.longitude;
+    //   this.checkInStatus = true;
+    //   this.checkInRuta();
+    //   // this.http.post(this.url + '/api/usertrck', this.formData).subscribe((resp: any) => {
+    //   //   console.log(JSON.parse(resp));
+    //   // });
       
-    }).catch((error) => {
-      console.log('Error getting location', error);
-    });
+    // }).catch((error) => {
+    //   console.log('Error getting location', error);
+    // });
+    this.checkInStatus = true;
+    this.storage.set('check-in', this.checkInStatus);
   }
 
   checkInRuta() {
     this.watch = this.geolocation.watchPosition().subscribe((resp: any) => {
-      var R = 6378.137; // Radius of earth in KM
       var dLat = resp.coords.latitude * Math.PI / 180 - this.latitud * Math.PI / 180;
       var dLon = resp.coords.longitude * Math.PI / 180 - this.longitud * Math.PI / 180;
       var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -117,9 +119,10 @@ export class DashboardPage implements OnInit {
   }
 
   checkOut() {
-    this.watch.unsubscribe();
-    this.checkInStatusFalse = true;
-    this.checkInStatusTrue = false;
+    this.locationTracker.stopTracking();
+    // this.watch.unsubscribe();
+    this.checkInStatus = false;
+    this.storage.set('check-in', this.checkInStatus);
   }
 
   logout() {

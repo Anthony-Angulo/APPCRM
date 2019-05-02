@@ -3,7 +3,8 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="entrega-pedido"></ion-back-button>
     </ion-buttons>
-    <ion-title>Pedidos CCFN</ion-title>
+    <ion-title *ngIf="datos.pedido">Pedidos CCFN</ion-title>
+    <ion-title *ngIf="!datos.pedido">Cotizaciones CCFN</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -73,7 +74,8 @@
     <ion-col>
       <ion-item>
         <ion-label>Fecha Recepcion</ion-label>
-        <ion-datetime [(ngModel)]="fecha_recepcion" displayFormat="YYYY DD MM" placeholder="Select Date"></ion-datetime>
+        <ion-datetime [(ngModel)]="fecha_recepcion"picker-format="DD MMM YYYY" displayFormat="MMM-DD-YYYY" min="{{min_date | date: 'yyyy-MM-dd'}}" max="{{max_date | date: 'yyyy-MM-dd'}}" placeholder="Select Date">
+        </ion-datetime>
       </ion-item>
     </ion-col>
   </ion-row>
@@ -83,7 +85,7 @@
         <ion-label>Despues de</ion-label>
         <ion-select [(ngModel)]="despues_id" okText="Aceptar" cancelText="Cancelar" name="despues_id"
           placeholder="Select One">
-          <ion-select-option *ngFor="let despues of horasDespuesList" [value]="despues.id">{{despues.hora}}
+          <ion-select-option *ngFor="let despues of horasList" [value]="despues.id">{{despues.hora}}
           </ion-select-option>
         </ion-select>
       </ion-item>
@@ -93,7 +95,7 @@
         <ion-label>Antes de</ion-label>
         <ion-select [(ngModel)]="antes_id" okText="Aceptar" cancelText="Cancelar" name="antes_id"
           placeholder="Select One">
-          <ion-select-option *ngFor="let antes of horasAntesList" [value]="antes.id">{{antes.hora}}
+          <ion-select-option *ngFor="let antes of horasList" [value]="antes.id">{{antes.hora}}
           </ion-select-option>
         </ion-select>
       </ion-item>
@@ -113,38 +115,45 @@
     </ion-col>
   </ion-row>
   <ion-list>
-    <ion-item *ngFor="let product of datos.products">
-      <ion-thumbnail slot="start">
-        <img src="../../../assets/img/placeholder-product.png">
-      </ion-thumbnail>
-      <ion-card>
-        <ion-card-header>
-          <ion-card-subtitle>
-            {{product.product_codigo}}
-          </ion-card-subtitle>
-          <ion-card-title>
-            {{product.product_name}}
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          Price: {{product.product_price}}<br>
-          Cantidad: {{product.quantity}}
-        </ion-card-content>
-      </ion-card>
-    </ion-item>
+    <ion-row *ngFor="let product of datos.products">
+      <ion-col size="3" size-lg>
+        <ion-thumbnail>
+          <img src="../../../assets/img/placeholder-product.png">
+        </ion-thumbnail>
+      </ion-col>
+      <ion-col size="9" size-lg size="12" size-sm>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>
+              {{product.product_codigo}}
+            </ion-card-subtitle>
+            <ion-card-title>
+              {{product.product_name}}
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            Price: {{product.product_price}}<br>
+            Cantidad: {{product.quantity}}
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
   </ion-list>
   <ion-item *ngIf="currency_id != 0">
     <ion-list>
       <ion-item>
-        <h1>SubTotal: ${{subtotal}}</h1>
+        <h1>SubTotal: ${{subtotal.toFixed(2)}}</h1>
       </ion-item>
       <ion-item>
-        <h1>Envio: 0</h1>
+        <h1>Impuestos: ${{impuestos.toFixed(2)}}</h1>
       </ion-item>
       <ion-item>
-        <h1>Total: ${{total}}</h1>
+        <h1>Total: ${{total.toFixed(2)}}</h1>
       </ion-item>
     </ion-list>
   </ion-item>
-  <ion-button expand="block" class="round" (click)="generarPedido()">Crear Pedido</ion-button>
+  <ion-button [disabled]="!pago_id || !documento_id || !ruta_id || !currency_id || !fecha_recepcion" expand="block" class="round" (click)="generarPedido()">
+    <div *ngIf="datos.pedido">Crear Pedido</div>
+    <div *ngIf="!datos.pedido">Crear Cotizaciones</div>
+  </ion-button>
 </ion-content>

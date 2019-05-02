@@ -5,7 +5,15 @@ import { NavController, IonSearchbar } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
 import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
 import { Router } from '@angular/router';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import Swal from 'sweetalert2'
+
+const PRODUCTS_KEY = 'products';
+const CONTACTS_KEY = 'contacts';
+const IMPUESTOS_KEY = 'impuestos';
+const TES_KEY = 'tes';
+const SUCURSAL_KEY = 'sucursal';
+const CAMBIO_KEY = 'cambio';
 
 @Component({
   selector: 'app-generate-pedido',
@@ -15,91 +23,141 @@ import Swal from 'sweetalert2'
 
 export class GeneratePedidoPage implements OnInit {
   @ViewChild('clientSearchBar') searchbar: IonSearchbar;
-  user_id: string = 'USER_ID';
-  storageProducts: string = 'products';
-  storageContacts: string = 'contacts';
-  storageStatus: string = 'status';
-  storageSucursal: string = 'sucursal';
+
   contactList: any = [];
+  contactListsearchBar: any = [];
   contactOrder: any;
+
   productOrder: any = [];
-  productList: any = [];
-  statusList: any = [];
+  productListAll: any = [];
+  productListSucursal: any = []
+  productListsearchBar: any = [];
+
   sucursalList: any = [];
-  listProducts: any = [];
-  list: any = [];
-  sucursal: any = [];
-  status: any = [];
-  fecha_creacion: String = new Date().toISOString();
-  fecha_due: Date = new Date();
-  status_id: number = 0;
-  sucursal_id: number = 0;
+  sucursal_id: string = '1';
+
+  impuestosList: any = [];
+  tesList: any = [];
+  
+  impuestos: number =0;
   subtotal: number = 0;
   total: number = 0;
-  url = 'http://192.168.0.41';
+  totalDolares = 0;
+  subtotalDolares:number = 0;
+  impuestosDolares:number = 0;
+  tipo_de_cambio: number = 0;
+
+  datos: any;
+
+  dolaresCard: boolean = false;
 
   constructor(
     private http: HttpClient,
     private storage: Storage,
-    private nav: NavController,
     private router: Router,
     private navExtras: NavExtrasServiceService,
+    private barcodeScanner: BarcodeScanner
   ) { }
-
+  
   ngOnInit() {
-
-    this.storage.get(this.storageContacts).then(val => {
+    this.datos = this.navExtras.getExtras();
+    
+    this.storage.get(CONTACTS_KEY).then(val => {
       this.contactList = val;
     });
 
-    this.storage.get(this.storageProducts).then(val => {
-      this.productList = val;
+    this.storage.get(IMPUESTOS_KEY).then(val => {
+      this.impuestosList = val;
     });
 
-    this.storage.get(this.storageStatus).then(val => {
-      this.statusList = val;
-      var id_filtered = this.statusList.find(status => status.id == '1');
-      this.status_id = id_filtered.id
+    this.storage.get(TES_KEY).then(val => {
+      this.tesList = val;
     });
 
-    this.storage.get(this.storageSucursal).then(val => {
+    this.storage.get(PRODUCTS_KEY).then(val => {
+      this.productListAll = val;
+      this.productListSucursal = this.productListAll.filter(product => product.sucursal_id == '1');
+    });
+
+    this.storage.get(SUCURSAL_KEY).then(val => {
       this.sucursalList = val;
-      var id_filtered = this.sucursalList.find(sucursal => sucursal.id == '1');
-      this.sucursal_id = id_filtered.id
     });
+
+    this.storage.get(CAMBIO_KEY).then(val => {
+      this.tipo_de_cambio = val;
+    });
+  }
+
+  ionViewDidEnter(){
+    this.datos = this.navExtras.getExtras()
+    if(this.datos !== {'pedido':true}|| this.datos !== {'pedido':false}){
+      if(this.datos.contact != this.contactOrder){
+        this.contactOrder=this.datos.contact;
+      }
+    }
+  }
+
+  ngOnDestroy(){
+    this.navExtras.setExtras(null)
   }
 
   public searchContacts(val: any) {
     let valor = val.target.value;
     if (valor && valor.trim() != '') {
-      this.list = this.contactList.filter((item) => {
+      this.contactListsearchBar = this.contactList.filter((item) => {
         return (item.nombre_reducido.toLowerCase().indexOf(valor.toLowerCase()) > -1);
       })
     } else {
-      this.list = '';
+      this.contactListsearchBar = [];
     }
+  }
+
+  public scanQr(){
+    this.barcodeScanner.scan().then(barcodeData => {
+      var id = parseInt(barcodeData.text)
+      if(id == null){
+        Swal.fire({
+          title: "Codigo QRIncorrecto",
+          type: "warning",
+          confirmButtonText: "Aceptar"
+        });
+      }
+      this.contactOrder = this.contactList.find(contact => contact.id == id);
+    }).catch(err => {
+      Swal.fire({
+        title: err,
+        type: "warning",
+        confirmButtonText: "Aceptar"
+      });
+    });
   }
 
   public searchProducts(val: any) {
     let valor2 = val.target.value;
     if (valor2.length > 1 && valor2.trim() != '') {
-      this.listProducts = this.productList.filter((item) => {
+      this.productListsearchBar = this.productListSucursal.filter((item) => {
         var in_list = this.productOrder.some(product => product.product_name == item.name)
         return (item.name.toLowerCase().indexOf(valor2.toLowerCase()) > -1) && !in_list;
       })
     } else {
-      this.listProducts = [];
+      this.productListsearchBar = [];
     }
   }
 
   public addContact(id: any) {
     this.contactOrder = this.contactList.find(contact => contact.id == id);
-    this.list = '';
+    this.contactListsearchBar = [];
   }
 
   public addProduct(id: any) {
-    var product = this.productList.find(product => product.id == id);
-    this.productOrder.push({
+    var imp = 1.00;
+    var product = this.productListSucursal.find(product => product.id == id);
+    var test_lit = this.tesList.filter(tes=>tes.tes==product.tes)
+    for(var i=0; i < test_lit.length; i++){
+      imp *= 1 + this.impuestosList.find(imp=> imp.codigo == test_lit[i].cod_impuesto).importe/100
+    };
+    imp-=1
+    var product_order = {
       product_codigo: product.codigoProtevs,
       product_name: product.name,
       product_price: product.price,
@@ -107,47 +165,99 @@ export class GeneratePedidoPage implements OnInit {
       product_UM: product.UM_mayoreo,
       product_moneda: product.moneda_mayoreo,
       quantity: 1,
-      subtotal: product.price,
-    });
-    this.listProducts = [];
+      subtotal: Number(product.price),
+      // impuestos_aplicados: '',
+      impuesto_cal: imp,
+      impuestos_total: 0,
+      total: 0
+    }
+    this.calcularImpuestos(product_order)
+    this.productOrder.push(product_order)
+    this.productListsearchBar = [];
+    this.updateTotal();
+    this.searchbar.value = '';
   }
 
   eliminarProducto(product) {
     this.productOrder.splice(this.productOrder.indexOf(product), 1);
+    this.updateTotal();
   }
 
+  updateTotal(){
+    this.total=0;
+    this.subtotal=0;
+    this.impuestos=0;
+
+    this.totalDolares = 0;
+    this.subtotalDolares = 0;
+    this.impuestosDolares = 0;
+
+
+    for(var i=0;i<this.productOrder.length;i++){
+      if (this.productOrder[i].product_moneda == "MN") {
+        this.subtotal += this.productOrder[i].subtotal;
+        this.impuestos += this.productOrder[i].impuestos_total;
+        this.total += this.productOrder[i].total;
+        this.subtotalDolares += this.productOrder[i].subtotal / this.tipo_de_cambio;
+        this.impuestosDolares += this.productOrder[i].impuestos_total / this.tipo_de_cambio;
+        this.totalDolares += this.productOrder[i].total / this.tipo_de_cambio;
+
+      } else {
+        this.subtotalDolares += this.productOrder[i].subtotal;
+        this.impuestosDolares += this.productOrder[i].impuestos_total;
+        this.totalDolares += this.productOrder[i].total;
+        this.subtotal += this.productOrder[i].subtotal * this.tipo_de_cambio;
+        this.impuestos += this.productOrder[i].impuestos_total * this.tipo_de_cambio;
+        this.total += this.productOrder[i].total * this.tipo_de_cambio;
+      }
+    }
+
+  }
+
+  calcularImpuestos(product){
+    product.impuestos_total = product.subtotal * product.impuesto_cal;
+    product.total = product.impuestos_total + product.subtotal
+  }
+  
   private increment(product) {
-    product.quantity++;
-    product.subtotal = product.product_price * product.quantity;
+    if(product.quantity < product.product_stock){
+      product.quantity++;
+      product.subtotal = product.product_price * product.quantity;
+      this.calcularImpuestos(product)
+      this.updateTotal()
+    }
   }
 
   private decrement(product) {
-    if (product.quantity > 0) {
+    if (product.quantity > 1) {
       product.quantity--;
       product.subtotal = product.product_price * product.quantity;
+      this.calcularImpuestos(product)
+      this.updateTotal()
     }
   }
 
+  cambioSucursal(event) {
+    this.subtotal = 0;
+    this.total = 0;
+    this.productOrder = []
+    this.productListSucursal = this.productListAll.filter(product => product.sucursal_id == event.detail.value);
+    this.searchbar.value = '';
+  }
+
   entregaPedido() {
+    let pedido = this.navExtras.getExtras().pedido
     const myData = {
       contact: this.contactOrder,
       products: this.productOrder,
-      status: this.status_id,
+      // status: this.status_id,
       sucursal: this.sucursal_id,
-      date_creacion: this.fecha_creacion,
-      date_due: this.fecha_due,
+      // date_creacion: this.fecha_creacion,
+      // date_due: this.fecha_due,
+      pedido: pedido,
     };
-
     this.navExtras.setExtras(myData);
-    if(this.contactOrder != null && this.productOrder.length > 0){
-      this.router.navigate(['entrega-pedido']);
-    }else{
-      Swal.fire({
-        title: "Seleccione un Contacto y/o Productos",
-        type: "warning",
-        confirmButtonText: "Aceptar"
-      });
-    }
+    this.router.navigate(['entrega-pedido']);
   }
 
 }

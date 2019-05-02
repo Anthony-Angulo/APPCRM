@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="pedidos-main"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Todas las Cotizaciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+  
+<ion-content>
+  <ion-virtual-scroll [items]="cotizaciones">
+    <ion-item *virtualItem="let cotizacion" (click)="goToDetail(cotizacion)">
+      <ion-card>
+        <img src="../../../assets/img/placeholder-image.png">
+        <ion-card-header>
+          <ion-card-title>
+            <p>Contact: {{contact(cotizacion.order.contact_id)}}</p>
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Fecha de recepcion: {{cotizacion.order.fecha_de_recepcion| date: "yyyy/MM/dd"}}</p>
+          <p>Enviar a: {{cotizacion.order.ship_to}}</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-item>
+  </ion-virtual-scroll>
+</ion-content>

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
-import { Validators } from '@angular/forms';
+import { SaveDataService } from 'src/app/services/save-data.service';
+
+const CONTACTS_KEY = 'contacts';
 
 @Component({
   selector: 'app-contacts',
@@ -10,18 +11,22 @@ import { Validators } from '@angular/forms';
 })
 export class ContactsPage implements OnInit {
 
-  contactList: any = [];x
+  contactList: any = [];
   list: any = [];
 
-  storageContacts: string = 'contacts';
-
-  constructor(private http: HttpClient, private storage: Storage) { }
+  constructor(
+    private storage: Storage,
+    private savedataservice: SaveDataService) { }
 
   ngOnInit() {
-    this.storage.get(this.storageContacts).then(val => {
+    var a = this.storage.get(CONTACTS_KEY).then(val => {
       this.contactList = val;
       this.list = val;
     });
+  }
+
+  ngOnDestroy() {
+    this.storage.set(CONTACTS_KEY, this.contactList);
   }
 
   searchContacts(val: any) {
@@ -32,6 +37,19 @@ export class ContactsPage implements OnInit {
       })
     } else {
       this.list = this.contactList;
+    }
+  }
+
+  public updateGeolocation(id: number){
+    try{
+      this.savedataservice.updateGeolocation(id).then(formData => {
+        var contact_index  = this.contactList.findIndex(contact => contact.id == id)
+        this.contactList[contact_index].latitud = formData.latitude;
+        this.contactList[contact_index].longitud = formData.longitude;
+      })
+    }
+    catch(e){
+
     }
   }
 }
