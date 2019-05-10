@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Platform, NavController } from '@ionic/angular';
+import { Component } from '@angular/core';
+import { Platform } from '@ionic/angular';
 import {
   GoogleMaps,
   GoogleMap,
@@ -9,11 +9,9 @@ import {
   Environment
 } from '@ionic-native/google-maps/ngx';
 import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
-import {  Router } from '@angular/router';
-import { Storage } from '@ionic/storage';
+import { Router } from '@angular/router';
 import { SaveDataService } from 'src/app/services/save-data.service';
-
-const CONTACTS_KEY = 'contacts';
+import { ImagesService } from 'src/app/services/images.service';
 
 @Component({
   selector: 'app-entrega-pedido',
@@ -23,20 +21,16 @@ const CONTACTS_KEY = 'contacts';
 export class EntregaPedidoPage {
   map: GoogleMap;
   datos: any;
-  contactList: any = [];
 
   constructor(
     public platform: Platform, 
     private router: Router,
-    private storage: Storage,
     private savedataservice: SaveDataService,
+    private imageservice: ImagesService,
     private navExtras: NavExtrasServiceService) { }
 
   ngOnInit(){
     this.datos = this.navExtras.getExtras();
-    this.storage.get(CONTACTS_KEY).then(val => {
-      this.contactList = val;
-    });
   }
   ngAfterViewInit() {
     if(this.datos.contact.longitud!=null){
@@ -74,24 +68,28 @@ export class EntregaPedidoPage {
     });
   }
 
-  public updateGeolocation(id: number){
-    try{
-      this.savedataservice.updateGeolocation(id).then(formData=>{
-        var contact_index  = this.contactList.findIndex(contact => contact.id == id)
-        this.contactList[contact_index].latitud = formData.latitude;
-        this.contactList[contact_index].longitud = formData.longitude;
-        this.datos.contact = this.contactList[contact_index]
-        this.storage.set(CONTACTS_KEY, this.contactList);
-        this.navExtras.setExtras(this.datos);
-        this.loadMap();
-      })
-    }
-    catch(e){
+  public updateGeolocation(contact: any){
 
-    }
+    this.savedataservice.updateGeolocation(contact.id).then(formData=>{
+      contact.latitud = formData.latitude;
+      contact.longitud = formData.longitude;
+      this.datos.contact = contact;
+      this.navExtras.setExtras(this.datos);
+      this.loadMap();
+    })
+
   }
 
- navMetodoPedidos(){
-  this.router.navigate(['fecha-pago-pedido']);
-}
+  navMetodoPedidos(){
+    this.router.navigate(['fecha-pago-pedido']);
+  }
+
+  public getPath(name){
+    return this.imageservice.getPath(name)
+  }
+
+  showImage(name){
+    this.imageservice.showImage(name)
+  }
+
 }

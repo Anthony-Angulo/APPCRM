@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
-import {  Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
 
 @Component({
@@ -13,7 +13,7 @@ export class CotizacionesMainPage implements OnInit {
   button_size: string;
   screen_width: number;
 
-  constructor(public plt: Platform, private navExtras: NavExtrasServiceService,private router: Router) { 
+  constructor(public plt: Platform, private navExtras: NavExtrasServiceService, private router: Router) { 
     plt.ready().then((readySource) => {
       this.screen_width = plt.width();
     });
@@ -28,7 +28,13 @@ export class CotizacionesMainPage implements OnInit {
     }
   }
   goTo() {
-    this.navExtras.setExtras({'pedido':false});
+    const data = {
+      contact: undefined,
+      products: [],
+      sucursal_id: '1',
+      pedido: false,
+    };
+    this.navExtras.setExtras(data);
     this.router.navigate(['generate-pedido']);
   }
 

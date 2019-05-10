@@ -1,18 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
-import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
+import { Network } from '@ionic-native/network/ngx';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { ToastController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
+import { finalize } from 'rxjs/operators';
+import { StorageService } from '../services/storage.service'
 import Swal from 'sweetalert2'
 
-const STORAGE_ORDER_KEY = 'order_pendings';
-const ORDER_KEY = 'orders';
-const STORAGE_COTIZACION_KEY = 'cotizaciones';
-const STORAGE_GEO_FORM_KEY = 'geo';
-const STORAGE_EVENTS_KEY = 'events_pendings';
-const STORAGE_TRACK_KEY = 'track_pendings';
 const URL = 'http://192.168.101.23';
 
 @Injectable({
@@ -20,12 +17,16 @@ const URL = 'http://192.168.101.23';
 })
 export class SaveDataService {
 
+  networksub: any;
+
   constructor(
     private http: HttpClient,
-    private storage: Storage,
+    private storageservice: StorageService,
     private router: Router,
+    private network: Network,
     private localNotifications: LocalNotifications,
     public toastController: ToastController,
+    public loadingController: LoadingController,
     private geolocation: Geolocation) { }
 
   async presentToast(data:any) {
@@ -36,21 +37,33 @@ export class SaveDataService {
     toast.present();
   }
 
+  public startNetwork(){
+    this.networksub = this.network.onConnect().subscribe(() => {
+      this.saveStorage()
+    });
+  }
+
+  public stopNetwork(){
+    this.networksub.unsubscribe()
+  }
+
   public saveStorage(){
     
-    // this.storage.get(STORAGE_ORDER_KEY).then(val => {
-    //   if(val.length > 0){
-    //     for(var i =0; i<val.length;i++){
-    //       this.http.post(URL + '/api/generarPedido', val[i]).subscribe((data: any) => {
-
-    //       });
-    //     }
-    //   }
-    // });
-    this.storage.get(STORAGE_GEO_FORM_KEY).then(val => {
+    this.storageservice.getPendingOrders().then(val => {
+      if(val.length > 0){
+        for(var i=val.length-1; i >= 0 ; i--){
+          this.http.post(URL + '/api/generarPedido', val[i]).subscribe((data: any) => {
+            val.splice(i, 1);
+          });
+          this.storageservice.setPendingOrders(val);
+        }
+      }
+    });
+    
+    this.storageservice.getPendingGeoUpdate().then(val => {
       if(val.length > 0){
         this.http.post(URL + '/api/updateGeolocationContacts', val).subscribe( data  => {
-          this.storage.set(STORAGE_GEO_FORM_KEY, null)
+          this.storageservice.setPendingGeoUpdate(null)
           this.presentToast('Geolocalizacion Guardada')
         }, (err: any) => {
           this.presentToast('a'+ err.error)
@@ -58,10 +71,10 @@ export class SaveDataService {
       }
     });
 
-    this.storage.get(STORAGE_EVENTS_KEY).then(val => {
+    this.storageservice.getPendingEvents().then(val => {
       if(val.length > 0){
         this.http.post(URL + '/api/addEvent', val).subscribe((data: any) => {
-          this.storage.set(STORAGE_EVENTS_KEY, null)
+          this.storageservice.setPendingEvents(null)
           this.presentToast('Eventos Guardados');
         }, (err: any) => {
           this.presentToast('a'+ err.error)
@@ -88,7 +101,7 @@ export class SaveDataService {
         description: element.desc,
         start_date: getDate(element.startTime),
         end_date: getDate(element.endTime),
-        fullday:  ( element.allDay) ? 1 : 0,
+        fullday: (element.allDay) ? 1 : 0,
         priority_id: element.priority,  
       };
       eventsData.push(formDataEvent);
@@ -100,7 +113,7 @@ export class SaveDataService {
 
     }, (err: any) => {
 
-      this.storage.get(STORAGE_EVENTS_KEY).then(events => {
+      this.storageservice.getPendingEvents().then(events => {
         let event_list
         if(events == null){
           event_list = eventsData;
@@ -110,7 +123,7 @@ export class SaveDataService {
             event_list.push(element);
           })
         }
-        this.storage.set(STORAGE_EVENTS_KEY, event_list);
+        this.storageservice.setPendingEvents(event_list);
       });;
       
     });
@@ -126,6 +139,13 @@ export class SaveDataService {
         latitude: resp.coords.latitude 
       };
 
+      this.storageservice.getContacts().then(contactList => {
+        let index = contactList.findIndex(contact => contact.id == id)
+        contactList[index].latitud = formData.latitude;
+        contactList[index].longitud = formData.longitude;
+        this.storageservice.setContacts(contactList); 
+      })
+      
       return this.saveGeolocation([formData])
 
     }).catch((error) => {
@@ -136,7 +156,6 @@ export class SaveDataService {
 
   private saveGeolocation(data){
 
-    console.log('19')
     this.http.post(URL + '/api/updateGeolocationContacts', data).subscribe( resp => {
 
       Swal.fire({
@@ -147,10 +166,10 @@ export class SaveDataService {
       
     }, (err: any) => {
       
-      this.storage.get(STORAGE_GEO_FORM_KEY).then(geo_update => {
+      this.storageservice.getPendingGeoUpdate().then(geo_update => {
         let geo_list = (geo_update == null) ? [] : geo_update;
         geo_list.push(data[0]);
-        this.storage.set(STORAGE_GEO_FORM_KEY, geo_list);
+        this.storageservice.setPendingGeoUpdate(geo_list);
       });
 
       Swal.fire({
@@ -174,15 +193,11 @@ export class SaveDataService {
       });
 
     }), (err: any) => {
-      
-      this.localNotifications.schedule({
-        text: 'There is no conection'
-      });
-
-      this.storage.get(STORAGE_TRACK_KEY).then(tracks => {
+    
+      this.storageservice.getPendingTrack().then(tracks => {
         let track_list = (tracks == null) ? [] : tracks;
         track_list.push(data);
-        this.storage.set(STORAGE_TRACK_KEY, track_list);
+        this.storageservice.setPendingTrack(track_list);
       });
       
     };
@@ -221,22 +236,60 @@ export class SaveDataService {
 
   }
 
-  public saveOrder(form){
+  async saveOrder(form){
+
+    const loading = await this.loadingController.create({
+      message: 'Guardando Orden...',
+    });
+    await loading.present();
 
     let order = {
       order: form.order,
       rows: form.rows,
     }
 
-    this.storage.get(ORDER_KEY).then(ordenes => {
-      let order_list = (ordenes == null) ? [] : ordenes;
-      order_list.push(order);
-      this.storage.set(ORDER_KEY, order_list);
-    });
+    this.http.post(URL + '/api/generarPedido', form)
+      .pipe(
+        finalize(() => {
+          loading.dismiss();
+        })
+      )
+      .subscribe((data: any) => {
 
-    this.http.post(URL + '/api/generarPedido', form).subscribe((data: any) => {
+      let idPedido = data.token;
+      
+      for(var i=0;i<order.rows.length;i++){
+        delete order.rows[i].codigoProtevs;
+      }
+      delete order.order.sucursal_id;
+      delete order.order.bill_city;
+      delete order.order.bill_country;
+      delete order.order.bill_state;
+      delete order.order.bill_street;
+      delete order.order.bill_tax_number;
+      delete order.order.bill_to;
+      delete order.order.bill_zip_code;
+      delete order.order.customer_no;
+      delete order.order.observacion_pago
+      delete order.order.observacion_recepcion
+      delete order.order.order_date
+      delete order.order.owned_by_id
+      delete order.order.owned_by_name
+      delete order.order.ship_city
+      delete order.order.ship_country
+      delete order.order.ship_state
+      delete order.order.ship_street
+      delete order.order.ship_tax_number
+      delete order.order.ship_zip_code
+      delete order.order.tienda_id
 
-      let idPedido = JSON.parse(data);
+      order.order.order_number = idPedido;
+
+      this.storageservice.getOrders().then(ordenes => {
+        let order_list = (ordenes == null) ? [] : ordenes;
+        order_list.push(order);
+        this.storageservice.setOrders(order_list);
+      });
 
       Swal.fire({
 
@@ -252,10 +305,10 @@ export class SaveDataService {
 
     }, (err: any) => {
       
-      this.storage.get(STORAGE_ORDER_KEY).then(ordener_pendientes => {
+      this.storageservice.getPendingOrders().then(ordener_pendientes => {
         let order_list = (ordener_pendientes == null) ? [] : ordener_pendientes;
         order_list.push(form);
-        this.storage.set(STORAGE_ORDER_KEY, order_list);
+        this.storageservice.setPendingOrders(order_list);
       });
       
       Swal.fire({
@@ -275,10 +328,10 @@ export class SaveDataService {
 
   private guardarCotizacion(form){
 
-    this.storage.get(STORAGE_COTIZACION_KEY).then(cotizaciones => {
+    this.storageservice.getCotizaciones().then(cotizaciones => {
       let cotizaciones_list = (cotizaciones == null) ? [] : cotizaciones;
       cotizaciones_list.push(form);
-      this.storage.set(STORAGE_COTIZACION_KEY, cotizaciones_list);
+      this.storageservice.setCotizaciones(cotizaciones_list);
     });
 
     Swal.fire({

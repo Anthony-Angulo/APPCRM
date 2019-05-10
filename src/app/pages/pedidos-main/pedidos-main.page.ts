@@ -31,7 +31,13 @@ export class PedidosMainPage implements OnInit {
     }
   }
   goTo() {
-    this.navExtras.setExtras({'pedido':true});
+    const data = {
+      contact: undefined,
+      products: [],
+      sucursal_id: '1',
+      pedido: true,
+    };
+    this.navExtras.setExtras(data);
     this.router.navigate(['generate-pedido']);
   }
 

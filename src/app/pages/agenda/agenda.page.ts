@@ -2,10 +2,8 @@ import { CalendarComponent } from 'ionic2-calendar/calendar';
 import { Component, ViewChild, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { formatDate } from '@angular/common';
-import { Storage } from '@ionic/storage';
 import { SaveDataService } from 'src/app/services/save-data.service';
-
-const EVENTOS_KEY = 'events';
+import { StorageService, Event, EventPriority } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-agenda',
@@ -25,14 +23,7 @@ export class AgendaPage implements OnInit {
     currentDate: new Date(),
   };
 
-  event = {
-    title: '',
-    desc: '',
-    startTime: '',
-    endTime: '',
-    allDay: false,
-    priority: '1',
-  };
+  event: Event;
  
   collapseCard: boolean = true;
   minDate = new Date().toISOString();
@@ -40,30 +31,31 @@ export class AgendaPage implements OnInit {
   eventSource = [];
   newEvents = [];
   viewTitle;
-  priorityList = [];
+  priorityList: EventPriority[] = [];
  
   @ViewChild(CalendarComponent) myCal: CalendarComponent;
  
   constructor(
     private alertCtrl: AlertController,
     private savedataservice: SaveDataService,
-    private storage: Storage,
+    private storageservice: StorageService,
     @Inject(LOCALE_ID) private locale: string) { }
  
   ngOnInit() {
     this.resetEvent();
-    this.storage.get(EVENTOS_KEY).then(val=>{
-      this.eventSource = val.events;
-      this.priorityList = val.priority;
+    this.storageservice.getEvents().then(eventList => {
+      this.eventSource = eventList;
       this.myCal.loadEvents();
+    })
+    this.storageservice.getEventsPriority().then(priorityList=>{
+      this.priorityList=priorityList;
     })
   }
  
   ngOnDestroy(){
     if(this.newEvents.length > 0){
-      let events_list = {events:this.eventSource, priority:this.priorityList}
-      this.storage.set(EVENTOS_KEY,events_list);
-      this.storage.get('USER_ID').then(val=>{
+      this.storageservice.setEvents(this.eventSource);
+      this.storageservice.getUserID().then(val=>{
         this.savedataservice.saveEvents(this.newEvents, val);
       })
     }
@@ -79,7 +71,7 @@ export class AgendaPage implements OnInit {
     };
   }
  
-  // Create the right event format and reload source
+
   addEvent() {
     let eventCopy = {
       title: this.event.title,
@@ -106,46 +98,44 @@ export class AgendaPage implements OnInit {
  next() {
   var swiper = document.querySelector('.swiper-container')['swiper'];
   swiper.slideNext();
-}
- 
-back() {
-  var swiper = document.querySelector('.swiper-container')['swiper'];
-  swiper.slidePrev();
-}
- 
-// Focus today
-today() {
-  this.calendar.currentDate = new Date();
-}
- 
-// Selected date reange and hence title changed
-onViewTitleChanged(title) {
-  this.viewTitle = title;
-}
-changeMode(mode) {
-  this.calendar.mode = mode;
-}
-// Calendar event was clicked
-async onEventSelected(event) {
-  // Use Angular date pipe for conversion
-  let start = formatDate(event.startTime, 'medium', this.locale);
-  let end = formatDate(event.endTime, 'medium', this.locale);
- 
-  const alert = await this.alertCtrl.create({
-    header: event.title,
-    subHeader: 'Status:' + event.status ,
-    message: 'Prioridad:' + this.priorityList.find(priority=>priority.id == event.priority).name + '<br><br>' + event.desc + '<br><br>From: ' + start + '<br>To: ' + end,
-    buttons: ['OK']
-  });
-  alert.present();
-}
- 
-// Time slot was clicked
-onTimeSelected(ev) {
-  let selected = new Date(ev.selectedTime);
-  this.event.startTime = selected.toISOString();
-  selected.setHours(selected.getHours() + 1);
-  this.event.endTime = (selected.toISOString());
-}
+  }
+  
+  back() {
+    var swiper = document.querySelector('.swiper-container')['swiper'];
+    swiper.slidePrev();
+  }
+  
+
+  today() {
+    this.calendar.currentDate = new Date();
+  }
+  
+
+  onViewTitleChanged(title) {
+    this.viewTitle = title;
+  }
+  changeMode(mode) {
+    this.calendar.mode = mode;
+  }
+
+  async onEventSelected(event) {
+    let start = formatDate(event.startTime, 'medium', this.locale);
+    let end = formatDate(event.endTime, 'medium', this.locale);
+  
+    const alert = await this.alertCtrl.create({
+      header: event.title,
+      subHeader: 'Status:' + event.status ,
+      message: 'Prioridad:' + this.priorityList.find(priority=>priority.id == event.priority).name + '<br><br>' + event.desc + '<br><br>From: ' + start + '<br>To: ' + end,
+      buttons: ['OK']
+    });
+    alert.present();
+  }
+
+  onTimeSelected(ev) {
+    let selected = new Date(ev.selectedTime);
+    this.event.startTime = selected.toISOString();
+    selected.setHours(selected.getHours() + 1);
+    this.event.endTime = (selected.toISOString());
+  }
 
 }

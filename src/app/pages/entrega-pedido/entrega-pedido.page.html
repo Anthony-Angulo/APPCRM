@@ -13,7 +13,12 @@
     <ion-col>
      <h1>Direccion de Envio</h1>
       <ion-card>
-        <img src="../../../assets/img/card-img.jpg">
+        <div *ngIf="datos.contact.img">
+          <ion-img style="height: 180px;width: auto;" [src]="getPath(datos.contact.img)" (click)="showImage(datos.contact.img)"></ion-img>
+        </div>
+        <div *ngIf="datos.contact.img==undefined">
+          <img src="../../../assets/img/placeholder-image.png">
+        </div>
         <ion-card-header>
           <ion-card-title>
             {{datos.contact.full_name}}
@@ -34,11 +39,11 @@
     <ion-col>
       <div [hidden]="!datos.contact.longitud"  id="map_canvas" style="height: 650px;width: 650px;display:block;margin: 0 auto;"></div>
       <div [hidden]="datos.contact.longitud">
-        <ion-button size="default" (click)="updateGeolocation(datos.contact.id)">
+        <ion-button size="default" (click)="updateGeolocation(datos.contact)">
           Agregar Geolocalizacion
         </ion-button>
       </div>
     </ion-col>
   </ion-row>
-  <ion-button [hidden]="!datos.contact.longitud" expand="block" class="round" (click)="navMetodoPedidos()">Continuar</ion-button>
+  <ion-button [hidden]="!datos.contact.longitud" expand="block" style="height: 50px" (click)="navMetodoPedidos()">Continuar</ion-button>
 </ion-content>

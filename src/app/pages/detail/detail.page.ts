@@ -1,26 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
-import {
-  GoogleMaps,
-  GoogleMap,
-  GoogleMapOptions,
-  Marker,
-  GoogleMapsEvent,
-  Environment
-} from '@ionic-native/google-maps/ngx';
 import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
-import { Storage } from '@ionic/storage';
 import { ToastController } from '@ionic/angular';
 import { SaveDataService } from 'src/app/services/save-data.service';
 import { Router } from '@angular/router';
-
-const COTIZACIONES_KEY = 'cotizaciones';
-const CONTACTS_KEY = 'contacts';
-const PAGO_KEY = 'pago';
-const RUTAS_KEY = 'rutas';
-const DOCUMENTS_KEY = 'documents';
-const CURRENCY_KEY = 'currency';
-const HORAS_KEY = 'horas';
+import { ImagesService } from 'src/app/services/images.service';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-detail',
@@ -29,7 +14,6 @@ const HORAS_KEY = 'horas';
 })
 export class DetailPage implements OnInit {
 
-  map: GoogleMap;
   order: any;
   documento : any;
   hora_antes: any;
@@ -49,40 +33,42 @@ export class DetailPage implements OnInit {
     public platform: Platform,
     private router: Router,
     private navExtras: NavExtrasServiceService,
-    private storage: Storage,
+    private storageservice: StorageService,
     public toastController: ToastController,
-    private savedataservice: SaveDataService) { }
+    private savedataservice: SaveDataService,
+    private imageservice: ImagesService) { }
 
   ngOnInit() {
     var extra = this.navExtras.getExtras();
     this.order = extra.order;
     this.isorder = extra.isorder;
+
+    this.storageservice.getContacts().then(contactList => {
+      this.contact = contactList.find(contact => contact.id == this.order.order.contact_id)
+    });
+
+    this.storageservice.getPagos().then(pagosList => {
+      this.pago = pagosList.find(pago => pago.id == this.order.order.pago_id)
+    });
+
+    this.storageservice.getRutas().then(rutasList => {
+      this.ruta = rutasList.find(ruta => ruta.id == this.order.order.ruta_id)
+    });
+
+    this.storageservice.getDocuments().then(documentsList => {
+      this.documento = documentsList.find(documento => documento.id == this.order.order.documento_id)
+    });
+
+    this.storageservice.getCurrency().then(currencyList => {
+      this.currency = currencyList.find(currency => currency.id == this.order.order.currency_id)
+    });
+
+    this.storageservice.getHoras().then(horasList => {
+      this.hora_antes = horasList.find(hora_antes => hora_antes.id == this.order.order.id_hora_antes)
+      this.hora_despues = horasList.find(hora_despues => hora_despues.id == this.order.order.id_hora_despues)
+    });
+
     
-    this.storage.get(CONTACTS_KEY).then(val => {
-      this.contact = val.find(contact => contact.id == this.order.order.contact_id)
-    });
-
-    this.storage.get(PAGO_KEY).then(val => {
-      this.pago = val.find(pago => pago.id == this.order.order.pago_id)
-    });
-
-    this.storage.get(RUTAS_KEY).then(val => {
-      this.ruta = val.find(ruta => ruta.id == this.order.order.ruta_id)
-    });
-
-    this.storage.get(DOCUMENTS_KEY).then(val => {
-      this.documento = val.find(documento => documento.id == this.order.order.documento_id)
-    });
-
-    this.storage.get(CURRENCY_KEY).then(val => {
-      this.currency = val.find(currency => currency.id == this.order.order.currency_id)
-    });
-
-    this.storage.get(HORAS_KEY).then(val => {
-      this.hora_antes = val.find(hora_antes => hora_antes.id == this.order.order.id_hora_antes)
-      this.hora_despues = val.find(hora_despues => hora_despues.id == this.order.order.id_hora_despues)
-    });
-
     if (this.order.order.currency_id == 62) {
       for (var i = 0; i < this.order.rows.length; i++) {
         if (this.order.rows[i].moneda == "MN") {
@@ -105,50 +91,16 @@ export class DetailPage implements OnInit {
     this.total = this.order.order.total_order
   }
 
-  ngAfterViewInit() {
-    this.platform.ready().then(() => {
-      this.loadMap();
-    });
-  }
-
-  async loadMap() {
-
-    let mapOptions: GoogleMapOptions = {
-      camera: {
-        target: {
-          lat: this.contact.latitud,
-          lng: this.contact.longitud
-        },
-        zoom: 18,
-        tilt: 30
-      }
-    };
-    this.map = GoogleMaps.create('map_canvas', mapOptions);
-
-    let marker: Marker = this.map.addMarkerSync({
-      title: 'Ionic',
-      icon: 'blue',
-      animation: 'DROP',
-      position: {
-        lat: this.contact.latitud,
-        lng: this.contact.longitud
-      }
-    });
-    marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-      alert('clicked');
-    });
-  }
-
   crearPedido(){
     this.savedataservice.saveOrder(this.order);
     this.borrarCotizacion();
   }
 
   borrarCotizacion(){
-    this.storage.get(COTIZACIONES_KEY).then(val=>{
-      var cotizaciones_list = val;
+    this.storageservice.getCotizaciones().then(cotizacionesList=>{
+      var cotizaciones_list = cotizacionesList;
       cotizaciones_list.splice(cotizaciones_list.indexOf(this.order), 1);
-      this.storage.set(COTIZACIONES_KEY, cotizaciones_list);
+      this.storageservice.setCotizaciones(cotizaciones_list)
     })
     this.presentToast('Cotizacion Eliminada.')
     this.router.navigate(['dashboard']);
@@ -161,6 +113,14 @@ export class DetailPage implements OnInit {
       duration: 5000
     });
     toast.present();
+  }
+
+  public getPath(name){
+    return this.imageservice.getPath(name)
+  }
+
+  showImage(name){
+    this.imageservice.showImage(name)
   }
 
 }

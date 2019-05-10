@@ -8,6 +8,15 @@
 </ion-header>
   
 <ion-content>
+  <div *ngIf="cotizaciones">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <p>No hay cotizaciones almacenadas.</p>
+        </ion-card-title>
+      </ion-card-header>
+    </ion-card>
+  </div>
   <ion-virtual-scroll [items]="cotizaciones">
     <ion-item *virtualItem="let cotizacion" (click)="goToDetail(cotizacion)">
       <ion-card>

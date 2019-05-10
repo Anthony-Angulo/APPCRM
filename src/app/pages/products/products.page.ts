@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ViewChild } from '@angular/core';
-import { Storage } from '@ionic/storage';
 import { IonSearchbar } from '@ionic/angular';
-
-const PRODUCTS_KEY = 'products';
-const SUCURSAL_KEY = 'sucursal';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-products',
@@ -21,18 +18,18 @@ export class ProductsPage implements OnInit {
   sucursalList: any = [];
   sucursal_id: string = '1';
 
-  constructor(private storage: Storage) { }
+  constructor(private storageservice: StorageService) { }
 
   ngOnInit() {
 
-    this.storage.get(PRODUCTS_KEY).then(val => {
-      this.productListAll = val;
+    this.storageservice.getProducts().then(productList => {
+      this.productListAll = productList;
       this.productListSucursal = this.productListAll.filter(product => product.sucursal_id == '1');
       this.productListsearchBar = this.productListSucursal;
     });
 
-    this.storage.get(SUCURSAL_KEY).then(val => {
-      this.sucursalList = val;
+    this.storageservice.getSucursales().then(sucursalList => {
+      this.sucursalList = sucursalList;
     });
 
   }

@@ -1,11 +1,7 @@
 import { Platform } from '@ionic/angular';
-import { Storage } from '@ionic/storage';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-
-const TOKEN_KEY = 'TOKEN_KEY';
-const USER_ID_KEY = 'USER_ID';
-const USER_NAME_KEY = 'USER_NAME';
+import { StorageService } from '../services/storage.service'
 
 @Injectable({
   providedIn: 'root'
@@ -14,25 +10,23 @@ export class AuthService {
 
   authenticationState = new BehaviorSubject(false);
 
-  constructor(
-    private storage: Storage,
-    private platform: Platform
-  ) {
+  constructor(private storageservice: StorageService, private platform: Platform) {
     this.platform.ready().then(_ => {
       this.checkToken();
     })
   }
 
   public login(user_id:any, token:any, name: string): Promise<void> {
-    this.storage.set(USER_ID_KEY, user_id);
-    this.storage.set(USER_NAME_KEY, name);
-    return this.storage.set(TOKEN_KEY, token).then(res => {
+    this.storageservice.setUserID(user_id)
+    this.storageservice.setUsername(name)
+    
+    return this.storageservice.setToken(token).then(res => {
       this.authenticationState.next(true);
     })
   }
 
   public logout(): Promise<void>  {
-    return this.storage.remove(TOKEN_KEY).then(_ => {
+    return this.storageservice.removeToken().then(_ => {
       this.authenticationState.next(false);
     })
   }
@@ -42,7 +36,7 @@ export class AuthService {
   }
 
   checkToken(){
-    return this.storage.get(TOKEN_KEY).then(res => {
+    return this.storageservice.getToken().then(res => {
       if(res){
         this.authenticationState.next(true);
       }else{

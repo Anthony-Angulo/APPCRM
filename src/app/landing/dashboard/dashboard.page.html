@@ -9,56 +9,56 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content text-center>
   <div style="padding-top: 5%;">
     <ion-row>
-      <ion-col text-center>
+      <ion-col>
         <ion-button color="light" [disabled]="!checkInStatus" routerLink="/contacts">
-          <img src="../../../assets/icon/clientes.png" alt="">
+          <img src="../../../assets/icon/clientes.png">
         </ion-button>
       </ion-col>
-      <ion-col text-center>
+      <ion-col>
         <ion-button  color="light" [disabled]="!checkInStatus" routerLink="/cotizaciones-main">
-          <img src="../../../assets/icon/cotizaciones.png" alt="">
+          <img src="../../../assets/icon/cotizaciones.png">
         </ion-button>
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col text-center>
+      <ion-col>
         <ion-button  color="light" [disabled]="!checkInStatus" routerLink="/pedidos-main">
-          <img src="../../../assets/icon/pedidos.png" alt="">
+          <img src="../../../assets/icon/pedidos.png">
         </ion-button>
       </ion-col>
-      <ion-col text-center>
+      <ion-col>
         <ion-button color="light" [disabled]="!checkInStatus" routerLink="/agenda">
-          <img src="../../../assets/icon/agenda.png" alt="">
+          <img src="../../../assets/icon/agenda.png">
         </ion-button>
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col text-center>
+      <ion-col>
         <ion-button color="light" [disabled]="!checkInStatus">
-          <img src="../../../assets/icon/entrega.png" alt="">
+          <img src="../../../assets/icon/entrega.png">
         </ion-button>
       </ion-col>
-      <ion-col text-center>
+      <ion-col>
         <ion-button color="light" [disabled]="!checkInStatus" routerLink="/products" >
-          <img src="../../../assets/icon/productos.png" alt="">
+          <img src="../../../assets/icon/productos.png">
         </ion-button>
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col text-center>
+      <ion-col>
         <ion-button  color="light" [hidden]="checkInStatus" (click)="checkIn()">
-          <img src="../../../assets/icon/check-in.png" alt="">
+          <img src="../../../assets/icon/check-in.png">
         </ion-button>
         <ion-button  color="light" [hidden]="!checkInStatus" (click)="checkOut()">
-          <img src="../../../assets/icon/check-out.png" alt="">
+          <img src="../../../assets/icon/check-out.png">
         </ion-button>
       </ion-col>
-      <ion-col text-center>
+      <ion-col>
         <ion-button color="light" [disabled]="!checkInStatus">
-          <img src="../../../assets/icon/cobranza.png" alt="">
+          <img src="../../../assets/icon/cobranza.png">
         </ion-button>
       </ion-col>
     </ion-row>

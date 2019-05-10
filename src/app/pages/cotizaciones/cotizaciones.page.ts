@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Storage } from '@ionic/storage';
 import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
 import { Router } from '@angular/router';
-
-const COTIZACIONES_KEY = 'cotizaciones';
-const CONTACTS_KEY = 'contacts';
+import { StorageService, Contact } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-cotizaciones',
@@ -14,20 +11,20 @@ const CONTACTS_KEY = 'contacts';
 export class CotizacionesPage implements OnInit {
 
   cotizaciones: any=[];
-  contacts: any =[];
+  contacts: Contact[] = [];
   
   constructor(
-    private storage: Storage,
+    private storageservice: StorageService,
     private router: Router,
     private navExtras: NavExtrasServiceService,) { }
 
   ngOnInit() {
-    this.storage.get(COTIZACIONES_KEY).then((val) => {
-      this.cotizaciones = val;
-    });
-    this.storage.get(CONTACTS_KEY).then((val) => {
-      this.contacts = val;
-    });
+    this.storageservice.getCotizaciones().then(cotizacionesList => {
+      this.cotizaciones = cotizacionesList;
+    })
+    this.storageservice.getContacts().then(contactList => {
+      this.contacts = contactList;
+    })
   }
 
   private contact(id){

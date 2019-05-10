@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Storage } from '@ionic/storage';
 import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
 import { Router } from '@angular/router';
-
-const ORDERS_KEY = 'orders';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-all-orders',
@@ -15,13 +13,13 @@ export class AllOrdersPage implements OnInit {
   orderData: any=[];
 
   constructor(
-    private storage: Storage,
     private router: Router,
+    private storageservice: StorageService,
     private navExtras: NavExtrasServiceService) { }
 
   ngOnInit() {
-    this.storage.get(ORDERS_KEY).then((val) => {
-      this.orderData = val;
+    this.storageservice.getOrders().then(orderList => {
+      this.orderData = orderList;
     });
   }
 

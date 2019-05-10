@@ -1,19 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Storage } from '@ionic/storage';
-import { NavController, IonSearchbar } from '@ionic/angular';
+import { IonSearchbar } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
 import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
 import { Router } from '@angular/router';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
-import Swal from 'sweetalert2'
-
-const PRODUCTS_KEY = 'products';
-const CONTACTS_KEY = 'contacts';
-const IMPUESTOS_KEY = 'impuestos';
-const TES_KEY = 'tes';
-const SUCURSAL_KEY = 'sucursal';
-const CAMBIO_KEY = 'cambio';
+import { AlertController } from '@ionic/angular';
+import { StorageService } from 'src/app/services/storage.service';
+import { ImagesService } from 'src/app/services/images.service';
 
 @Component({
   selector: 'app-generate-pedido',
@@ -22,19 +15,17 @@ const CAMBIO_KEY = 'cambio';
 })
 
 export class GeneratePedidoPage implements OnInit {
-  @ViewChild('clientSearchBar') searchbar: IonSearchbar;
+  @ViewChild('clientSearchBar') clientSearchBar: IonSearchbar;
+  @ViewChild('productSearchBar') productSearchBar: IonSearchbar;
 
   contactList: any = [];
   contactListsearchBar: any = [];
-  contactOrder: any;
 
-  productOrder: any = [];
   productListAll: any = [];
   productListSucursal: any = []
   productListsearchBar: any = [];
 
   sucursalList: any = [];
-  sucursal_id: string = '1';
 
   impuestosList: any = [];
   tesList: any = [];
@@ -45,6 +36,7 @@ export class GeneratePedidoPage implements OnInit {
   totalDolares = 0;
   subtotalDolares:number = 0;
   impuestosDolares:number = 0;
+
   tipo_de_cambio: number = 0;
 
   datos: any;
@@ -52,9 +44,10 @@ export class GeneratePedidoPage implements OnInit {
   dolaresCard: boolean = false;
 
   constructor(
-    private http: HttpClient,
-    private storage: Storage,
+    public alertController: AlertController,
+    private storageservice: StorageService,
     private router: Router,
+    private imageservice: ImagesService,
     private navExtras: NavExtrasServiceService,
     private barcodeScanner: BarcodeScanner
   ) { }
@@ -62,39 +55,30 @@ export class GeneratePedidoPage implements OnInit {
   ngOnInit() {
     this.datos = this.navExtras.getExtras();
     
-    this.storage.get(CONTACTS_KEY).then(val => {
-      this.contactList = val;
+    this.storageservice.getContacts().then(contactList => {
+      this.contactList = contactList;
     });
 
-    this.storage.get(IMPUESTOS_KEY).then(val => {
-      this.impuestosList = val;
+    this.storageservice.getImpuestos().then(impuestosList => {
+      this.impuestosList = impuestosList;
     });
 
-    this.storage.get(TES_KEY).then(val => {
-      this.tesList = val;
+    this.storageservice.getTes().then(tesList => {
+      this.tesList = tesList;
     });
 
-    this.storage.get(PRODUCTS_KEY).then(val => {
-      this.productListAll = val;
+    this.storageservice.getProducts().then(productList => {
+      this.productListAll = productList;
       this.productListSucursal = this.productListAll.filter(product => product.sucursal_id == '1');
     });
 
-    this.storage.get(SUCURSAL_KEY).then(val => {
-      this.sucursalList = val;
+    this.storageservice.getSucursales().then(sucursalList => {
+      this.sucursalList = sucursalList;
     });
 
-    this.storage.get(CAMBIO_KEY).then(val => {
-      this.tipo_de_cambio = val;
+    this.storageservice.getCambio().then(tipo_de_cambio => {
+      this.tipo_de_cambio = tipo_de_cambio;
     });
-  }
-
-  ionViewDidEnter(){
-    this.datos = this.navExtras.getExtras()
-    if(this.datos !== {'pedido':true}|| this.datos !== {'pedido':false}){
-      if(this.datos.contact != this.contactOrder){
-        this.contactOrder=this.datos.contact;
-      }
-    }
   }
 
   ngOnDestroy(){
@@ -116,19 +100,15 @@ export class GeneratePedidoPage implements OnInit {
     this.barcodeScanner.scan().then(barcodeData => {
       var id = parseInt(barcodeData.text)
       if(id == null){
-        Swal.fire({
-          title: "Codigo QRIncorrecto",
-          type: "warning",
-          confirmButtonText: "Aceptar"
-        });
+        this.presentAlert('Formato QR invalido')
+      } else {
+        this.datos.contact = this.contactList.find(contact => contact.id == id);
+        if(this.datos.contact == undefined){
+          this.presentAlert('Identificador no encontrado')
+        }
       }
-      this.contactOrder = this.contactList.find(contact => contact.id == id);
     }).catch(err => {
-      Swal.fire({
-        title: err,
-        type: "warning",
-        confirmButtonText: "Aceptar"
-      });
+      this.presentAlert(err)
     });
   }
 
@@ -136,7 +116,7 @@ export class GeneratePedidoPage implements OnInit {
     let valor2 = val.target.value;
     if (valor2.length > 1 && valor2.trim() != '') {
       this.productListsearchBar = this.productListSucursal.filter((item) => {
-        var in_list = this.productOrder.some(product => product.product_name == item.name)
+        let in_list = this.datos.products.some(product => product.product_name == item.name)
         return (item.name.toLowerCase().indexOf(valor2.toLowerCase()) > -1) && !in_list;
       })
     } else {
@@ -144,19 +124,20 @@ export class GeneratePedidoPage implements OnInit {
     }
   }
 
-  public addContact(id: any) {
-    this.contactOrder = this.contactList.find(contact => contact.id == id);
+  public addContact(contact: any) {
+    this.datos.contact = contact;
     this.contactListsearchBar = [];
+    this.clientSearchBar.value = '';
   }
 
-  public addProduct(id: any) {
-    var imp = 1.00;
-    var product = this.productListSucursal.find(product => product.id == id);
-    var test_lit = this.tesList.filter(tes=>tes.tes==product.tes)
+  public addProduct(product: any) {
+    let imp = 1.00;
+    var test_lit = this.tesList.filter(tes=> tes.tes == product.tes);
     for(var i=0; i < test_lit.length; i++){
-      imp *= 1 + this.impuestosList.find(imp=> imp.codigo == test_lit[i].cod_impuesto).importe/100
+      imp *= 1 + this.impuestosList.find(imp=> imp.codigo == test_lit[i].cod_impuesto).importe / 100
     };
-    imp-=1
+    imp -= 1
+
     var product_order = {
       product_codigo: product.codigoProtevs,
       product_name: product.name,
@@ -166,49 +147,44 @@ export class GeneratePedidoPage implements OnInit {
       product_moneda: product.moneda_mayoreo,
       quantity: 1,
       subtotal: Number(product.price),
-      // impuestos_aplicados: '',
       impuesto_cal: imp,
       impuestos_total: 0,
       total: 0
     }
+
     this.calcularImpuestos(product_order)
-    this.productOrder.push(product_order)
+    this.datos.products.push(product_order)
     this.productListsearchBar = [];
+    this.productSearchBar.value = '';
     this.updateTotal();
-    this.searchbar.value = '';
+    
   }
 
   eliminarProducto(product) {
-    this.productOrder.splice(this.productOrder.indexOf(product), 1);
+    this.datos.products.splice(this.datos.products.indexOf(product), 1);
     this.updateTotal();
   }
 
   updateTotal(){
-    this.total=0;
-    this.subtotal=0;
-    this.impuestos=0;
+    this.total = this.impuestos = this.subtotal = 0;
+    this.totalDolares = this.impuestosDolares = this.subtotalDolares = 0;
 
-    this.totalDolares = 0;
-    this.subtotalDolares = 0;
-    this.impuestosDolares = 0;
-
-
-    for(var i=0;i<this.productOrder.length;i++){
-      if (this.productOrder[i].product_moneda == "MN") {
-        this.subtotal += this.productOrder[i].subtotal;
-        this.impuestos += this.productOrder[i].impuestos_total;
-        this.total += this.productOrder[i].total;
-        this.subtotalDolares += this.productOrder[i].subtotal / this.tipo_de_cambio;
-        this.impuestosDolares += this.productOrder[i].impuestos_total / this.tipo_de_cambio;
-        this.totalDolares += this.productOrder[i].total / this.tipo_de_cambio;
+    for(var i=0; i < this.datos.products.length; i++){
+      if (this.datos.products[i].product_moneda == "MN") {
+        this.subtotal += this.datos.products[i].subtotal;
+        this.impuestos += this.datos.products[i].impuestos_total;
+        this.total += this.datos.products[i].total;
+        this.subtotalDolares += this.datos.products[i].subtotal / this.tipo_de_cambio;
+        this.impuestosDolares += this.datos.products[i].impuestos_total / this.tipo_de_cambio;
+        this.totalDolares += this.datos.products[i].total / this.tipo_de_cambio;
 
       } else {
-        this.subtotalDolares += this.productOrder[i].subtotal;
-        this.impuestosDolares += this.productOrder[i].impuestos_total;
-        this.totalDolares += this.productOrder[i].total;
-        this.subtotal += this.productOrder[i].subtotal * this.tipo_de_cambio;
-        this.impuestos += this.productOrder[i].impuestos_total * this.tipo_de_cambio;
-        this.total += this.productOrder[i].total * this.tipo_de_cambio;
+        this.subtotalDolares += this.datos.products[i].subtotal;
+        this.impuestosDolares += this.datos.products[i].impuestos_total;
+        this.totalDolares += this.datos.products[i].total;
+        this.subtotal += this.datos.products[i].subtotal * this.tipo_de_cambio;
+        this.impuestos += this.datos.products[i].impuestos_total * this.tipo_de_cambio;
+        this.total += this.datos.products[i].total * this.tipo_de_cambio;
       }
     }
 
@@ -238,26 +214,33 @@ export class GeneratePedidoPage implements OnInit {
   }
 
   cambioSucursal(event) {
-    this.subtotal = 0;
-    this.total = 0;
-    this.productOrder = []
+    this.datos.products = this.productListsearchBar = [];
+    this.productSearchBar.value = '';
     this.productListSucursal = this.productListAll.filter(product => product.sucursal_id == event.detail.value);
-    this.searchbar.value = '';
+    this.updateTotal()
   }
 
   entregaPedido() {
-    let pedido = this.navExtras.getExtras().pedido
-    const myData = {
-      contact: this.contactOrder,
-      products: this.productOrder,
-      // status: this.status_id,
-      sucursal: this.sucursal_id,
-      // date_creacion: this.fecha_creacion,
-      // date_due: this.fecha_due,
-      pedido: pedido,
-    };
-    this.navExtras.setExtras(myData);
+    this.navExtras.setExtras(this.datos);
     this.router.navigate(['entrega-pedido']);
+  }
+
+  async presentAlert(info) {
+    const alert = await this.alertController.create({
+      header: 'QR',
+      message: info,
+      buttons: ['OK']
+    });
+
+    await alert.present();
+  }
+
+  public getPath(name){
+    return this.imageservice.getPath(name)
+  }
+
+  showImage(name){
+    this.imageservice.showImage(name)
   }
 
 }

@@ -4,11 +4,22 @@ import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
 import { SaveDataService } from 'src/app/services/save-data.service';
 import 'rxjs/add/operator/filter';
 
+// const R = 6378.137; // Radius of earth in KM
+
 @Injectable({
   providedIn: 'root'
 })
 export class LocationTrackerService {
 
+  
+  // formData = { 
+  //   user_id: '', 
+  //   movimiento_id: 0,
+  //   latitud: 0,
+  //   longitud: 0,
+  //   order_number: ''
+  // };
+  
   public watch: any;    
   public lat: number = 0;
   public lng: number = 0;
@@ -65,9 +76,36 @@ export class LocationTrackerService {
 
     // this.watch = this.geolocation.watchPosition(options).filter((p: any) => p.code === undefined).subscribe((position: Geoposition) => {
 
-    // console.log(position);
+    //   var dLat = resp.coords.latitude * Math.PI / 180 - this.latitud * Math.PI / 180;
+    //   var dLon = resp.coords.longitude * Math.PI / 180 - this.longitud * Math.PI / 180;
+    //   var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    //   Math.cos(this.latitud * Math.PI / 180) * Math.cos(resp.coords.latitude * Math.PI / 180) *
+    //   Math.sin(dLon/2) * Math.sin(dLon/2);
+    //   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    //   var distanciaKilometros = R * c;
+    //   if(distanciaKilometros > 1){
+    //     this.longitud = resp.coords.longitude;
+    //     this.latitud = resp.coords.latitude;
+    //     console.log(distanciaKilometros + " " + this.longitud + " " + this.latitud)
+    //   }
+
+
+
+    //   // this.storage.get('USER_ID').then((val: any) => {
+    //   //   this.formData.user_id = val.replace('"', '');
+    //   //   this.formData.movimiento_id = 7;
+    //   //   this.formData.latitud = resp.coords.latitude;
+    //   //   this.formData.longitud = resp.coords.longitude;
+    //   //   this.http.post(this.url + '/api/usertrck', this.formData).subscribe((resp: any) => {
+    //   //     console.log(JSON.parse(resp));
+    //   //   });
+    //   // });
+
 
     // });
+
+
+
 
   }
 

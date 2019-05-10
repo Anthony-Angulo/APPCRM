@@ -18,7 +18,12 @@ import { AuthService } from './services/authentication.service';
 import { NgCalendarModule  } from 'ionic2-calendar';
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx';
 import { LocationTrackerService  } from './services/location-tracker.service';
-
+ 
+import { Camera } from '@ionic-native/Camera/ngx';
+import { File } from '@ionic-native/File/ngx';
+import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { FilePath } from '@ionic-native/file-path/ngx';
+import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -42,7 +47,12 @@ import { LocationTrackerService  } from './services/location-tracker.service';
     LocalNotifications,
     BackgroundMode,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    AuthService
+    AuthService,
+    Camera,
+    File,
+    WebView,
+    FilePath,
+    PhotoViewer
   ],
   bootstrap: [AppComponent]
 })

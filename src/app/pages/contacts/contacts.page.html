@@ -19,7 +19,12 @@
   <ion-virtual-scroll [items]="list">
     <ion-item *virtualItem="let contact">
       <ion-card color="light">
-        <img src="../../../assets/img/placeholder-image.png">
+        <div *ngIf="contact.img">
+          <ion-img style="height: 180px;width: auto;" [src]="getPath(contact.img)" (click)="showImage(contact.img)"></ion-img>
+        </div>
+        <div *ngIf="contact.img==undefined">
+          <img src="../../../assets/img/placeholder-image.png">
+        </div>
         <ion-card-header>
           <ion-card-subtitle>{{contact.full_name}}</ion-card-subtitle>
           <ion-card-title>{{contact.nombre_reducido}}</ion-card-title>
@@ -30,12 +35,10 @@
           <p>Direccion: {{contact.street}} {{contact.colonia}}, {{contact.city}} {{contact.state}}
             {{contact.zip_code}}
           </p>
-          <ion-button size="default" [hidden]="contact.longitud" (click)="updateGeolocation(contact.id)">
+          <ion-button [hidden]="contact.longitud" size="default" (click)="updateGeolocation(contact)">
             Agregar Geolocalizacion
           </ion-button>
-          <ion-button size="default" [hidden]="!contact.longitud" (click)="updateGeolocation(contact.id)">
-            Actualizar Geolocalizacion
-          </ion-button>
+          <ion-icon float-right name="image" style="font-size: 35px;" (click)="addPhoto(contact.id)"></ion-icon>
         </ion-card-content>
       </ion-card>
     </ion-item>

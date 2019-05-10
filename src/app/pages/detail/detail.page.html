@@ -97,7 +97,12 @@
     <ion-col>
       <h1>Direccion de Envio</h1>
       <ion-card>
-        <img src="../../../assets/img/card-img.jpg">
+        <div *ngIf="contact.img">
+          <ion-img style="height: 180px;width: auto;" [src]="getPath(contact.img)" (click)="showImage(contact.img)"></ion-img>
+        </div>
+        <div *ngIf="contact.img==undefined">
+          <img src="../../../assets/img/placeholder-image.png">
+        </div>
         <ion-card-header>
           <ion-card-title>
             {{contact.full_name}}
@@ -114,12 +119,6 @@
       </ion-card>
     </ion-col>
   </ion-row>
-  <ion-row class="map">
-    <ion-col>
-      <div id="map_canvas" style="height: 650px;width: 650px;display:block;margin: 0 auto;"></div>
-    </ion-col>
-  </ion-row>
-
   <ion-item>
     <ion-list>
       <ion-item>

@@ -28,7 +28,7 @@
       
       <ion-item>
         <ion-label>Prioridad</ion-label>
-        <ion-select [(ngModel)]="event.priority" okText="Aceptar" cancelText="Cancelar" placeholder="Select One">
+        <ion-select [(ngModel)]="event.priority" okText="Aceptar" cancelText="Cancelar">
           <ion-select-option *ngFor="let priority of priorityList" [value]="priority.id">
             {{priority.name}}
           </ion-select-option>

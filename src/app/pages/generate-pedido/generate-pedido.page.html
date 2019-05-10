@@ -10,27 +10,33 @@
 
 <ion-content padding>
   <ion-item>
-    <ion-searchbar placeholder="Buscar Cliente" debounce="500" (ionInput)="searchContacts($event);" clear-icon>
-    </ion-searchbar>
+    <ion-searchbar #clientSearchBar placeholder="Buscar Cliente" debounce="500" (ionInput)="searchContacts($event);" clear-icon></ion-searchbar>
     <ion-button (click)="scanQr()">QR</ion-button>
   </ion-item>
-  <ion-list *ngIf="contactListsearchBar">
-    <ion-item color="light" *ngFor="let contact of contactListsearchBar" (click)="addContact(contact.id)" detail>
-      {{contact.nombre_reducido}}
-    </ion-item>
+  <ion-list *ngIf="contactListsearchBar?.length">
+    <ion-virtual-scroll [items]="contactListsearchBar">
+      <ion-item *virtualItem="let contact" color="light" (click)="addContact(contact)" detail>
+        {{contact.nombre_reducido}}
+      </ion-item>
+    </ion-virtual-scroll>
   </ion-list>
-  <ion-list *ngIf="contactOrder">
+  <ion-list *ngIf="datos.contact">
     <ion-card color="light">
-      <img src="../../../assets/img/placeholder-image.png">
+      <div *ngIf="datos.contact.img">
+        <ion-img style="height: 180px;width: auto;" [src]="getPath(datos.contact.img)" (click)="showImage(datos.contact.img)"></ion-img>
+      </div>
+      <div *ngIf="datos.contact.img==undefined">
+        <img src="../../../assets/img/placeholder-image.png">
+      </div>
       <ion-card-header>
-        <ion-card-subtitle>{{contactOrder.full_name}}</ion-card-subtitle>
-        <ion-card-title>{{contactOrder.nombre_reducido}}</ion-card-title>
+        <ion-card-subtitle>{{datos.contact.full_name}}</ion-card-subtitle>
+        <ion-card-title>{{datos.contact.nombre_reducido}}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <p>Codigo Cliente: {{contactOrder.codigo_protevs}}</p>
-        <p>Tienda: {{contactOrder.tienda}}</p>
-        <p>Direccion: {{contactOrder.street}} {{contactOrder.colonia}}, {{contactOrder.city}} {{contactOrder.state}}
-          {{contactOrder.zip_code}}
+        <p>Codigo Cliente: {{datos.contact.codigo_protevs}}</p>
+        <p>Tienda: {{datos.contact.tienda}}</p>
+        <p>Direccion: {{datos.contact.street}} {{datos.contact.colonia}}, {{datos.contact.city}} {{datos.contact.state}}
+          {{datos.contact.zip_code}}
         </p>
       </ion-card-content>
     </ion-card>
@@ -39,7 +45,7 @@
     <ion-col>
       <ion-item>
         <ion-label>Sucursal</ion-label>
-        <ion-select [(ngModel)]="sucursal_id" okText="Aceptar" cancelText="Cancelar" name="sucursal_id"
+        <ion-select [(ngModel)]="datos.sucursal_id" okText="Aceptar" cancelText="Cancelar" name="sucursal_id"
           placeholder="Select One" (ionChange)="cambioSucursal($event)">
           <ion-select-option *ngFor="let suc of sucursalList" [value]="suc.id">
             {{suc.nombre_sucursal}}
@@ -49,15 +55,17 @@
     </ion-col>
   </ion-row>
   <ion-item>
-    <ion-searchbar #clientSearchBar placeholder="Buscar Producto" (ionInput)="searchProducts($event);"></ion-searchbar>
+    <ion-searchbar #productSearchBar placeholder="Buscar Producto" (ionInput)="searchProducts($event);"></ion-searchbar>
   </ion-item>
-  <ion-list *ngIf="productListsearchBar">
-    <ion-item color="light" *ngFor="let product of productListsearchBar" (click)="addProduct(product.id)" detail>
+  <ion-list *ngIf="productListsearchBar?.length">
+    <ion-virtual-scroll [items]="productListsearchBar">
+      <ion-item *virtualItem="let product" color="light" (click)="addProduct(product)" detail>
       {{product.name}}
-    </ion-item>
+      </ion-item>
+    </ion-virtual-scroll>
   </ion-list>
   <ion-list>
-    <ion-row *ngFor="let product of productOrder">
+    <ion-row *ngFor="let product of datos.products">
       <ion-col size="3" size-lg>
         <ion-thumbnail>
           <img src="../../../assets/img/placeholder-product.png">
@@ -68,24 +76,22 @@
           <ion-card-header>
             <ion-card-subtitle>
               {{product.product_codigo}}
-              <ion-button style="float: right;" color="light" (click)="eliminarProducto(product)">
-                <ion-icon name="trash" slot="icon-only"></ion-icon>
-              </ion-button>
+              <ion-icon name="trash" style="font-size: 30px;float: right;" (click)="eliminarProducto(product)"></ion-icon>
             </ion-card-subtitle>
             <ion-card-title>
               {{product.product_name}}
             </ion-card-title>
           </ion-card-header>
           <ion-card-content>
+            <ion-icon style="font-size: 35px;float: right;" name="add-circle" (click)="increment(product)"></ion-icon>
+            <ion-icon style="font-size: 35px;float: right;" name="remove-circle" (click)="decrement(product)"></ion-icon>
             Price: {{product.product_price}}<br>
             stock: {{product.product_stock}}<br>
-            Cantidad:
-            <ion-icon style="font-size: 20px;" name="remove-circle" (click)="decrement(product)"></ion-icon>
-            {{product.quantity}}
-            <ion-icon style="font-size: 20px;" name="add-circle" (click)="increment(product)"></ion-icon>
+            Cantidad: {{product.quantity}}
             Subtotal: ${{product.subtotal.toFixed(2)}}
             Impuestos: ${{product.impuestos_total.toFixed(2)}}
             Total: ${{product.total.toFixed(2)}}
+            
           </ion-card-content>
         </ion-card>
       </ion-col>
@@ -131,8 +137,7 @@
           </ion-list>
         </ion-card-content>
       </ion-card>
-
     </ion-item>
-    <ion-button [disabled]="!contactOrder || !productOrder?.length " expand="block" class="round" (click)="entregaPedido()">Continuar</ion-button>
+    <ion-button [disabled]="!datos.contact || !datos.products?.length " expand="block" style="height: 50px" (click)="entregaPedido()">Continuar</ion-button>
   </ion-list>
 </ion-content>

@@ -15,10 +15,9 @@ const routes: Routes = [
   { path: 'all-orders', loadChildren: './pages/all-orders/all-orders.module#AllOrdersPageModule' },
   { path: 'cotizaciones-main', loadChildren: './pages/cotizaciones-main/cotizaciones-main.module#CotizacionesMainPageModule' },
   { path: 'agenda', loadChildren: './pages/agenda/agenda.module#AgendaPageModule' },
-  { path: 'cotizaciones', loadChildren: './pages/cotizaciones/cotizaciones.module#CotizacionesPageModule' },  { path: 'detail', loadChildren: './pages/detail/detail.module#DetailPageModule' },
+  { path: 'cotizaciones', loadChildren: './pages/cotizaciones/cotizaciones.module#CotizacionesPageModule' },
+  { path: 'detail', loadChildren: './pages/detail/detail.module#DetailPageModule' },
   { path: 'products', loadChildren: './pages/products/products.module#ProductsPageModule' },
-
-
 
 ];
 
