@@ -45,6 +45,7 @@ export class ContactsPage implements OnInit {
   showImage(name){
     this.imageservice.showImage(name)
   }
+  
   searchContacts(val: any) {
     let valor = val.target.value;
     if (valor && valor.trim() != '') {
@@ -76,24 +77,25 @@ export class ContactsPage implements OnInit {
 
   async addPhoto(id: number) {
     const actionSheet = await this.actionSheetController.create({
-        header: "Select Image source",
-        buttons: [{
-                text: 'Load from Library',
-                handler: () => {
-                    this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY, id);
-                }
-            },
-            {
-                text: 'Use Camera',
-                handler: () => {
-                    this.takePicture(this.camera.PictureSourceType.CAMERA, id);
-                }
-            },
-            {
-                text: 'Cancel',
-                role: 'cancel'
-            }
-        ]
+      header: "Select Image source",
+      buttons: [
+        {
+          text: 'Load from Library',
+          handler: () => {
+              this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY, id);
+          }
+        },
+        {
+          text: 'Use Camera',
+          handler: () => {
+              this.takePicture(this.camera.PictureSourceType.CAMERA, id);
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        }
+      ]
     });
     await actionSheet.present();
   }
@@ -107,18 +109,18 @@ export class ContactsPage implements OnInit {
     };
  
     this.camera.getPicture(options).then(imagePath => {
-        if (this.plt.is('android') && sourceType === this.camera.PictureSourceType.PHOTOLIBRARY) {
-            this.filePath.resolveNativePath(imagePath)
-                .then(filePath => {
-                    let correctPath = filePath.substr(0, filePath.lastIndexOf('/') + 1);
-                    let currentName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.lastIndexOf('?'));
-                    this.copyFileToLocalDir(correctPath, currentName, this.createFileName(), id);
-                });
-        } else {
-            var currentName = imagePath.substr(imagePath.lastIndexOf('/') + 1);
-            var correctPath = imagePath.substr(0, imagePath.lastIndexOf('/') + 1);
+      if (this.plt.is('android') && sourceType === this.camera.PictureSourceType.PHOTOLIBRARY) {
+        this.filePath.resolveNativePath(imagePath)
+          .then(filePath => {
+            let correctPath = filePath.substr(0, filePath.lastIndexOf('/') + 1);
+            let currentName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.lastIndexOf('?'));
             this.copyFileToLocalDir(correctPath, currentName, this.createFileName(), id);
-        }
+          });
+      } else {
+        var currentName = imagePath.substr(imagePath.lastIndexOf('/') + 1);
+        var correctPath = imagePath.substr(0, imagePath.lastIndexOf('/') + 1);
+        this.copyFileToLocalDir(correctPath, currentName, this.createFileName(), id);
+      }
     });
  
 }
@@ -132,9 +134,9 @@ createFileName() {
 
 copyFileToLocalDir(namePath, currentName, newFileName, id: number) {
   this.file.copyFile(namePath, currentName, this.file.dataDirectory, newFileName).then(success => {
-      this.updateStoredImages(newFileName, id);
+    this.updateStoredImages(newFileName, id);
   }, error => {
-      this.presentToast('Error while storing file.');
+    this.presentToast('Error while storing file.');
   });
 }
 

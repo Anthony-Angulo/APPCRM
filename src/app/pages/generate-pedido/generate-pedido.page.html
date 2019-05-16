@@ -75,17 +75,17 @@
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>
-              {{product.product_codigo}}
+              {{product.codigoProtevs}}
               <ion-icon name="trash" style="font-size: 30px;float: right;" (click)="eliminarProducto(product)"></ion-icon>
             </ion-card-subtitle>
             <ion-card-title>
-              {{product.product_name}}
+              {{product.name}}
             </ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <ion-icon style="font-size: 35px;float: right;" name="add-circle" (click)="increment(product)"></ion-icon>
             <ion-icon style="font-size: 35px;float: right;" name="remove-circle" (click)="decrement(product)"></ion-icon>
-            Price: {{product.product_price}}<br>
+            Price: {{product.price}}<br>
             stock: {{product.product_stock}}<br>
             Cantidad: {{product.quantity}}
             Subtotal: ${{product.subtotal.toFixed(2)}}

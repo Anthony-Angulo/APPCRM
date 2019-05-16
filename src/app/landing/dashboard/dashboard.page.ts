@@ -23,11 +23,11 @@ export class DashboardPage implements OnInit {
     
   ngOnInit() {    
 
-    console.log(this.storageservice.getEvents());
-
-    this.storage.get("check-in").then(val=>{
-      this.checkInStatus = val;
-      if(this.checkInStatus == false){
+    this.storage.get("check-in").then(val => {
+      if(val){
+        this.checkInStatus = true;
+      } else {
+        this.checkInStatus = false;
         this.offlineData.getDataOffline();
       }
     });

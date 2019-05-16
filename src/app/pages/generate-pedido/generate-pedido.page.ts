@@ -116,7 +116,7 @@ export class GeneratePedidoPage implements OnInit {
     let valor2 = val.target.value;
     if (valor2.length > 1 && valor2.trim() != '') {
       this.productListsearchBar = this.productListSucursal.filter((item) => {
-        let in_list = this.datos.products.some(product => product.product_name == item.name)
+        let in_list = this.datos.products.some(product => product.name == item.name)
         return (item.name.toLowerCase().indexOf(valor2.toLowerCase()) > -1) && !in_list;
       })
     } else {
@@ -139,12 +139,12 @@ export class GeneratePedidoPage implements OnInit {
     imp -= 1
 
     var product_order = {
-      product_codigo: product.codigoProtevs,
-      product_name: product.name,
-      product_price: product.price,
+      codigoProtevs: product.codigoProtevs,
+      name: product.name,
+      price: product.price,
       product_stock: product.stock,
-      product_UM: product.UM_mayoreo,
-      product_moneda: product.moneda_mayoreo,
+      UM_mayoreo: product.UM_mayoreo,
+      moneda_mayoreo: product.moneda_mayoreo,
       quantity: 1,
       subtotal: Number(product.price),
       impuesto_cal: imp,
@@ -170,7 +170,7 @@ export class GeneratePedidoPage implements OnInit {
     this.totalDolares = this.impuestosDolares = this.subtotalDolares = 0;
 
     for(var i=0; i < this.datos.products.length; i++){
-      if (this.datos.products[i].product_moneda == "MN") {
+      if (this.datos.products[i].moneda_mayoreo == "MN") {
         this.subtotal += this.datos.products[i].subtotal;
         this.impuestos += this.datos.products[i].impuestos_total;
         this.total += this.datos.products[i].total;
@@ -198,7 +198,7 @@ export class GeneratePedidoPage implements OnInit {
   private increment(product) {
     if(product.quantity < product.product_stock){
       product.quantity++;
-      product.subtotal = product.product_price * product.quantity;
+      product.subtotal = product.price * product.quantity;
       this.calcularImpuestos(product)
       this.updateTotal()
     }
@@ -207,7 +207,7 @@ export class GeneratePedidoPage implements OnInit {
   private decrement(product) {
     if (product.quantity > 1) {
       product.quantity--;
-      product.subtotal = product.product_price * product.quantity;
+      product.subtotal = product.price * product.quantity;
       this.calcularImpuestos(product)
       this.updateTotal()
     }

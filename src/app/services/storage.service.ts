@@ -46,11 +46,11 @@ export interface Contact {
 
 export interface Event {
   title: string,
-  desc: string,
+  description: string,
   startTime: string,
   endTime: string,
   allDay: boolean,
-  priority: string,
+  event_priority_id: string,
 };
 
 export interface EventPriority {

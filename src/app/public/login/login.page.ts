@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/authentication.service';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
-
-const URL = 'http://192.168.101.23';
+import { environment as ENV } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +26,7 @@ export class LoginPage implements OnInit {
 
   login(){
 
-    this.http.post(URL + '/api/login', this.formData).subscribe((data: any) =>{
+    this.http.post(ENV.BASE_URL + '/login', this.formData).subscribe((data: any) =>{
       if(data.status){
         this.authService.login(data.id, data.token, data.name);
       }else{

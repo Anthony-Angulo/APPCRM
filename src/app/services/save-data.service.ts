@@ -7,10 +7,9 @@ import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { ToastController } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
-import { StorageService } from '../services/storage.service'
+import { StorageService } from '../services/storage.service';
+import { environment as ENV } from 'src/environments/environment';
 import Swal from 'sweetalert2'
-
-const URL = 'http://192.168.101.23';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +37,9 @@ export class SaveDataService {
   }
 
   public startNetwork(){
+    if(this.network.type!='none'){
+      this.saveStorage()
+    }
     this.networksub = this.network.onConnect().subscribe(() => {
       this.saveStorage()
     });
@@ -48,37 +50,43 @@ export class SaveDataService {
   }
 
   public saveStorage(){
-    
+    console.log('internet')
     this.storageservice.getPendingOrders().then(val => {
-      if(val.length > 0){
-        for(var i=val.length-1; i >= 0 ; i--){
-          this.http.post(URL + '/api/generarPedido', val[i]).subscribe((data: any) => {
-            val.splice(i, 1);
-          });
-          this.storageservice.setPendingOrders(val);
+      if(val){
+        if(val.length > 0){
+          for(var i=val.length-1; i >= 0 ; i--){
+            this.http.post(ENV.BASE_URL + '/generarPedido', val[i]).subscribe((data: any) => {
+              val.splice(i, 1);
+            });
+            this.storageservice.setPendingOrders(val);
+          }
         }
       }
     });
-    
+
     this.storageservice.getPendingGeoUpdate().then(val => {
-      if(val.length > 0){
-        this.http.post(URL + '/api/updateGeolocationContacts', val).subscribe( data  => {
-          this.storageservice.setPendingGeoUpdate(null)
-          this.presentToast('Geolocalizacion Guardada')
-        }, (err: any) => {
-          this.presentToast('a'+ err.error)
-        });
+      if(val){
+        if(val.length > 0){
+          this.http.post(ENV.BASE_URL + '/updateGeolocationContacts', val).subscribe( data  => {
+            this.storageservice.setPendingGeoUpdate(null)
+            this.presentToast('Geolocalizacion Guardada')
+          }, (err: any) => {
+            this.presentToast('a'+ err.error)
+          });
+        }
       }
     });
 
     this.storageservice.getPendingEvents().then(val => {
-      if(val.length > 0){
-        this.http.post(URL + '/api/addEvent', val).subscribe((data: any) => {
-          this.storageservice.setPendingEvents(null)
-          this.presentToast('Eventos Guardados');
-        }, (err: any) => {
-          this.presentToast('a'+ err.error)
-        });
+      if(val){
+        if(val.length > 0){
+          this.http.post(ENV.BASE_URL + '/addEvent', val).subscribe((data: any) => {
+            this.storageservice.setPendingEvents(null)
+            this.presentToast('Eventos Guardados');
+          }, (err: any) => {
+            this.presentToast('a'+ err.error)
+          });
+        }
       }
     });
 
@@ -98,32 +106,32 @@ export class SaveDataService {
       let formDataEvent = { 
         name: element.title,
         owned_by_id: user_id,
-        description: element.desc,
+        description: element.description,
         start_date: getDate(element.startTime),
         end_date: getDate(element.endTime),
-        fullday: (element.allDay) ? 1 : 0,
-        priority_id: element.priority,  
+        full_day: (element.allDay) ? 1 : 0,
+        event_priority_id: element.event_priority_id,  
       };
       eventsData.push(formDataEvent);
     });
     
-    this.http.post(URL + '/api/addEvent', eventsData).subscribe((data: any) => {
+    this.http.post(ENV.BASE_URL + '/addEvent', eventsData).subscribe((data: any) => {
 
       this.presentToast('Eventos Guardados');
 
     }, (err: any) => {
 
       this.storageservice.getPendingEvents().then(events => {
-        let event_list
-        if(events == null){
-          event_list = eventsData;
-        } else {
-          event_list = events;
+
+        if (events) {
           eventsData.forEach(element=> {
-            event_list.push(element);
+            events.push(element);
           })
+          this.storageservice.setPendingEvents(events);
+        } else {
+          this.storageservice.setPendingEvents(eventsData);
         }
-        this.storageservice.setPendingEvents(event_list);
+
       });;
       
     });
@@ -131,7 +139,7 @@ export class SaveDataService {
   }
 
   public updateGeolocation(id: number){
-    var geo_promise = this.geolocation.getCurrentPosition({ timeout: 600000, enableHighAccuracy: true }).then((resp) => {
+    return this.geolocation.getCurrentPosition({ timeout: 600000, enableHighAccuracy: true }).then((resp) => {
 
       let formData = { 
         id: id,
@@ -146,47 +154,48 @@ export class SaveDataService {
         this.storageservice.setContacts(contactList); 
       })
       
-      return this.saveGeolocation([formData])
+      this.http.post(ENV.BASE_URL + '/updateGeolocationContacts', [formData]).subscribe( resp => {
+
+        Swal.fire({
+          title: "Geolocalizacion Guardada",
+          type: "success",
+          confirmButtonText: "Enterado."
+        });
+        
+      }, (err: any) => {
+        
+        this.storageservice.getPendingGeoUpdate().then(geo_update => {
+  
+          if (geo_update) {
+            geo_update.push(formData);
+            this.storageservice.setPendingGeoUpdate(geo_update);
+          } else {
+            this.storageservice.setPendingGeoUpdate([formData]);
+          }
+  
+        });
+  
+        Swal.fire({
+  
+          title: "Actualizacion Pendiente. Esperando Conexion.",
+          type: "success",
+          confirmButtonText: "Enterado."
+  
+        });
+        
+      });
+
+      return formData
 
     }).catch((error) => {
       throw Error("Error al querer optener geolocalizacion:" + error)
     });
-    return geo_promise
-  }
-
-  private saveGeolocation(data){
-
-    this.http.post(URL + '/api/updateGeolocationContacts', data).subscribe( resp => {
-
-      Swal.fire({
-        title: "Geolocalizacion Guardada",
-        type: "success",
-        confirmButtonText: "Enterado."
-      });
-      
-    }, (err: any) => {
-      
-      this.storageservice.getPendingGeoUpdate().then(geo_update => {
-        let geo_list = (geo_update == null) ? [] : geo_update;
-        geo_list.push(data[0]);
-        this.storageservice.setPendingGeoUpdate(geo_list);
-      });
-
-      Swal.fire({
-
-        title: "Actualizacion Pendiente. Esperando Conexion.",
-        type: "success",
-        confirmButtonText: "Enterado."
-
-      });
-      
-    });
-    return data[0];
+    
   }
 
   public saveUserTrack(data){
 
-    this.http.post(URL + '/api/usertrck', data).subscribe((resp: any) => {
+    this.http.post(ENV.BASE_URL + '/usertrck', data).subscribe((resp: any) => {
         
       this.localNotifications.schedule({
         text: 'There is a legendary Pokemon near you'
@@ -195,9 +204,14 @@ export class SaveDataService {
     }), (err: any) => {
     
       this.storageservice.getPendingTrack().then(tracks => {
-        let track_list = (tracks == null) ? [] : tracks;
-        track_list.push(data);
-        this.storageservice.setPendingTrack(track_list);
+
+        if (tracks) {
+          tracks.push(data);
+          this.storageservice.setPendingTrack(tracks);
+        } else {
+          this.storageservice.setPendingTrack([data]);
+        }
+
       });
       
     };
@@ -221,7 +235,7 @@ export class SaveDataService {
       let form = {
         order: order,
         rows: rows,
-        usertrack:formDataTrack
+        usertrack: formDataTrack
       }
 
       if(pedido){
@@ -236,6 +250,32 @@ export class SaveDataService {
 
   }
 
+  private guardarCotizacion(form){
+
+    this.storageservice.getCotizaciones().then(cotizaciones => {
+
+      if (cotizaciones) {
+        cotizaciones.push(form);
+        this.storageservice.setCotizaciones(cotizaciones);
+      } else {
+        this.storageservice.setCotizaciones([form]);
+      }
+
+    });
+
+    Swal.fire({
+
+      title: "Cotizacion Almacenada.",
+      type: "success",
+      confirmButtonText: "Enterado."
+
+    }).then((result) => {
+      if (result.value) {
+        this.router.navigate(['dashboard']);
+      }
+    });
+  }
+
   async saveOrder(form){
 
     const loading = await this.loadingController.create({
@@ -248,7 +288,7 @@ export class SaveDataService {
       rows: form.rows,
     }
 
-    this.http.post(URL + '/api/generarPedido', form)
+    this.http.post(ENV.BASE_URL + '/generarPedido', form)
       .pipe(
         finalize(() => {
           loading.dismiss();
@@ -286,9 +326,14 @@ export class SaveDataService {
       order.order.order_number = idPedido;
 
       this.storageservice.getOrders().then(ordenes => {
-        let order_list = (ordenes == null) ? [] : ordenes;
-        order_list.push(order);
-        this.storageservice.setOrders(order_list);
+
+        if (ordenes) {
+          ordenes.push(order);
+          this.storageservice.setOrders(ordenes);
+        } else {
+          this.storageservice.setOrders([order]);
+        }
+
       });
 
       Swal.fire({
@@ -305,10 +350,15 @@ export class SaveDataService {
 
     }, (err: any) => {
       
-      this.storageservice.getPendingOrders().then(ordener_pendientes => {
-        let order_list = (ordener_pendientes == null) ? [] : ordener_pendientes;
-        order_list.push(form);
-        this.storageservice.setPendingOrders(order_list);
+      this.storageservice.getPendingOrders().then(ordenes_pendientes => {
+
+        if (ordenes_pendientes) {
+          ordenes_pendientes.push(form);
+          this.storageservice.setPendingOrders(ordenes_pendientes);
+        } else {
+          this.storageservice.setPendingOrders([form]);
+        }
+
       });
       
       Swal.fire({
@@ -326,43 +376,16 @@ export class SaveDataService {
     });
   }
 
-  private guardarCotizacion(form){
-
-    this.storageservice.getCotizaciones().then(cotizaciones => {
-      let cotizaciones_list = (cotizaciones == null) ? [] : cotizaciones;
-      cotizaciones_list.push(form);
-      this.storageservice.setCotizaciones(cotizaciones_list);
-    });
-
-    Swal.fire({
-
-      title: "Cotizacion Almacenada.",
-      type: "success",
-      confirmButtonText: "Enterado."
-
-    }).then((result) => {
-      if (result.value) {
-        this.router.navigate(['dashboard']);
-      }
-    });
-  }
-
   private generateOrderRows(products) {
-    let  orderRows = []
 
-    for ( let product  of  products) {
-      //Formulario a enviar para el registro de los productos de la orden
-      let formDataOrderRows = { 
-        product_name: product.product_name, 
-        price: product.product_price,
-        quantity: product.quantity,
-        codigoProtevs: product.product_codigo, 
-        unidad_medida: product.product_UM,
-        moneda: product.product_moneda
-      };
-      orderRows.push(formDataOrderRows);
-    }
+    products.forEach(element => {
+      delete element.total
+      delete element.subtotal
+      delete element.product_stock
+      delete element.impuesto_cal
+      delete element.impuestos_total
+    });
 
-    return orderRows;
+    return products;
   }
 }

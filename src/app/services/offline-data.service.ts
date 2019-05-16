@@ -3,9 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { LoadingController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
 import { StorageService } from 'src/app/services/storage.service';
+import { environment as ENV } from 'src/environments/environment';
 import 'rxjs/add/operator/timeout';
-
-const URL = 'http://192.168.101.23';
 
 @Injectable({
   providedIn: 'root'
@@ -23,29 +22,23 @@ export class OfflineDataService {
   
     this.storageservice.getUserID().then((val) => {
       
-      this.http.get(URL + '/api/contact/' + val).timeout(3000).subscribe((data: any) => {
+      this.http.get(ENV.BASE_URL + '/contact/' + val).timeout(3000).subscribe((data: any) => {
         this.storageservice.setContacts(data);
       })
 
-      this.http.get(URL + '/api/events/' + val).subscribe((data: any) => {
+      this.http.get(ENV.BASE_URL + '/events/' + val).subscribe((data: any) => {
         let events = []
         data.events.forEach(element => {
-          let event = {
-            title: element.title,
-            desc: element.description,
-            startTime: new Date(Date.parse(element.startTime)),
-            endTime: new Date(Date.parse(element.endTime)),
-            allDay: (element.allDay==1) ? true : false,
-            priority: element.event_priority_id,
-            status: element.status
-          };
-          events.push(event);
+          element.endTime = new Date(Date.parse(element.endTime))
+          element.startTime = new Date(Date.parse(element.startTime))
+          element.allDay = (element.allDay) ? true : false
+          events.push(element);
         });
         this.storageservice.setEvents(events);
         this.storageservice.setEventsPriority(data.priority)
       })
 
-      this.http.get(URL + '/api/orders_by_owner/' + val).subscribe((data: any)=>{
+      this.http.get(ENV.BASE_URL + '/orders_by_owner/' + val).subscribe((data: any)=>{
         let orders_list = [];
         data[0].forEach(order => {
           let rows = data[1].filter(row => row.order_id == order.id)
@@ -56,7 +49,7 @@ export class OfflineDataService {
 
     });
 
-    this.http.get(URL + '/api/info').subscribe((data: any) => {
+    this.http.get(ENV.BASE_URL + '/info').subscribe((data: any) => {
       // this.storage.set(STATUS_KEY, data.status);
       this.storageservice.setSucursales(data.sucursal);
       this.storageservice.setPagos(data.pagos);
@@ -69,7 +62,7 @@ export class OfflineDataService {
       this.storageservice.setCambio(data.cambio[0].moneda_venta);
     });
     
-    this.http.get(URL + '/api/products/' + 1)
+    this.http.get(ENV.BASE_URL + '/products/' + 1)
       .pipe(
         finalize(() => {
             loading.dismiss();

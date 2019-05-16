@@ -60,26 +60,26 @@ export class AgendaPage implements OnInit {
       })
     }
   }
+
   resetEvent() {
     this.event = {
       title: '',
-      desc: '',
+      description: '',
       startTime: new Date().toISOString(),
       endTime: new Date().toISOString(),
       allDay: false,
-      priority: '1',
+      event_priority_id: '1',
     };
   }
  
-
   addEvent() {
     let eventCopy = {
       title: this.event.title,
       startTime:  new Date(Date.parse(this.event.startTime)),
       endTime: new Date(Date.parse(this.event.endTime)),
       allDay: this.event.allDay,
-      desc: this.event.desc,
-      priority: this.event.priority,
+      description: this.event.description,
+      event_priority_id: this.event.event_priority_id,
       status: 'New'
     }
 
@@ -125,7 +125,7 @@ export class AgendaPage implements OnInit {
     const alert = await this.alertCtrl.create({
       header: event.title,
       subHeader: 'Status:' + event.status ,
-      message: 'Prioridad:' + this.priorityList.find(priority=>priority.id == event.priority).name + '<br><br>' + event.desc + '<br><br>From: ' + start + '<br>To: ' + end,
+      message: 'Prioridad:' + this.priorityList.find(priority=>priority.id == event.event_priority_id).name + '<br><br>' + event.description + '<br><br>From: ' + start + '<br>To: ' + end,
       buttons: ['OK']
     });
     alert.present();

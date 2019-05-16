@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  BASE_URL:'http://crm.ccfnweb.com.mx/apicrm/public/api'
 };

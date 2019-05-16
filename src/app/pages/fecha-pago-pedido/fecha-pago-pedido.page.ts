@@ -111,7 +111,7 @@ export class FechaPagoPedidoPage implements OnInit {
 
     if (this.orderData.currency_id == 62) {
       for (var i = 0; i < this.datos.products.length; i++) {
-        if (this.datos.products[i].product_moneda == "MN") {
+        if (this.datos.products[i].moneda_mayoreo == "MN") {
           this.subtotal += this.datos.products[i].subtotal;
           this.impuestos += this.datos.products[i].impuestos_total;
           this.orderData.total_order += this.datos.products[i].total;
@@ -123,7 +123,7 @@ export class FechaPagoPedidoPage implements OnInit {
       }
     } else if(this.orderData.currency_id == 96) {
       for (var i = 0; i < this.datos.products.length; i++) {
-        if (this.datos.products[i].product_moneda == "DL") {
+        if (this.datos.products[i].moneda_mayoreo == "DL") {
           this.subtotal += this.datos.products[i].subtotal;
           this.impuestos += this.datos.products[i].impuestos_total;
           this.orderData.total_order += this.datos.products[i].total;
