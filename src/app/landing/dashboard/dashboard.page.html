@@ -18,14 +18,14 @@
         </ion-button>
       </ion-col>
       <ion-col>
-        <ion-button  color="light" [disabled]="!checkInStatus" routerLink="/cotizaciones-main">
+        <ion-button color="light" [disabled]="!checkInStatus" routerLink="/cotizaciones-main">
           <img src="../../../assets/icon/cotizaciones.png">
         </ion-button>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
-        <ion-button  color="light" [disabled]="!checkInStatus" routerLink="/pedidos-main">
+        <ion-button color="light" [disabled]="!checkInStatus" routerLink="/pedidos-main">
           <img src="../../../assets/icon/pedidos.png">
         </ion-button>
       </ion-col>
@@ -37,28 +37,16 @@
     </ion-row>
     <ion-row>
       <ion-col>
-        <ion-button color="light" [disabled]="!checkInStatus">
-          <img src="../../../assets/icon/entrega.png">
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button color="light" [disabled]="!checkInStatus" routerLink="/products" >
-          <img src="../../../assets/icon/productos.png">
-        </ion-button>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <ion-button  color="light" [hidden]="checkInStatus" (click)="checkIn()">
+        <ion-button color="light" [hidden]="checkInStatus" (click)="checkIn()">
           <img src="../../../assets/icon/check-in.png">
         </ion-button>
-        <ion-button  color="light" [hidden]="!checkInStatus" (click)="checkOut()">
+        <ion-button color="light" [hidden]="!checkInStatus" (click)="checkOut()">
           <img src="../../../assets/icon/check-out.png">
         </ion-button>
       </ion-col>
       <ion-col>
-        <ion-button color="light" [disabled]="!checkInStatus">
-          <img src="../../../assets/icon/cobranza.png">
+        <ion-button color="light" [disabled]="!checkInStatus" routerLink="/products">
+          <img src="../../../assets/icon/productos.png">
         </ion-button>
       </ion-col>
     </ion-row>

@@ -1,35 +1,50 @@
 import { Component, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
-import {  Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-pedidos-main',
-  templateUrl: './pedidos-main.page.html',
-  styleUrls: ['./pedidos-main.page.scss'],
+  templateUrl: '../../../assets/html/main/main.page.html',
+  styleUrls: ['../../../assets/html/main/main.page.scss'],
 })
 export class PedidosMainPage implements OnInit {
 
   button_size: string;
   screen_width: number;
+  notificationCounts: number;
+  title: string = 'Pedidos CCFN'
+  allTitle: string = 'Todas los Pedidos'
+  allLink: string = 'all-orders'
+  imageLink: string = '../../../assets/icon/Bag.png'
 
   constructor(
     public plt: Platform,
     private navExtras: NavExtrasServiceService,
-    private router: Router,) { 
+    private storageservice: StorageService,
+    private router: Router) {
     plt.ready().then((readySource) => {
       this.screen_width = plt.width();
     });
   }
 
   ngOnInit() {
-    if(this.screen_width < 550){
-      this.button_size='default'
+    if (this.screen_width < 550) {
+      this.button_size = 'default'
     }
     else {
-      this.button_size='large'
+      this.button_size = 'large'
     }
   }
+
+  ionViewWillEnter() {
+    this.storageservice.getNotifications().then(notificationList => {
+      let notifications = notificationList.filter(Notification => Notification.vista == false)
+      this.notificationCounts = notifications.length
+    })
+  }
+
   goTo() {
     const data = {
       contact: undefined,

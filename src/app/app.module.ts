@@ -1,30 +1,30 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { GoogleMaps } from '@ionic-native/google-maps';
-import { Network } from '@ionic-native/network/ngx';
 import { RouteReuseStrategy } from '@angular/router';
-import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
+import { Camera } from '@ionic-native/Camera/ngx';
+import { FilePath } from '@ionic-native/file-path/ngx';
+import { File } from '@ionic-native/File/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { GoogleMaps } from '@ionic-native/google-maps';
+import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { Network } from '@ionic-native/network/ngx';
+import { OneSignal } from '@ionic-native/onesignal/ngx';
+import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { HttpClientModule } from '@angular/common/http';
-import { AppComponent } from './app.component';
-import { AppRoutingModule } from './app-routing.module';
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage';
-import { Geolocation } from '@ionic-native/geolocation/ngx';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
-import { BackgroundMode } from '@ionic-native/background-mode/ngx';
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
-import { AuthService } from './services/authentication.service';
-import { NgCalendarModule  } from 'ionic2-calendar';
-import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx';
-import { LocationTrackerService  } from './services/location-tracker.service';
- 
-import { Camera } from '@ionic-native/Camera/ngx';
-import { File } from '@ionic-native/File/ngx';
-import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { FilePath } from '@ionic-native/file-path/ngx';
-import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
+import { NgCalendarModule } from 'ionic2-calendar';
 
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { AuthService } from './services/authentication.service';
+
+// import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx';
+// import { LocationTrackerService  } from './services/location-tracker.service';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -38,14 +38,13 @@ import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
   providers: [
     StatusBar,
     SplashScreen,
-    LocationTrackerService,
+    // LocationTrackerService,
     GoogleMaps,
     Network,
-    BackgroundGeolocation,
+    // BackgroundGeolocation,
     Geolocation,
     BarcodeScanner,
-    LocalNotifications,
-    BackgroundMode,
+    BackgroundMode,OneSignal,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     AuthService,
     Camera,

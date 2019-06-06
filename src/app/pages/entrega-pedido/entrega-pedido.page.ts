@@ -23,17 +23,17 @@ export class EntregaPedidoPage {
   datos: any;
 
   constructor(
-    public platform: Platform, 
+    public platform: Platform,
     private router: Router,
     private savedataservice: SaveDataService,
     private imageservice: ImagesService,
     private navExtras: NavExtrasServiceService) { }
 
-  ngOnInit(){
+  ngOnInit() {
     this.datos = this.navExtras.getExtras();
   }
   ngAfterViewInit() {
-    if(this.datos.contact.longitud!=null){
+    if (this.datos.contact.longitud != null) {
       this.platform.ready().then(() => {
         this.loadMap();
       });
@@ -68,9 +68,9 @@ export class EntregaPedidoPage {
     });
   }
 
-  public updateGeolocation(contact: any){
+  public updateGeolocation(contact: any) {
 
-    this.savedataservice.updateGeolocation(contact.id).then(formData=>{
+    this.savedataservice.updateGeolocation(contact.id).then(formData => {
       contact.latitud = formData.latitude;
       contact.longitud = formData.longitude;
       this.datos.contact = contact;
@@ -80,15 +80,15 @@ export class EntregaPedidoPage {
 
   }
 
-  navMetodoPedidos(){
+  navMetodoPedidos() {
     this.router.navigate(['fecha-pago-pedido']);
   }
 
-  public getPath(name){
+  public getPath(name) {
     return this.imageservice.getPath(name)
   }
 
-  showImage(name){
+  showImage(name) {
     this.imageservice.showImage(name)
   }
 

@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Notificaciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <img style="width:100%;" src="../../../assets/icon/market.png" alt="">
+  <ion-virtual-scroll [items]="notifications">
+    <ion-item *virtualItem="let notification" (click)="goToDetail(notification)">
+      <ion-card color="light" style="width:100%;">
+        <ion-card-header>
+          <ion-card-subtitle>{{notification.name}}</ion-card-subtitle>
+          <div *ngIf="notification.vista" style="float: right;">Vista</div>
+          <div *ngIf="!notification.vista" style="float: right;">No Vista</div>
+        </ion-card-header>
+        <!-- <ion-card-content>
+          <p>Codigo Cliente: {{contact.codigo_protevs}}</p>
+          <p>Tienda: {{contact.tienda}}</p>
+          <p>Direccion: {{contact.street}} {{contact.colonia}}, {{contact.city}} {{contact.state}}
+            {{contact.zip_code}}
+          </p>
+        </ion-card-content> -->
+      </ion-card>
+    </ion-item>
+  </ion-virtual-scroll>
+</ion-content>

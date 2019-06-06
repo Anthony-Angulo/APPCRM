@@ -1,15 +1,16 @@
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
+
 import { IonicModule } from '@ionic/angular';
 
-import { ContactsPage } from './contacts.page';
+import { NotificationsPage } from './notifications.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: ContactsPage
+    component: NotificationsPage
   }
 ];
 
@@ -20,6 +21,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [ContactsPage]
+  declarations: [NotificationsPage]
 })
-export class ContactsPageModule {}
+export class NotificationsPageModule {}

@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Platform } from '@ionic/angular';
-import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
-import { ToastController } from '@ionic/angular';
-import { SaveDataService } from 'src/app/services/save-data.service';
 import { Router } from '@angular/router';
+import { Platform, ToastController } from '@ionic/angular';
 import { ImagesService } from 'src/app/services/images.service';
+import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
+import { SaveDataService } from 'src/app/services/save-data.service';
 import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
@@ -15,19 +14,20 @@ import { StorageService } from 'src/app/services/storage.service';
 export class DetailPage implements OnInit {
 
   order: any;
-  documento : any;
+  documento: any;
   hora_antes: any;
   hora_despues: any;
   pago: any;
   ruta: any;
-  contact: any = {full_name:''};
+  contact: any = { full_name: '' };
   currency: any;
+  status: any;
 
   total: number = 0;
   impuestos: number = 0;
   subtotal: number = 0;
 
-  isorder:any ;
+  isorder: any;
 
   constructor(
     public platform: Platform,
@@ -45,6 +45,10 @@ export class DetailPage implements OnInit {
 
     this.storageservice.getContacts().then(contactList => {
       this.contact = contactList.find(contact => contact.id == this.order.order.contact_id)
+    });
+
+    this.storageservice.getStatus().then(statusList => {
+      this.status = statusList.find(status => status.id == this.order.order.order_status_id)
     });
 
     this.storageservice.getPagos().then(pagosList => {
@@ -68,7 +72,7 @@ export class DetailPage implements OnInit {
       this.hora_despues = horasList.find(hora_despues => hora_despues.id == this.order.order.id_hora_despues)
     });
 
-    
+
     if (this.order.order.currency_id == 62) {
       for (var i = 0; i < this.order.rows.length; i++) {
         if (this.order.rows[i].moneda == "MN") {
@@ -77,7 +81,7 @@ export class DetailPage implements OnInit {
           this.subtotal += this.order.rows[i].price * this.order.rows[i].quantity * this.order.order.tipo_cambio;
         }
       }
-    } else if(this.order.order.currency_id == 96) {
+    } else if (this.order.order.currency_id == 96) {
       for (var i = 0; i < this.order.rows.length; i++) {
         if (this.order.rows[i].moneda == "DL") {
           this.subtotal += this.order.rows[i].price * this.order.rows[i].quantity;
@@ -86,18 +90,18 @@ export class DetailPage implements OnInit {
         }
       }
     }
-    this.impuestos = this.order.order.total_order - this.subtotal; 
-  
+    this.impuestos = this.order.order.total_order - this.subtotal;
+
     this.total = this.order.order.total_order
   }
 
-  crearPedido(){
+  crearPedido() {
     this.savedataservice.saveOrder(this.order);
     this.borrarCotizacion();
   }
 
-  borrarCotizacion(){
-    this.storageservice.getCotizaciones().then(cotizacionesList=>{
+  borrarCotizacion() {
+    this.storageservice.getCotizaciones().then(cotizacionesList => {
       var cotizaciones_list = cotizacionesList;
       cotizaciones_list.splice(cotizaciones_list.indexOf(this.order), 1);
       this.storageservice.setCotizaciones(cotizaciones_list)
@@ -107,7 +111,7 @@ export class DetailPage implements OnInit {
 
   }
 
-  async presentToast(data:any) {
+  async presentToast(data: any) {
     const toast = await this.toastController.create({
       message: data,//'Dispositivo Conectado a Internet. Ordenes Registradas.',
       duration: 5000
@@ -115,11 +119,11 @@ export class DetailPage implements OnInit {
     toast.present();
   }
 
-  public getPath(name){
+  public getPath(name) {
     return this.imageservice.getPath(name)
   }
 
-  showImage(name){
+  showImage(name) {
     this.imageservice.showImage(name)
   }
 

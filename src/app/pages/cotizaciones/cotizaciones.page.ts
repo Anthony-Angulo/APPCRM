@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
 import { Router } from '@angular/router';
-import { StorageService, Contact } from 'src/app/services/storage.service';
+import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
+import { Contact, StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-cotizaciones',
@@ -10,13 +10,13 @@ import { StorageService, Contact } from 'src/app/services/storage.service';
 })
 export class CotizacionesPage implements OnInit {
 
-  cotizaciones: any=[];
+  cotizaciones: any = [];
   contacts: Contact[] = [];
-  
+
   constructor(
     private storageservice: StorageService,
     private router: Router,
-    private navExtras: NavExtrasServiceService,) { }
+    private navExtras: NavExtrasServiceService, ) { }
 
   ngOnInit() {
     this.storageservice.getCotizaciones().then(cotizacionesList => {
@@ -27,15 +27,15 @@ export class CotizacionesPage implements OnInit {
     })
   }
 
-  private contact(id){
-    var contact = this.contacts.find(contact=> contact.id == id)
-    if(contact){
+  private contact(id) {
+    var contact = this.contacts.find(contact => contact.id == id)
+    if (contact) {
       return contact.nombre_reducido
     }
   }
 
-  goToDetail(cotizacion){
-    this.navExtras.setExtras({order:cotizacion, isorder:false});
+  goToDetail(cotizacion) {
+    this.navExtras.setExtras({ order: cotizacion, isorder: false });
     this.router.navigate(['detail']);
   }
 

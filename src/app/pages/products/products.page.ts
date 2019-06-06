@@ -11,9 +11,9 @@ import { StorageService } from 'src/app/services/storage.service';
 export class ProductsPage implements OnInit {
   @ViewChild('productSearchBar') searchbar: IonSearchbar;
 
-  productListAll:any = [];
-  productListSucursal:any  = [];
-  productListsearchBar:any  = [];
+  productListAll: any = [];
+  productListSucursal: any = [];
+  productListsearchBar: any = [];
 
   sucursalList: any = [];
   sucursal_id: string = '1';
@@ -38,7 +38,7 @@ export class ProductsPage implements OnInit {
     let valor = val.target.value;
     if (valor && valor.trim() != '') {
       this.productListsearchBar = this.productListSucursal.filter((item) => {
-        return (item.name.toLowerCase().indexOf(valor.toLowerCase()) > -1);
+        return (item.name.toLowerCase().indexOf(valor.toLowerCase()) > -1) || (item.codigoProtevs.toLowerCase().indexOf(valor.toLowerCase()) > -1);
       })
     } else {
       this.productListsearchBar = this.productListSucursal;

@@ -1,7 +1,8 @@
-import { Platform } from '@ionic/angular';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { StorageService } from '../services/storage.service'
+import { Platform } from '@ionic/angular';
+import { BehaviorSubject } from 'rxjs';
+
+import { StorageService } from '../services/storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,30 +17,30 @@ export class AuthService {
     })
   }
 
-  public login(user_id:any, token:any, name: string): Promise<void> {
+  public login(user_id: any, token: any, name: string): Promise<void> {
     this.storageservice.setUserID(user_id)
     this.storageservice.setUsername(name)
-    
+
     return this.storageservice.setToken(token).then(res => {
       this.authenticationState.next(true);
     })
   }
 
-  public logout(): Promise<void>  {
+  public logout(): Promise<void> {
     return this.storageservice.removeToken().then(_ => {
       this.authenticationState.next(false);
     })
   }
 
-  isAuthenticated(): boolean{
+  isAuthenticated(): boolean {
     return this.authenticationState.value;
   }
 
-  checkToken(){
+  checkToken() {
     return this.storageservice.getToken().then(res => {
-      if(res){
+      if (res) {
         this.authenticationState.next(true);
-      }else{
+      } else {
         this.authenticationState.next(false);
       }
     });

@@ -1,16 +1,12 @@
-import { Component, OnInit, ChangeDetectorRef  } from '@angular/core';
-import { SaveDataService } from 'src/app/services/save-data.service';
-import { StorageService, Contact } from 'src/app/services/storage.service';
-
-import { Camera, CameraOptions, PictureSourceType } from '@ionic-native/Camera/ngx';
-import { ActionSheetController, ToastController, Platform, LoadingController } from '@ionic/angular';
-import { File, FileEntry } from '@ionic-native/File/ngx';
 import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Camera, CameraOptions, PictureSourceType } from '@ionic-native/Camera/ngx';
 import { FilePath } from '@ionic-native/file-path/ngx';
-
+import { File } from '@ionic-native/File/ngx';
+import { ActionSheetController, LoadingController, Platform, ToastController } from '@ionic/angular';
 import { ImagesService } from 'src/app/services/images.service';
- 
-import { finalize } from 'rxjs/operators';
+import { SaveDataService } from 'src/app/services/save-data.service';
+import { Contact, StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-contacts',
@@ -19,7 +15,7 @@ import { finalize } from 'rxjs/operators';
 })
 export class ContactsPage implements OnInit {
 
-  contactList: Contact[] = [];
+  contactList: any[] = [];
   list: Contact[] = [];
 
   constructor(
@@ -38,39 +34,39 @@ export class ContactsPage implements OnInit {
     })
   }
 
-  public getPath(name){
+  public getPath(name) {
     return this.imageservice.getPath(name)
   }
 
-  showImage(name){
+  showImage(name) {
     this.imageservice.showImage(name)
   }
-  
+
   searchContacts(val: any) {
     let valor = val.target.value;
     if (valor && valor.trim() != '') {
       this.list = this.contactList.filter((item) => {
-        return (item.nombre_reducido.toLowerCase().indexOf(valor.toLowerCase()) > -1);
+        return (item.nombre_reducido.toLowerCase().indexOf(valor.toLowerCase()) > -1) || (item.codigo_protevs.toLowerCase().indexOf(valor.toLowerCase()) > -1);
       })
     } else {
       this.list = this.contactList;
     }
   }
 
-  public updateGeolocation(contact: any){
+  public updateGeolocation(contact: any) {
 
     this.savedataservice.updateGeolocation(contact.id).then(formData => {
       contact.latitud = formData.latitude;
       contact.longitud = formData.longitude;
     });
-    
+
   }
- 
+
   async presentToast(text) {
     const toast = await this.toastController.create({
-        message: text,
-        position: 'bottom',
-        duration: 3000
+      message: text,
+      position: 'bottom',
+      duration: 3000
     });
     toast.present();
   }
@@ -82,13 +78,13 @@ export class ContactsPage implements OnInit {
         {
           text: 'Load from Library',
           handler: () => {
-              this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY, id);
+            this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY, id);
           }
         },
         {
           text: 'Use Camera',
           handler: () => {
-              this.takePicture(this.camera.PictureSourceType.CAMERA, id);
+            this.takePicture(this.camera.PictureSourceType.CAMERA, id);
           }
         },
         {
@@ -99,15 +95,15 @@ export class ContactsPage implements OnInit {
     });
     await actionSheet.present();
   }
-  
+
   takePicture(sourceType: PictureSourceType, id: number) {
     var options: CameraOptions = {
-        quality: 70,
-        sourceType: sourceType,
-        saveToPhotoAlbum: false,
-        correctOrientation: true
+      quality: 70,
+      sourceType: sourceType,
+      saveToPhotoAlbum: false,
+      correctOrientation: true
     };
- 
+
     this.camera.getPicture(options).then(imagePath => {
       if (this.plt.is('android') && sourceType === this.camera.PictureSourceType.PHOTOLIBRARY) {
         this.filePath.resolveNativePath(imagePath)
@@ -122,93 +118,93 @@ export class ContactsPage implements OnInit {
         this.copyFileToLocalDir(correctPath, currentName, this.createFileName(), id);
       }
     });
- 
-}
-
-createFileName() {
-  var d = new Date(),
-      n = d.getTime(),
-      newFileName = n + ".jpg";
-  return newFileName;
-}
-
-copyFileToLocalDir(namePath, currentName, newFileName, id: number) {
-  this.file.copyFile(namePath, currentName, this.file.dataDirectory, newFileName).then(success => {
-    this.updateStoredImages(newFileName, id);
-  }, error => {
-    this.presentToast('Error while storing file.');
-  });
-}
-
-updateStoredImages(name, id: number) {
-
-  var contact_index  = this.contactList.findIndex(contact => contact.id == id)
-
-  if(this.contactList[contact_index].img!=undefined){
-
-    let filePath = this.file.dataDirectory + this.contactList[contact_index].img;
-    var correctPath = filePath.substr(0, filePath.lastIndexOf('/') + 1);  
-    this.file.removeFile(correctPath, this.contactList[contact_index].img).then(res => {
-      this.presentToast('File removed.');
-    });
 
   }
 
-  this.contactList[contact_index].img = name;
+  createFileName() {
+    var d = new Date(),
+      n = d.getTime(),
+      newFileName = n + ".jpg";
+    return newFileName;
+  }
 
-  this.storageservice.setContacts(this.contactList)
-      
-}
+  copyFileToLocalDir(namePath, currentName, newFileName, id: number) {
+    this.file.copyFile(namePath, currentName, this.file.dataDirectory, newFileName).then(success => {
+      this.updateStoredImages(newFileName, id);
+    }, error => {
+      this.presentToast('Error while storing file.');
+    });
+  }
 
-// deleteImage(imgEntry, position) {
-//   this.images.splice(position, 1);
+  updateStoredImages(name, id: number) {
 
-//   
-// }
+    var contact_index = this.contactList.findIndex(contact => contact.id == id)
 
-// startUpload(imgEntry) {
-//   this.file.resolveLocalFilesystemUrl(imgEntry.filePath)
-//       .then(entry => {
-//           ( < FileEntry > entry).file(file => this.readFile(file))
-//       })
-//       .catch(err => {
-//           this.presentToast('Error while reading file.');
-//       });
-// }
+    if (this.contactList[contact_index].img != undefined) {
 
-// readFile(file: any) {
-//   const reader = new FileReader();
-//   reader.onloadend = () => {
-//       const formData = new FormData();
-//       const imgBlob = new Blob([reader.result], {
-//           type: file.type
-//       });
-//       formData.append('file', imgBlob, file.name);
-//       this.uploadImageData(formData);
-//   };
-//   reader.readAsArrayBuffer(file);
-// }
+      let filePath = this.file.dataDirectory + this.contactList[contact_index].img;
+      var correctPath = filePath.substr(0, filePath.lastIndexOf('/') + 1);
+      this.file.removeFile(correctPath, this.contactList[contact_index].img).then(res => {
+        this.presentToast('File removed.');
+      });
 
-// async uploadImageData(formData: FormData) {
-//   const loading = await this.loadingController.create({
-//       content: 'Uploading image...',
-//   });
-//   await loading.present();
+    }
 
-//   this.http.post("http://localhost:8888/upload.php", formData)
-//       .pipe(
-//           finalize(() => {
-//               loading.dismiss();
-//           })
-//       )
-//       .subscribe(res => {
-//           if (res['success']) {
-//               this.presentToast('File upload complete.')
-//           } else {
-//               this.presentToast('File upload failed.')
-//           }
-//       });
-// }
+    this.contactList[contact_index].img = name;
+
+    this.storageservice.setContacts(this.contactList)
+
+  }
+
+  // deleteImage(imgEntry, position) {
+  //   this.images.splice(position, 1);
+
+  //   
+  // }
+
+  // startUpload(imgEntry) {
+  //   this.file.resolveLocalFilesystemUrl(imgEntry.filePath)
+  //       .then(entry => {
+  //           ( < FileEntry > entry).file(file => this.readFile(file))
+  //       })
+  //       .catch(err => {
+  //           this.presentToast('Error while reading file.');
+  //       });
+  // }
+
+  // readFile(file: any) {
+  //   const reader = new FileReader();
+  //   reader.onloadend = () => {
+  //       const formData = new FormData();
+  //       const imgBlob = new Blob([reader.result], {
+  //           type: file.type
+  //       });
+  //       formData.append('file', imgBlob, file.name);
+  //       this.uploadImageData(formData);
+  //   };
+  //   reader.readAsArrayBuffer(file);
+  // }
+
+  // async uploadImageData(formData: FormData) {
+  //   const loading = await this.loadingController.create({
+  //       content: 'Uploading image...',
+  //   });
+  //   await loading.present();
+
+  //   this.http.post("http://localhost:8888/upload.php", formData)
+  //       .pipe(
+  //           finalize(() => {
+  //               loading.dismiss();
+  //           })
+  //       )
+  //       .subscribe(res => {
+  //           if (res['success']) {
+  //               this.presentToast('File upload complete.')
+  //           } else {
+  //               this.presentToast('File upload failed.')
+  //           }
+  //       });
+  // }
 
 
 }

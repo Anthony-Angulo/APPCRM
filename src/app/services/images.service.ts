@@ -8,13 +8,13 @@ import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
 })
 export class ImagesService {
 
-  constructor(private file: File, private webview: WebView, private photoViewer: PhotoViewer,) { }
+  constructor(private file: File, private webview: WebView, private photoViewer: PhotoViewer, ) { }
 
-  public getPath(name){
+  public getPath(name) {
     let filePath = this.file.dataDirectory + name;
     return this.pathForImage(filePath);
   }
-  
+
   pathForImage(img) {
     if (img === null) {
       return '';
@@ -24,7 +24,7 @@ export class ImagesService {
     }
   }
 
-  public showImage(name){
+  public showImage(name) {
     this.photoViewer.show(this.file.dataDirectory + name)
   }
 

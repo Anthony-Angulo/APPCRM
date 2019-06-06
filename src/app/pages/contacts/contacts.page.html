@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content>
-  <img style="width:100%;" src="../../../assets/img/tienda.png" alt="">
+  <img style="width:100%;" src="../../../assets/icon/market.png" alt="">
   <ion-row>
     <ion-col>
       <ion-toolbar>
@@ -20,7 +20,8 @@
     <ion-item *virtualItem="let contact">
       <ion-card color="light">
         <div *ngIf="contact.img">
-          <ion-img style="height: 180px;width: auto;" [src]="getPath(contact.img)" (click)="showImage(contact.img)"></ion-img>
+          <ion-img style="height: 180px;width: auto;" [src]="getPath(contact.img)" (click)="showImage(contact.img)">
+          </ion-img>
         </div>
         <div *ngIf="contact.img==undefined">
           <img src="../../../assets/img/placeholder-image.png">

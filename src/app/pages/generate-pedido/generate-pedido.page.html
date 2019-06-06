@@ -10,7 +10,8 @@
 
 <ion-content padding>
   <ion-item>
-    <ion-searchbar #clientSearchBar placeholder="Buscar Cliente" debounce="500" (ionInput)="searchContacts($event);" clear-icon></ion-searchbar>
+    <ion-searchbar #clientSearchBar placeholder="Buscar Cliente" debounce="500" (ionInput)="searchContacts($event);"
+      clear-icon></ion-searchbar>
     <ion-button (click)="scanQr()">QR</ion-button>
   </ion-item>
   <ion-list *ngIf="contactListsearchBar?.length">
@@ -23,7 +24,8 @@
   <ion-list *ngIf="datos.contact">
     <ion-card color="light">
       <div *ngIf="datos.contact.img">
-        <ion-img style="height: 180px;width: auto;" [src]="getPath(datos.contact.img)" (click)="showImage(datos.contact.img)"></ion-img>
+        <ion-img style="height: 180px;width: auto;" [src]="getPath(datos.contact.img)"
+          (click)="showImage(datos.contact.img)"></ion-img>
       </div>
       <div *ngIf="datos.contact.img==undefined">
         <img src="../../../assets/img/placeholder-image.png">
@@ -60,7 +62,7 @@
   <ion-list *ngIf="productListsearchBar?.length">
     <ion-virtual-scroll [items]="productListsearchBar">
       <ion-item *virtualItem="let product" color="light" (click)="addProduct(product)" detail>
-      {{product.name}}
+        {{product.name}}
       </ion-item>
     </ion-virtual-scroll>
   </ion-list>
@@ -76,68 +78,91 @@
           <ion-card-header>
             <ion-card-subtitle>
               {{product.codigoProtevs}}
-              <ion-icon name="trash" style="font-size: 30px;float: right;" (click)="eliminarProducto(product)"></ion-icon>
+              <ion-icon name="trash" style="font-size: 30px;float: right;" (click)="eliminarProducto(product)">
+              </ion-icon>
             </ion-card-subtitle>
             <ion-card-title>
-              {{product.name}}
+              {{product.product_name}}
             </ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-icon style="font-size: 35px;float: right;" name="add-circle" (click)="increment(product)"></ion-icon>
-            <ion-icon style="font-size: 35px;float: right;" name="remove-circle" (click)="decrement(product)"></ion-icon>
-            Price: {{product.price}}<br>
-            stock: {{product.product_stock}}<br>
-            Cantidad: {{product.quantity}}
-            Subtotal: ${{product.subtotal.toFixed(2)}}
-            Impuestos: ${{product.impuestos_total.toFixed(2)}}
-            Total: ${{product.total.toFixed(2)}}
-            
+            <ion-icon style="font-size: 40px;float: right;" name="add-circle" (click)="increment(product)"></ion-icon>
+            <ion-icon style="font-size: 40px;float: right;" name="remove-circle" (click)="decrement(product)">
+            </ion-icon>
+            Price: {{product.price}} {{product.moneda}}<br>
+            Stock: {{product.product_stock}}<br>
+            <ion-item>
+              Cantidad: <ion-input type="number" [(ngModel)]="product.quantity" (ngModelChange)="productChange(product)"
+                (ionBlur)="productQuantity(product)"></ion-input>
+              <div *ngIf="product.quantity > product.product_stock || product.quantity < 1">
+                <p>Cantidad Invalida</p>
+              </div>
+            </ion-item>
+            Subtotal: ${{product.subtotal.toFixed(2)}} {{product.pago_tipo}}<br>
+            Impuestos: ${{product.impuestos_total.toFixed(2)}} {{product.pago_tipo}}<br>
+            Total: ${{product.total.toFixed(2)}} {{product.pago_tipo}}<br>
+            <ion-radio-group [(ngModel)]="product.pago_tipo" (ngModelChange)="productChange(product)">
+              <ion-list-header>
+                <ion-label>Pago</ion-label>
+              </ion-list-header>
+              <ion-item>
+                <ion-label>Pesos</ion-label>
+                <ion-radio slot="start" value="MN" checked></ion-radio>
+              </ion-item>
+              <ion-item>
+                <ion-label>Dolares</ion-label>
+                <ion-radio slot="start" value="DL"></ion-radio>
+              </ion-item>
+            </ion-radio-group>
           </ion-card-content>
         </ion-card>
       </ion-col>
     </ion-row>
-    <ion-item>
-      <ion-card>
-        <ion-card-header>
-          <ion-card-title *ngIf="!dolaresCard">Precio en Pesos</ion-card-title>
-          <ion-card-title *ngIf="dolaresCard">Precio en Dolares</ion-card-title>
-          <ion-button tappable (click)="dolaresCard = !dolaresCard" >
-            <div *ngIf="!dolaresCard">
-              Cambiar para dolares
-            </div>
-            <div *ngIf="dolaresCard">
-              Cambiar para pesos
-            </div>
-          </ion-button>
-        </ion-card-header>
-        <ion-card-content *ngIf="!dolaresCard">
-          <ion-list>
-            <ion-item>
-              <h1>SubTotal: ${{subtotal.toFixed(2)}}</h1>
-            </ion-item>
-            <ion-item>
-              <h1>Impuestos: ${{impuestos.toFixed(2)}}</h1>
-            </ion-item>
-            <ion-item>
-              <h1>Total: ${{total.toFixed(2)}}</h1>
-            </ion-item>
-          </ion-list>
-        </ion-card-content>
-        <ion-card-content *ngIf="dolaresCard">
-          <ion-list>
-            <ion-item>
-              <h1>SubTotalDolares: ${{subtotalDolares.toFixed(2)}}</h1>
-            </ion-item>
-            <ion-item>
-              <h1>ImpuestosDolares: ${{impuestosDolares.toFixed(2)}}</h1>
-            </ion-item>
-            <ion-item>
-              <h1>TotalDolares: ${{totalDolares.toFixed(2)}}</h1>
-            </ion-item>
-          </ion-list>
-        </ion-card-content>
-      </ion-card>
-    </ion-item>
-    <ion-button [disabled]="!datos.contact || !datos.products?.length " expand="block" style="height: 50px" (click)="entregaPedido()">Continuar</ion-button>
+    <ion-row *ngIf="total">
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Precio en Pesos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item>
+                <h1>SubTotal: ${{subtotal.toFixed(2)}}</h1>
+              </ion-item>
+              <ion-item>
+                <h1>Impuestos: ${{impuestos.toFixed(2)}}</h1>
+              </ion-item>
+              <ion-item>
+                <h1>Total: ${{total.toFixed(2)}}</h1>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="totalDolares">
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Precio en Dolares</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item>
+                <h1>SubTotalDolares: ${{subtotalDolares.toFixed(2)}}</h1>
+              </ion-item>
+              <ion-item>
+                <h1>ImpuestosDolares: ${{impuestosDolares.toFixed(2)}}</h1>
+              </ion-item>
+              <ion-item>
+                <h1>TotalDolares: ${{totalDolares.toFixed(2)}}</h1>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-button [disabled]="!datos.contact || !datos.products?.length " expand="block" style="height: 50px"
+      (click)="entregaPedido()">Continuar</ion-button>
   </ion-list>
 </ion-content>

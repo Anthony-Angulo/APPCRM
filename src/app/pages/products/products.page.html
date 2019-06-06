@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content>
-  <img style="width:100%;" src="../../../assets/img/tienda.png" alt="">
+  <img style="width:100%;" src="../../../assets/icon/market.png" alt="">
   <ion-row>
     <ion-col>
       <ion-item>
@@ -32,26 +32,26 @@
   <ion-virtual-scroll [items]="productListsearchBar">
     <ion-row *virtualItem="let product">
       <ion-col size="3" size-lg>
-      <ion-thumbnail>
-        <img src="../../../assets/img/placeholder-product.png">
-      </ion-thumbnail>
-    </ion-col>
-    <ion-col size="9" size-lg size="12" size-sm>
-      <ion-card>
-        <ion-card-header>
-          <ion-card-subtitle>
-            {{product.codigoProtevs}}
-          </ion-card-subtitle>
-          <ion-card-title>
-            {{product.name}}
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          Price: {{product.price}} {{product.moneda_mayoreo}}<br>
-          stock: {{product.stock}}<br>
-        </ion-card-content>
-      </ion-card>
-    </ion-col>
-  </ion-row>
+        <ion-thumbnail>
+          <img src="../../../assets/img/placeholder-product.png">
+        </ion-thumbnail>
+      </ion-col>
+      <ion-col size="9" size-lg size="12" size-sm>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>
+              {{product.codigoProtevs}}
+            </ion-card-subtitle>
+            <ion-card-title>
+              {{product.name}}
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            Price: {{product.price}} {{product.UM_mayoreo}}<br>
+            stock: {{product.stock}}<br>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
   </ion-virtual-scroll>
 </ion-content>

@@ -11,10 +11,11 @@
 <ion-content>
   <ion-row>
     <ion-col>
-     <h1>Direccion de Envio</h1>
+      <h1>Direccion de Envio</h1>
       <ion-card>
         <div *ngIf="datos.contact.img">
-          <ion-img style="height: 180px;width: auto;" [src]="getPath(datos.contact.img)" (click)="showImage(datos.contact.img)"></ion-img>
+          <ion-img style="height: 180px;width: auto;" [src]="getPath(datos.contact.img)"
+            (click)="showImage(datos.contact.img)"></ion-img>
         </div>
         <div *ngIf="datos.contact.img==undefined">
           <img src="../../../assets/img/placeholder-image.png">
@@ -37,7 +38,8 @@
   </ion-row>
   <ion-row class="map">
     <ion-col>
-      <div [hidden]="!datos.contact.longitud"  id="map_canvas" style="height: 650px;width: 650px;display:block;margin: 0 auto;"></div>
+      <div [hidden]="!datos.contact.longitud" id="map_canvas"
+        style="height: 650px;width: 650px;display:block;margin: 0 auto;"></div>
       <div [hidden]="datos.contact.longitud">
         <ion-button size="default" (click)="updateGeolocation(datos.contact)">
           Agregar Geolocalizacion
@@ -45,5 +47,6 @@
       </div>
     </ion-col>
   </ion-row>
-  <ion-button [hidden]="!datos.contact.longitud" expand="block" style="height: 50px" (click)="navMetodoPedidos()">Continuar</ion-button>
+  <ion-button expand="block" style="height: 50px" (click)="navMetodoPedidos()"> <!--[hidden]="!datos.contact.longitud"--> 
+    Continuar</ion-button>
 </ion-content>

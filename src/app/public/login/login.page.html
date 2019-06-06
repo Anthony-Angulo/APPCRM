@@ -17,7 +17,7 @@
         <ion-label position="floating"><ion-icon name="lock" item-start class="text-primary"></ion-icon> Password</ion-label>
         <ion-input type="password" [(ngModel)]="formData.password" name="password" required></ion-input>
       </ion-item>
-      <ion-button [disabled]="form.invalid" expand="block" style="height: 45px" type="submit">Ingresar</ion-button>
+      <ion-button [disabled]="form.invalid || disableButton" expand="block" (click)="disableButton=true" style="height: 45px" type="submit">Ingresar</ion-button>
     </ion-list>
   </form></div>
 </ion-content>

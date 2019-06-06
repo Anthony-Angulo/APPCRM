@@ -19,13 +19,14 @@ const HORAS_KEY = 'horas';
 const USER_ID_KEY = 'USER_ID';
 const USER_NAME_KEY = 'USER_NAME';
 const TOKEN_KEY = 'TOKEN_KEY';
-
+const ONESIGNAL_REGISTER = 'register';
 const STORAGE_ORDER_KEY = 'order_pendings';
 const STORAGE_GEO_KEY = 'geo';
 const STORAGE_EVENTS_KEY = 'events_pendings';
 const STORAGE_TRACK_KEY = 'track_pendings';
-
-// const STATUS_KEY = 'status';
+const NOTIFICATIONS_KEY = 'notifications';
+const STATUS_KEY = 'status';
+const CHECK_IN = 'check-in';
 
 export interface Contact {
   city: string,
@@ -63,13 +64,21 @@ export interface EventPriority {
 })
 export class StorageService {
 
-  constructor(private storage: Storage,) { }
+  constructor(private storage: Storage) { }
+
+  getStatus(): Promise<any[]> {
+    return this.storage.get(STATUS_KEY)
+  }
+
+  setStatus(status: any[]) {
+    this.storage.set(STATUS_KEY, status);
+  }
 
   getEvents(): Promise<Event[]> {
     return this.storage.get(EVENTS_KEY)
   }
 
-  setEvents(events: Event[]){
+  setEvents(events: Event[]) {
     this.storage.set(EVENTS_KEY, events);
   }
 
@@ -77,31 +86,55 @@ export class StorageService {
     return this.storage.get(PRIORITY_EVENTS_KEY)
   }
 
-  setEventsPriority(priority: EventPriority[]){
+  setEventsPriority(priority: EventPriority[]) {
     this.storage.set(PRIORITY_EVENTS_KEY, priority);
   }
 
-  getOrders(): Promise<any[]> {
-    return this.storage.get(ORDERS_KEY)
+  async getOrders(): Promise<any[]> {
+    return await this.storage.get(ORDERS_KEY)
   }
 
-  setOrders(orders: any){
-    return this.storage.set(ORDERS_KEY, orders)
+  async setOrders(orders: any) {
+    return await this.storage.set(ORDERS_KEY, orders)
   }
 
   getContacts(): Promise<Contact[]> {
     return this.storage.get(CONTACTS_KEY)
   }
 
-  setContacts(contacts: Contact[]){
+  setContacts(contacts: Contact[]) {
     this.storage.set(CONTACTS_KEY, contacts)
+  }
+
+  getNotifications(): Promise<any[]> {
+    return this.storage.get(NOTIFICATIONS_KEY)
+  }
+
+  setNotifications(notifications: any[]) {
+    this.storage.set(NOTIFICATIONS_KEY, notifications)
+  }
+
+  getCheckIn(): Promise<any> {
+    return this.storage.get(CHECK_IN)
+  }
+
+  setCheckIn(status: boolean) {
+    this.storage.set(CHECK_IN, status)
+  }
+
+  getRegisterOneSignal(): Promise<any> {
+    return this.storage.get(ONESIGNAL_REGISTER)
+  }
+
+  setRegisterOneSignal(register: any) {
+    this.storage.set(ONESIGNAL_REGISTER, register)
   }
 
   getCotizaciones(): Promise<any[]> {
     return this.storage.get(COTIZACIONES_KEY)
   }
 
-  setCotizaciones(cotizaciones: any[]){
+  setCotizaciones(cotizaciones: any[]) {
     this.storage.set(COTIZACIONES_KEY, cotizaciones)
   }
 
@@ -109,7 +142,7 @@ export class StorageService {
     return this.storage.get(PRODUCTS_KEY)
   }
 
-  setProducts(products: any[]){
+  setProducts(products: any[]) {
     this.storage.set(PRODUCTS_KEY, products)
   }
 
@@ -117,7 +150,7 @@ export class StorageService {
     return this.storage.get(SUCURSAL_KEY)
   }
 
-  setSucursales(sucursales: any[]){
+  setSucursales(sucursales: any[]) {
     this.storage.set(SUCURSAL_KEY, sucursales)
   }
 
@@ -125,7 +158,7 @@ export class StorageService {
     return this.storage.get(CAMBIO_KEY)
   }
 
-  setCambio(cambio: number){
+  setCambio(cambio: number) {
     this.storage.set(CAMBIO_KEY, cambio)
   }
 
@@ -133,7 +166,7 @@ export class StorageService {
     return this.storage.get(TES_KEY)
   }
 
-  setTes(tes: any[]){
+  setTes(tes: any[]) {
     this.storage.set(TES_KEY, tes)
   }
 
@@ -141,7 +174,7 @@ export class StorageService {
     return this.storage.get(IMPUESTOS_KEY)
   }
 
-  setImpuestos(impuestos: any[]){
+  setImpuestos(impuestos: any[]) {
     this.storage.set(IMPUESTOS_KEY, impuestos)
   }
 
@@ -149,7 +182,7 @@ export class StorageService {
     return this.storage.get(HORAS_KEY)
   }
 
-  setHoras(horas: any[]){
+  setHoras(horas: any[]) {
     this.storage.set(HORAS_KEY, horas)
   }
 
@@ -157,7 +190,7 @@ export class StorageService {
     return this.storage.get(CURRENCY_KEY)
   }
 
-  setCurrency(currency: any[]){
+  setCurrency(currency: any[]) {
     this.storage.set(CURRENCY_KEY, currency)
   }
 
@@ -165,7 +198,7 @@ export class StorageService {
     return this.storage.get(DOCUMENTS_KEY)
   }
 
-  setDocuments(documents: any[]){
+  setDocuments(documents: any[]) {
     this.storage.set(DOCUMENTS_KEY, documents)
   }
 
@@ -173,7 +206,7 @@ export class StorageService {
     return this.storage.get(RUTAS_KEY)
   }
 
-  setRutas(rutas: any[]){
+  setRutas(rutas: any[]) {
     this.storage.set(RUTAS_KEY, rutas)
   }
 
@@ -181,67 +214,67 @@ export class StorageService {
     return this.storage.get(PAGO_KEY)
   }
 
-  setPagos(pagos: any[]){
+  setPagos(pagos: any[]) {
     this.storage.set(PAGO_KEY, pagos)
   }
 
-  getUserID(){
+  getUserID() {
     return this.storage.get(USER_ID_KEY);
   }
-  
-  setUserID(id: number){
+
+  setUserID(id: number) {
     return this.storage.set(USER_ID_KEY, id);
   }
 
-  getUsername(){
+  getUsername() {
     return this.storage.get(USER_NAME_KEY);
   }
-  
-  setUsername(name: string){
+
+  setUsername(name: string) {
     return this.storage.set(USER_NAME_KEY, name);
   }
 
-  getToken(){
+  getToken() {
     return this.storage.get(TOKEN_KEY);
   }
-  
-  setToken(token: string){
+
+  setToken(token: string) {
     return this.storage.set(TOKEN_KEY, token);
   }
 
-  getPendingOrders(){
+  getPendingOrders() {
     return this.storage.get(STORAGE_ORDER_KEY);
   }
-  
-  setPendingOrders(orders: any[]){
+
+  setPendingOrders(orders: any[]) {
     return this.storage.set(STORAGE_ORDER_KEY, orders);
   }
 
-  getPendingGeoUpdate(){
+  getPendingGeoUpdate() {
     return this.storage.get(STORAGE_GEO_KEY);
   }
-  
-  setPendingGeoUpdate(geo: any[]){
+
+  setPendingGeoUpdate(geo: any[]) {
     return this.storage.set(STORAGE_GEO_KEY, geo);
   }
 
-  getPendingEvents(){
+  getPendingEvents() {
     return this.storage.get(STORAGE_EVENTS_KEY);
   }
-  
-  setPendingEvents(events: any[]){
+
+  setPendingEvents(events: any[]) {
     return this.storage.set(STORAGE_EVENTS_KEY, events);
   }
 
-  getPendingTrack(){
+  getPendingTrack() {
     return this.storage.get(STORAGE_TRACK_KEY);
   }
-  
-  setPendingTrack(track: any[]){
+
+  setPendingTrack(track: any[]) {
     return this.storage.set(STORAGE_TRACK_KEY, track);
   }
 
-  removeToken(){
+  removeToken() {
     return this.storage.remove(TOKEN_KEY);
   }
 }

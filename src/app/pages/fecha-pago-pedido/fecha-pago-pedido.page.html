@@ -18,7 +18,8 @@
     <ion-col>
       <ion-item>
         <ion-label>Tipo de Pago</ion-label>
-        <ion-select [(ngModel)]="orderData.pago_id" okText="Aceptar" cancelText="Cancelar" name="pago_id" placeholder="Select One">
+        <ion-select [(ngModel)]="orderData.pago_id" okText="Aceptar" cancelText="Cancelar" name="pago_id"
+          placeholder="Select One">
           <ion-select-option *ngFor="let pag of pagoList" [value]="pag.id">
             {{pag.name}}
           </ion-select-option>
@@ -28,7 +29,8 @@
     <ion-col>
       <ion-item>
         <ion-label>Documento</ion-label>
-        <ion-select [(ngModel)]="orderData.documento_id" okText="Aceptar" cancelText="Cancelar" name="documento_id" placeholder="Select One">
+        <ion-select [(ngModel)]="orderData.documento_id" okText="Aceptar" cancelText="Cancelar" name="documento_id"
+          placeholder="Select One">
           <ion-select-option *ngFor="let documento of documentList" [value]="documento.id">
             {{documento.name}}
           </ion-select-option>
@@ -40,19 +42,10 @@
     <ion-col>
       <ion-item>
         <ion-label>Ruta</ion-label>
-        <ion-select [(ngModel)]="orderData.ruta_id" okText="Aceptar" cancelText="Cancelar" name="ruta_id" placeholder="Select One">
+        <ion-select [(ngModel)]="orderData.ruta_id" okText="Aceptar" cancelText="Cancelar" name="ruta_id"
+          placeholder="Select One">
           <ion-select-option *ngFor="let ruta of rutasList" [value]="ruta.id">
             {{ruta.name}}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-    </ion-col>
-    <ion-col>
-      <ion-item>
-        <ion-label>Moneda</ion-label>
-        <ion-select [(ngModel)]="orderData.currency_id" okText="Aceptar" cancelText="Cancelar" name="currency_id" placeholder="Select One" (ionChange)="calcularTotalSelect($event)">
-          <ion-select-option *ngFor="let moneda of currencyList" [value]="moneda.id">
-            {{moneda.code}}
           </ion-select-option>
         </ion-select>
       </ion-item>
@@ -75,7 +68,9 @@
     <ion-col>
       <ion-item>
         <ion-label>Fecha Recepcion</ion-label>
-        <ion-datetime [(ngModel)]="orderData.fecha_de_recepcion"picker-format="DD MMM YYYY" displayFormat="MMM-DD-YYYY" min="{{min_date | date: 'yyyy-MM-dd'}}" max="{{max_date | date: 'yyyy-MM-dd'}}" placeholder="Select Date"></ion-datetime>
+        <ion-datetime [(ngModel)]="orderData.fecha_de_recepcion" picker-format="DD MMM YYYY" displayFormat="MMM-DD-YYYY"
+          min="{{min_date | date: 'yyyy-MM-dd'}}" max="{{max_date | date: 'yyyy-MM-dd'}}" placeholder="Select Date">
+        </ion-datetime>
       </ion-item>
     </ion-col>
   </ion-row>
@@ -83,7 +78,8 @@
     <ion-col>
       <ion-item>
         <ion-label>Despues de</ion-label>
-        <ion-select [(ngModel)]="orderData.id_hora_despues" okText="Aceptar" cancelText="Cancelar" name="despues_id"placeholder="Select One">
+        <ion-select [(ngModel)]="orderData.id_hora_despues" okText="Aceptar" cancelText="Cancelar" name="despues_id"
+          placeholder="Select One">
           <ion-select-option *ngFor="let despues of horasList" [value]="despues.id">
             {{despues.hora}}
           </ion-select-option>
@@ -93,7 +89,8 @@
     <ion-col>
       <ion-item>
         <ion-label>Antes de</ion-label>
-        <ion-select [(ngModel)]="orderData.id_hora_antes" okText="Aceptar" cancelText="Cancelar" name="antes_id" placeholder="Select One">
+        <ion-select [(ngModel)]="orderData.id_hora_antes" okText="Aceptar" cancelText="Cancelar" name="antes_id"
+          placeholder="Select One">
           <ion-select-option *ngFor="let antes of horasList" [value]="antes.id">
             {{antes.hora}}
           </ion-select-option>
@@ -116,19 +113,14 @@
   </ion-row>
   <ion-list>
     <ion-row *ngFor="let product of datos.products">
-      <ion-col size="3" size-lg>
-        <ion-thumbnail>
-          <img src="../../../assets/img/placeholder-product.png">
-        </ion-thumbnail>
-      </ion-col>
-      <ion-col size="9" size-lg size="12" size-sm>
+      <ion-col>
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>
               {{product.codigoProtevs}}
             </ion-card-subtitle>
             <ion-card-title>
-              {{product.name}}
+              {{product.product_name}}
             </ion-card-title>
           </ion-card-header>
           <ion-card-content>
@@ -138,21 +130,54 @@
         </ion-card>
       </ion-col>
     </ion-row>
+    <ion-row *ngIf="total">
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Precio en Pesos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item>
+                <h1>SubTotal: ${{subtotal.toFixed(2)}}</h1>
+              </ion-item>
+              <ion-item>
+                <h1>Impuestos: ${{impuestos.toFixed(2)}}</h1>
+              </ion-item>
+              <ion-item>
+                <h1>Total: ${{total.toFixed(2)}}</h1>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="totalDolares">
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Precio en Dolares</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item>
+                <h1>SubTotalDolares: ${{subtotalDolares.toFixed(2)}}</h1>
+              </ion-item>
+              <ion-item>
+                <h1>ImpuestosDolares: ${{impuestosDolares.toFixed(2)}}</h1>
+              </ion-item>
+              <ion-item>
+                <h1>TotalDolares: ${{totalDolares.toFixed(2)}}</h1>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
   </ion-list>
-  <ion-item *ngIf="orderData.currency_id != 0">
-    <ion-list>
-      <ion-item>
-        <h1>SubTotal: ${{subtotal.toFixed(2)}}</h1>
-      </ion-item>
-      <ion-item>
-        <h1>Impuestos: ${{impuestos.toFixed(2)}}</h1>
-      </ion-item>
-      <ion-item>
-        <h1>Total: ${{orderData.total_order.toFixed(2)}}</h1>
-      </ion-item>
-    </ion-list>
-  </ion-item>
-  <ion-button [disabled]="!orderData.pago_id || !orderData.documento_id || !orderData.ruta_id || !orderData.currency_id || !orderData.fecha_de_recepcion" expand="block" style="height: 50px" (click)="generarPedido()">
+  <ion-button
+    [disabled]="!orderData.pago_id || !orderData.documento_id || !orderData.ruta_id || !orderData.fecha_de_recepcion || disableButton"
+    expand="block" style="height: 50px" (click)="generarPedido(); disableButton=true">
     <div *ngIf="datos.pedido">Crear Pedido</div>
     <div *ngIf="!datos.pedido">Crear Cotizaciones</div>
   </ion-button>

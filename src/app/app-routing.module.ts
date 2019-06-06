@@ -4,8 +4,10 @@ import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: 'dashboard', canActivate: [AuthGuard],
-    loadChildren: './landing/dashboard/dashboard.module#DashboardPageModule' },
+  {
+    path: 'dashboard', canActivate: [AuthGuard],
+    loadChildren: './landing/dashboard/dashboard.module#DashboardPageModule'
+  },
   { path: 'login', loadChildren: './public/login/login.module#LoginPageModule' },
   { path: 'contacts', loadChildren: './pages/contacts/contacts.module#ContactsPageModule' },
   { path: 'generate-pedido', loadChildren: './pages/generate-pedido/generate-pedido.module#GeneratePedidoPageModule' },
@@ -18,7 +20,7 @@ const routes: Routes = [
   { path: 'cotizaciones', loadChildren: './pages/cotizaciones/cotizaciones.module#CotizacionesPageModule' },
   { path: 'detail', loadChildren: './pages/detail/detail.module#DetailPageModule' },
   { path: 'products', loadChildren: './pages/products/products.module#ProductsPageModule' },
-
+  { path: 'notifications', loadChildren: './pages/notifications/notifications.module#NotificationsPageModule' },
 ];
 
 @NgModule({

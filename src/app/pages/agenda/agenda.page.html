@@ -9,26 +9,26 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-  
+
 <ion-content>
-  
+
   <!-- Card for adding a new event -->
   <ion-card>
     <ion-card-header tappable (click)="collapseCard = !collapseCard">
       <ion-card-title>New Event</ion-card-title>
     </ion-card-header>
     <ion-card-content *ngIf="!collapseCard">
-  
+
       <ion-item>
         <ion-input type="text" placeholder="Title" [(ngModel)]="event.title"></ion-input>
       </ion-item>
       <ion-item>
         <ion-input type="text" placeholder="Description" [(ngModel)]="event.description"></ion-input>
       </ion-item>
-      
+
       <ion-item>
         <ion-label>Prioridad</ion-label>
-        <ion-select [(ngModel)]="event.priority" okText="Aceptar" cancelText="Cancelar">
+        <ion-select [(ngModel)]="event.event_priority_id" okText="Aceptar" cancelText="Cancelar">
           <ion-select-option *ngFor="let priority of priorityList" [value]="priority.id">
             {{priority.name}}
           </ion-select-option>
@@ -37,12 +37,14 @@
 
       <ion-item>
         <ion-label>Start</ion-label>
-        <ion-datetime displayFormat="MMM D:HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.startTime" [min]="minDate"></ion-datetime>
+        <ion-datetime displayFormat="MMM D:HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.startTime"
+          [min]="minDate"></ion-datetime>
       </ion-item>
 
       <ion-item>
         <ion-label>End</ion-label>
-        <ion-datetime displayFormat="MMM D:HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.endTime" [min]="minDate"></ion-datetime>
+        <ion-datetime displayFormat="MMM D:HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.endTime"
+          [min]="minDate"></ion-datetime>
       </ion-item>
 
       <ion-item>
@@ -50,21 +52,25 @@
         <ion-checkbox [(ngModel)]="event.allDay"></ion-checkbox>
       </ion-item>
 
-      <ion-button fill="outline" expand="block" (click)="addEvent()" [disabled]="event.title == ''">Add Event</ion-button>
+      <ion-button fill="outline" expand="block" (click)="addEvent()" [disabled]="event.title == ''">Add Event
+      </ion-button>
     </ion-card-content>
   </ion-card>
-  
+
   <ion-row>
-  
+
     <!-- Change the displayed calendar mode -->
     <ion-col size="4">
-      <ion-button expand="block" [color]="calendar.mode == 'month' ? 'primary' : 'secondary'" (click)="changeMode('month')">Month</ion-button>
+      <ion-button expand="block" [color]="calendar.mode == 'month' ? 'primary' : 'secondary'"
+        (click)="changeMode('month')">Month</ion-button>
     </ion-col>
     <ion-col size="4">
-      <ion-button expand="block" [color]="calendar.mode == 'week' ? 'primary' : 'secondary'" (click)="changeMode('week')">Week</ion-button>
+      <ion-button expand="block" [color]="calendar.mode == 'week' ? 'primary' : 'secondary'"
+        (click)="changeMode('week')">Week</ion-button>
     </ion-col>
     <ion-col size="4">
-      <ion-button expand="block" [color]="calendar.mode == 'day' ? 'primary' : 'secondary'" (click)="changeMode('day')">Day</ion-button>
+      <ion-button expand="block" [color]="calendar.mode == 'day' ? 'primary' : 'secondary'" (click)="changeMode('day')">
+        Day</ion-button>
     </ion-col>
 
 
@@ -78,7 +84,7 @@
     <ion-col size="4" text-center>
       {{ viewTitle }}
     </ion-col>
-    
+
     <!-- Move forward one screen of the slides -->
     <ion-col size="4" text-right>
       <ion-button fill="clear" (click)="next()">
@@ -86,16 +92,10 @@
       </ion-button>
     </ion-col>
   </ion-row>
-  
-  <calendar 
-  [eventSource]="eventSource" 
-  [calendarMode]="calendar.mode" 
-  [currentDate]="calendar.currentDate"
-  [markDisabled]="markDisabled" 
-  (onEventSelected)="onEventSelected($event)"
-  (onTitleChanged)="onViewTitleChanged($event)"
-  (onTimeSelected)="onTimeSelected($event)" 
-  step="30">
+
+  <calendar [eventSource]="eventSource" [calendarMode]="calendar.mode" [currentDate]="calendar.currentDate"
+    [markDisabled]="markDisabled" (onEventSelected)="onEventSelected($event)"
+    (onTitleChanged)="onViewTitleChanged($event)" (onTimeSelected)="onTimeSelected($event)" step="30">
   </calendar>
-  
+
 </ion-content>
