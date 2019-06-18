@@ -142,21 +142,27 @@ export class GeneratePedidoPage implements OnInit {
       codigoProtevs: product.codigoProtevs,
       product_name: product.name,
       price: product.price,
-      product_stock: product.stock,
-      UM_mayoreo: product.UM_mayoreo,
+      product_stock: Number(product.stock),
       moneda: product.moneda_mayoreo,
       quantity: 1,
+      unidad_medida: product.UM_mayoreo,
+      quantity_dos: Number(product.b1_conv),
+      unidad_medida_dos: product.unimed,
       subtotal: Number(product.price),
       impuesto_cal: imp,
       impuestos_total: 0,
       total: 0,
-      pago_tipo: product.moneda_mayoreo
+      pago_tipo: product.moneda_mayoreo,
+      conv: Number(product.b1_conv),
     }
+
+    console.log(product_order)
 
     product_order.impuestos_total = product_order.subtotal * product_order.impuesto_cal;
     product_order.total = product_order.impuestos_total + product_order.subtotal
 
-    this.datos.products.push(product_order)
+    this.datos.products.unshift(product_order)
+
     this.productListsearchBar = [];
     this.productSearchBar.value = '';
     this.updateTotal();
@@ -204,11 +210,23 @@ export class GeneratePedidoPage implements OnInit {
     }
   }
 
+  quantityChange(product){
+    product.quantity_dos = product.quantity * product.conv
+    if(!Number.isInteger(product.quantity_dos)){
+      product.quantity_dos = Math.round(product.quantity_dos)
+    }
+    this.productChange(product)
+  }
+
+  quantity2Change(product){
+    product.quantity = product.quantity_dos / product.conv
+    this.productChange(product)
+  }
+
   productQuantity(product) {
-    product.quantity = Math.round(product.quantity)
     if (product.quantity > product.product_stock) {
       product.quantity = product.product_stock * 1
-    } else if (product.quantity < 1) {
+    } else if (product.quantity <= 0) {
       product.quantity = 1
     }
   }

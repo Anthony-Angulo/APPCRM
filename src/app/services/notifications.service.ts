@@ -25,9 +25,9 @@ export class NotificationsService {
 
     this.storageservice.getRegisterOneSignal().then(register => {
 
-      if (register==null) {
+      // if (register==null) {
         this.oneSignal.getIds().then(val => {
-
+          console.log(14)
           this.storageservice.getUserID().then(id => {
             let formData = {
               crm_userId: id,
@@ -40,12 +40,12 @@ export class NotificationsService {
             })
           })
         });
-      }
+      // }
 
     })
-
+    console.log(12)
     this.oneSignal.handleNotificationReceived().subscribe(data => {
-      
+      console.log(1)
       let notification = {
         name: data.payload.body,
         id: data.payload.additionalData.id,
@@ -62,7 +62,7 @@ export class NotificationsService {
         })
 
         if (index > -1) {
-          orderList[index].order.order_status_id = 4
+          orderList[index].order.order_status_id = data.payload.additionalData.status_id
           this.storageservice.setOrders(orderList)
           this.storageservice.getNotifications().then(notificationsList => {
             if (notificationsList) {

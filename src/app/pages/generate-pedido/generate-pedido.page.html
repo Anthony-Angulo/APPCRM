@@ -91,12 +91,14 @@
             </ion-icon>
             Price: {{product.price}} {{product.moneda}}<br>
             Stock: {{product.product_stock}}<br>
+            Cantidad:
             <ion-item>
-              Cantidad: <ion-input type="number" [(ngModel)]="product.quantity" (ngModelChange)="productChange(product)"
-                (ionBlur)="productQuantity(product)"></ion-input>
-              <div *ngIf="product.quantity > product.product_stock || product.quantity < 1">
-                <p>Cantidad Invalida</p>
-              </div>
+              <ion-input type="number" [(ngModel)]="product.quantity" (ngModelChange)="quantityChange(product)"
+                (ionBlur)="productQuantity(product)"></ion-input> {{product.unidad_medida}}
+            </ion-item>
+            <ion-item *ngIf="product.conv!=0 && product.conv!=1">
+              <ion-input type="number" [(ngModel)]="product.quantity_dos" (ngModelChange)="quantity2Change(product)"
+                (ionBlur)="productQuantity(product)"></ion-input> {{product.unidad_medida_dos}}
             </ion-item>
             Subtotal: ${{product.subtotal.toFixed(2)}} {{product.pago_tipo}}<br>
             Impuestos: ${{product.impuestos_total.toFixed(2)}} {{product.pago_tipo}}<br>

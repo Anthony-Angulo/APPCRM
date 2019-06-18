@@ -80,6 +80,7 @@ export class OfflineDataService {
       this.storageservice.setTes(data.tes);
       this.storageservice.setImpuestos(data.impuestos);
       this.storageservice.setCambio(data.cambio[0].moneda_venta);
+      
     });
 
     this.http.get(ENV.BASE_URL + '/products/' + 1)

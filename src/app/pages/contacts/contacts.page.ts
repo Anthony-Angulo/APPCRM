@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+// import { HttpClient } from '@angular/common/http';
+import { /*ChangeDetectorRef,*/ Component, OnInit } from '@angular/core';
 import { Camera, CameraOptions, PictureSourceType } from '@ionic-native/Camera/ngx';
 import { FilePath } from '@ionic-native/file-path/ngx';
 import { File } from '@ionic-native/File/ngx';
@@ -7,6 +7,7 @@ import { ActionSheetController, LoadingController, Platform, ToastController } f
 import { ImagesService } from 'src/app/services/images.service';
 import { SaveDataService } from 'src/app/services/save-data.service';
 import { Contact, StorageService } from 'src/app/services/storage.service';
+// import { load } from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-contacts',
@@ -21,10 +22,15 @@ export class ContactsPage implements OnInit {
   constructor(
     private storageservice: StorageService,
     private imageservice: ImagesService,
-    private camera: Camera, private file: File, private http: HttpClient,
-    private actionSheetController: ActionSheetController, private toastController: ToastController,
-    private plt: Platform, private loadingController: LoadingController,
-    private ref: ChangeDetectorRef, private filePath: FilePath,
+    private camera: Camera,
+    private file: File,
+    // private http: HttpClient,
+    private actionSheetController: ActionSheetController,
+    private toastController: ToastController,
+    private plt: Platform,
+    private loadingController: LoadingController,
+    // private ref: ChangeDetectorRef,
+    private filePath: FilePath,
     private savedataservice: SaveDataService) { }
 
   ngOnInit() {
@@ -53,11 +59,20 @@ export class ContactsPage implements OnInit {
     }
   }
 
-  public updateGeolocation(contact: any) {
+  async updateGeolocation(contact: any) {
+
+    const loading = await this.loadingController.create({
+      message: 'Actualizando Geolocalizacion',
+    });
+    await loading.present();
 
     this.savedataservice.updateGeolocation(contact.id).then(formData => {
       contact.latitud = formData.latitude;
-      contact.longitud = formData.longitude;
+      contact.longitud = formData.longitude;      
+    }).catch(err =>{
+      console.log(err)
+    }).finally(() =>{
+      loading.dismiss()
     });
 
   }
@@ -73,22 +88,22 @@ export class ContactsPage implements OnInit {
 
   async addPhoto(id: number) {
     const actionSheet = await this.actionSheetController.create({
-      header: "Select Image source",
+      header: "Selececcionar Origen de la Imagen",
       buttons: [
         {
-          text: 'Load from Library',
+          text: 'Cargar desde Libreria',
           handler: () => {
             this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY, id);
           }
         },
         {
-          text: 'Use Camera',
+          text: 'Usar Camara',
           handler: () => {
             this.takePicture(this.camera.PictureSourceType.CAMERA, id);
           }
         },
         {
-          text: 'Cancel',
+          text: 'Cancelar',
           role: 'cancel'
         }
       ]

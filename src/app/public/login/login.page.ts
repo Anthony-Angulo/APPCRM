@@ -45,6 +45,7 @@ export class LoginPage implements OnInit {
       }
      }, (err: any) => {
         this.presentAlert('No Conecion a Internet.')
+        this.disableButton = false;
      });
   }
 

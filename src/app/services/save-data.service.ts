@@ -48,7 +48,6 @@ export class SaveDataService {
   }
 
   public saveStorage() {
-    console.log('internet')
     this.storageservice.getPendingOrders().then(val => {
       if (val) {
         if (val.length > 0) {
@@ -296,7 +295,7 @@ export class SaveDataService {
 
         for (var i = 0; i < order.rows.length; i++) {
           delete order.rows[i].codigoProtevs
-          delete order.rows[i].UM_mayoreo
+          delete order.rows[i].conv
         }
         delete order.order.sucursal_id;
         delete order.order.bill_city;

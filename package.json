@@ -67,6 +67,7 @@
     "intl": "^1.2.5",
     "ionic-image-loader": "^7.0.0-beta.2",
     "ionic2-calendar": "^0.5.2",
+    "onesignal-cordova-plugin": "2.4.7",
     "phonegap-plugin-barcodescanner": "^8.0.1",
     "rxjs": "~6.3.3",
     "rxjs-compat": "^6.4.0",
@@ -126,7 +127,8 @@
       "cordova-plugin-camera": {},
       "cordova-plugin-file": {},
       "cordova-plugin-filepath": {},
-      "com-sarriaroman-photoviewer": {}
+      "com-sarriaroman-photoviewer": {},
+      "onesignal-cordova-plugin": {}
     },
     "platforms": [
       "android",
