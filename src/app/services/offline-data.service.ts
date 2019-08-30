@@ -24,7 +24,6 @@ export class OfflineDataService {
     if (this.network.type == 'none') {
       const alert = await this.alertCtrl.create({
         header: 'No Internet',
-        // subHeader: 'Status:' + event.status,
         message: 'No se puede optener la informacion por falta de conexion a internet',
         buttons: ['OK']
       });
@@ -44,14 +43,12 @@ export class OfflineDataService {
       })
 
       this.http.get(ENV.BASE_URL + '/events/' + val).subscribe((data: any) => {
-        let events = []
         data.events.forEach(element => {
           element.endTime = new Date(Date.parse(element.endTime))
           element.startTime = new Date(Date.parse(element.startTime))
           element.allDay = (element.allDay) ? true : false
-          events.push(element);
         });
-        this.storageservice.setEvents(events);
+        this.storageservice.setEvents(data.events);
         this.storageservice.setEventsPriority(data.priority)
       })
 

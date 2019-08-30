@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
+import { Contact } from '../models/contact';
+import { Event, EventPriority } from '../models/event'
 
 const ORDERS_KEY = 'orders';
 const CONTACTS_KEY = 'contacts';
@@ -27,37 +29,6 @@ const STORAGE_TRACK_KEY = 'track_pendings';
 const NOTIFICATIONS_KEY = 'notifications';
 const STATUS_KEY = 'status';
 const CHECK_IN = 'check-in';
-
-export interface Contact {
-  city: string,
-  codigo_protevs: number,
-  colonia: string,
-  country: string,
-  full_name: string,
-  id: number,
-  latitud: number,
-  longitud: number,
-  nombre_reducido: string,
-  state: string,
-  street: string,
-  tienda: number
-  zip_code: number,
-  img: string
-};
-
-export interface Event {
-  title: string,
-  description: string,
-  startTime: string,
-  endTime: string,
-  allDay: boolean,
-  event_priority_id: string,
-};
-
-export interface EventPriority {
-  id: number,
-  name: string
-};
 
 @Injectable({
   providedIn: 'root'

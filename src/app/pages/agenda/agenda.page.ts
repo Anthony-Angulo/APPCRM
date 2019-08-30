@@ -3,7 +3,8 @@ import { Component, Inject, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { CalendarComponent } from 'ionic2-calendar/calendar';
 import { SaveDataService } from 'src/app/services/save-data.service';
-import { Event, EventPriority, StorageService } from 'src/app/services/storage.service';
+import { StorageService } from 'src/app/services/storage.service';
+import { Event, EventPriority } from 'src/app/models/event'
 
 @Component({
   selector: 'app-agenda',

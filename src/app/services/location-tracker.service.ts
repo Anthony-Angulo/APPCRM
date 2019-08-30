@@ -1,8 +1,13 @@
-import { Injectable } from '@angular/core';
-import { BackgroundGeolocation, BackgroundGeolocationEvents } from '@ionic-native/background-geolocation/ngx';
-import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
-import { SaveDataService } from 'src/app/services/save-data.service';
 import 'rxjs/add/operator/filter';
+
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+// import { BackgroundGeolocation, BackgroundGeolocationEvents } from '@ionic-native/background-geolocation/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { SaveDataService } from 'src/app/services/save-data.service';
+import { environment as ENV } from 'src/environments/environment';
+
+import { StorageService } from './storage.service';
 
 // const R = 6378.137; // Radius of earth in KM
 
@@ -11,7 +16,7 @@ import 'rxjs/add/operator/filter';
 })
 export class LocationTrackerService {
 
-  
+
   // formData = { 
   //   user_id: '', 
   //   movimiento_id: 0,
@@ -19,52 +24,75 @@ export class LocationTrackerService {
   //   longitud: 0,
   //   order_number: ''
   // };
-  
-  public watch: any;    
+
+  public watch: any;
   public lat: number = 0;
   public lng: number = 0;
 
   constructor(
-    private saveData: SaveDataService, 
+    private storageservice: StorageService,
+    private saveData: SaveDataService,
     private geolocation: Geolocation,
-    private backgroundGeolocation: BackgroundGeolocation,) {
+    private http: HttpClient,
+    // private backgroundGeolocation: BackgroundGeolocation, 
+    ) {
 
   }
 
   startTracking() {
 
-    let config = {
-      desiredAccuracy: 0,
-      stationaryRadius: 1000,
-      distanceFilter: 500, 
-      debug: false,
-      interval: 2000,
-      stopOnTerminate: false, 
-    };
-
-    this.backgroundGeolocation.configure(config).then((location) => {
-
-      this.backgroundGeolocation.on(BackgroundGeolocationEvents.location).subscribe(location => {
-
+    this.geolocation.getCurrentPosition().then(resp => {
+      this.storageservice.getUserID().then((id: any) => {
+        
         let formData = {
-          user_id: 853,
+          user_id: id,
           movimiento_id: 1,
-          latitud: location.latitude,
-          longitud: location.longitude,
-          order_number: ''
-        };
+          latitud: resp.coords.latitude,
+          longitud: resp.coords.longitude
+        }
 
-        this.saveData.saveUserTrack(formData);
+        this.http.post(ENV.BASE_URL + '/usertrck', formData).subscribe((resp: any) => {
+          console.log(resp);
+        })
 
-      }, (err) => { 
-
-        console.log(err);
-
-      });
+      })
+    }).catch(error=>{
+      console.log(error)
     })
-    
-    // Turn ON the background-geolocation system.
-    this.backgroundGeolocation.start();
+
+
+    // let config = {
+    //   desiredAccuracy: 0,
+    //   stationaryRadius: 1000,
+    //   distanceFilter: 500,
+    //   debug: false,
+    //   interval: 2000,
+    //   stopOnTerminate: false,
+    // };
+
+    // this.backgroundGeolocation.configure(config).then((location) => {
+
+    //   this.backgroundGeolocation.on(BackgroundGeolocationEvents.location).subscribe(location => {
+
+    //     let formData = {
+    //       user_id: 853,
+    //       movimiento_id: 1,
+    //       latitud: location.latitude,
+    //       longitud: location.longitude,
+    //       order_number: ''
+    //     };
+
+    //     this.saveData.saveUserTrack(formData);
+
+    //   }, (err) => {
+
+    //     console.log(err);
+
+    //   });
+    // })
+
+    // // Turn ON the background-geolocation system.
+    // this.backgroundGeolocation.start();
 
 
     // Foreground Tracking
@@ -91,15 +119,7 @@ export class LocationTrackerService {
 
 
 
-    //   // this.storage.get('USER_ID').then((val: any) => {
-    //   //   this.formData.user_id = val.replace('"', '');
-    //   //   this.formData.movimiento_id = 7;
-    //   //   this.formData.latitud = resp.coords.latitude;
-    //   //   this.formData.longitud = resp.coords.longitude;
-    //   //   this.http.post(this.url + '/api/usertrck', this.formData).subscribe((resp: any) => {
-    //   //     console.log(JSON.parse(resp));
-    //   //   });
-    //   // });
+
 
 
     // });
@@ -113,9 +133,28 @@ export class LocationTrackerService {
 
     console.log('stopTracking');
 
-    this.backgroundGeolocation.stop()
-    this.backgroundGeolocation.finish();
+    // this.backgroundGeolocation.stop()
+    // this.backgroundGeolocation.finish();
     // this.watch.unsubscribe();
+
+    this.geolocation.getCurrentPosition().then(resp => {
+      this.storageservice.getUserID().then((id: any) => {
+        
+        let formData = {
+          user_id: id,
+          movimiento_id: 2,
+          latitud: resp.coords.latitude,
+          longitud: resp.coords.longitude
+        }
+
+        this.http.post(ENV.BASE_URL + '/usertrck', formData).subscribe((resp: any) => {
+          console.log(resp);
+        })
+
+      })
+    }).catch(error=>{
+      console.log(error)
+    })
 
   }
 

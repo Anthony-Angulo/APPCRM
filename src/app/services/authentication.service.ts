@@ -1,6 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { AlertController, LoadingController, Platform } from '@ionic/angular';
+import { Storage } from '@ionic/storage';
 import { BehaviorSubject } from 'rxjs';
+import { finalize } from 'rxjs/operators';
+import { environment as ENV } from 'src/environments/environment';
 
 import { StorageService } from '../services/storage.service';
 
@@ -11,21 +15,60 @@ export class AuthService {
 
   authenticationState = new BehaviorSubject(false);
 
-  constructor(private storageservice: StorageService, private platform: Platform) {
+  constructor(
+    private storageservice: StorageService,
+    private platform: Platform,
+    private http: HttpClient,
+    private storage: Storage,
+    public alertController: AlertController,
+    public loadingController: LoadingController) {
     this.platform.ready().then(_ => {
       this.checkToken();
     })
   }
 
-  public login(user_id: any, token: any, name: string): Promise<void> {
-    this.storageservice.setUserID(user_id)
-    this.storageservice.setUsername(name)
+  async login(formData: any) {
 
-    return this.storageservice.setToken(token).then(res => {
-      this.authenticationState.next(true);
-    })
+    const loading = await this.loadingController.create({
+      message: 'Entrando...',
+    });
+    await loading.present();
+
+    this.http.post(ENV.BASE_URL + '/login', formData)
+      .pipe(
+        finalize(() => {
+          loading.dismiss();
+        })
+      ).subscribe((data: any) => {
+        if (data.status) {
+
+          this.storageservice.setUserID(data.id)
+          this.storageservice.setUsername(data.name)
+          this.storage.set('last_user', formData.email)
+
+          this.storageservice.setToken(data.token).then(res => {
+            this.authenticationState.next(true);
+          })
+
+        } else {
+          this.presentAlert('Credenciales Invalidas.')
+
+        }
+      }, (err: any) => {
+        this.presentAlert('No Conecion a Internet.')
+      });
+
   }
 
+  async presentAlert(info) {
+    const alert = await this.alertController.create({
+      header: 'Login',
+      message: info,
+      buttons: ['OK']
+    });
+
+    await alert.present();
+  }
   public logout(): Promise<void> {
     return this.storageservice.removeToken().then(_ => {
       this.authenticationState.next(false);

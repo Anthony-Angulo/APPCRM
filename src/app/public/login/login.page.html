@@ -7,17 +7,26 @@
 
 <ion-content padding>
   <div style="margin-top: 450px">
-  <form #form="ngForm" (ngSubmit)="login()">
-    <ion-list>
-      <ion-item>
-        <ion-label position="floating"><ion-icon name="mail" item-start class="text-primary"></ion-icon> Email</ion-label>
-        <ion-input type="email" [(ngModel)]="formData.email" name="email" pattern="[A-Za-z0-9._%+-]{3,}@[a-zA-Z]{3,}([.]{1}[a-zA-Z]{2,}|[.]{1}[a-zA-Z]{2,}[.]{1}[a-zA-Z]{2,})"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating"><ion-icon name="lock" item-start class="text-primary"></ion-icon> Password</ion-label>
-        <ion-input type="password" [(ngModel)]="formData.password" name="password" required></ion-input>
-      </ion-item>
-      <ion-button [disabled]="form.invalid || disableButton" expand="block" (click)="disableButton=true" style="height: 45px" type="submit">Ingresar</ion-button>
-    </ion-list>
-  </form></div>
+    <form #form="ngForm" (ngSubmit)="login()">
+      <ion-list>
+        <ion-item>
+          <ion-label position="floating">
+            <ion-icon name="mail" item-start class="text-primary"></ion-icon>
+            Email
+          </ion-label>
+          <ion-input type="email" [(ngModel)]="formData.email" name="email"
+            pattern="[A-Za-z0-9._%+-]{3,}@[a-zA-Z]{3,}([.]{1}[a-zA-Z]{2,}|[.]{1}[a-zA-Z]{2,}[.]{1}[a-zA-Z]{2,})">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">
+            <ion-icon name="lock" item-start class="text-primary"></ion-icon>
+            Password
+          </ion-label>
+          <ion-input type="password" [(ngModel)]="formData.password" name="password" required></ion-input>
+        </ion-item>
+        <ion-button [disabled]="form.invalid" expand="block" style="height: 45px" type="submit">Ingresar</ion-button>
+      </ion-list>
+    </form>
+  </div>
 </ion-content>

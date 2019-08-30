@@ -6,7 +6,8 @@ import { File } from '@ionic-native/File/ngx';
 import { ActionSheetController, LoadingController, Platform, ToastController } from '@ionic/angular';
 import { ImagesService } from 'src/app/services/images.service';
 import { SaveDataService } from 'src/app/services/save-data.service';
-import { Contact, StorageService } from 'src/app/services/storage.service';
+import { StorageService } from 'src/app/services/storage.service';
+import { Contact } from 'src/app/models/contact';
 // import { load } from '@angular/core/src/render3';
 
 @Component({

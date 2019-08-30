@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
-import { Contact, StorageService } from 'src/app/services/storage.service';
+import { StorageService } from 'src/app/services/storage.service';
+import { Contact } from 'src/app/models/contact'
 
 @Component({
   selector: 'app-cotizaciones',

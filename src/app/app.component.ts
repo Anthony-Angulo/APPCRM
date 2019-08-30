@@ -32,7 +32,7 @@ export class AppComponent {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       this.backgroundMode.enable();
-      this.backgroundMode.excludeFromTaskList();
+      // this.backgroundMode.excludeFromTaskList();
       this.saveData.startNetwork();
 
       this.authService.authenticationState.subscribe(state => {
