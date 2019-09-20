@@ -11,7 +11,7 @@ export class ImagesService {
   constructor(private file: File, private webview: WebView, private photoViewer: PhotoViewer, ) { }
 
   public getPath(name) {
-    let filePath = this.file.dataDirectory + name;
+    const filePath = this.file.dataDirectory + name;
     return this.pathForImage(filePath);
   }
 
@@ -19,13 +19,13 @@ export class ImagesService {
     if (img === null) {
       return '';
     } else {
-      let converted = this.webview.convertFileSrc(img);
+      const converted = this.webview.convertFileSrc(img);
       return converted;
     }
   }
 
   public showImage(name) {
-    this.photoViewer.show(this.file.dataDirectory + name)
+    this.photoViewer.show(this.file.dataDirectory + name);
   }
 
 }

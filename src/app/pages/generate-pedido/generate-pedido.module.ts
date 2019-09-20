@@ -5,7 +5,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { GeneratePedidoPage } from './generate-pedido.page';
+import { GeneratePedidoPage, ModalPage } from './generate-pedido.page';
 
 const routes: Routes = [
   {
@@ -21,6 +21,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [GeneratePedidoPage]
+  declarations: [GeneratePedidoPage, ModalPage],
+  entryComponents: [ModalPage]
 })
 export class GeneratePedidoPageModule {}

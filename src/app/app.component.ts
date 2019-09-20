@@ -8,6 +8,19 @@ import { Platform } from '@ionic/angular';
 import { AuthService } from './services/authentication.service';
 import { SaveDataService } from './services/save-data.service';
 
+declare global {
+  interface Date {
+    getMySQLFormat (): string;
+  }
+}
+
+Date.prototype.getMySQLFormat = function() {
+  return this.getFullYear() + '-' +
+  (1 + this.getMonth()) + '-' +
+  this.getDate() + ' ' +
+  this.toLocaleTimeString().slice(0, -2);
+};
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html'
@@ -28,7 +41,7 @@ export class AppComponent {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      
+
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       this.backgroundMode.enable();

@@ -24,7 +24,7 @@ export class AuthService {
     public loadingController: LoadingController) {
     this.platform.ready().then(_ => {
       this.checkToken();
-    })
+    });
   }
 
   async login(formData: any) {
@@ -42,20 +42,20 @@ export class AuthService {
       ).subscribe((data: any) => {
         if (data.status) {
 
-          this.storageservice.setUserID(data.id)
-          this.storageservice.setUsername(data.name)
-          this.storage.set('last_user', formData.email)
+          this.storageservice.setUserID(data.id);
+          this.storageservice.setUsername(data.name);
+          this.storage.set('last_user', formData.email);
 
           this.storageservice.setToken(data.token).then(res => {
             this.authenticationState.next(true);
-          })
+          });
 
         } else {
-          this.presentAlert('Credenciales Invalidas.')
+          this.presentAlert('Credenciales Invalidas.');
 
         }
       }, (err: any) => {
-        this.presentAlert('No Conecion a Internet.')
+        this.presentAlert('No Conecion a Internet.');
       });
 
   }
@@ -72,7 +72,7 @@ export class AuthService {
   public logout(): Promise<void> {
     return this.storageservice.removeToken().then(_ => {
       this.authenticationState.next(false);
-    })
+    });
   }
 
   isAuthenticated(): boolean {

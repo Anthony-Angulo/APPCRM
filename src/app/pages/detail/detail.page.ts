@@ -23,9 +23,9 @@ export class DetailPage implements OnInit {
   currency: any;
   status: any;
 
-  total: number = 0;
-  impuestos: number = 0;
-  subtotal: number = 0;
+  total = 0;
+  impuestos = 0;
+  subtotal = 0;
 
   isorder: any;
 
@@ -39,51 +39,51 @@ export class DetailPage implements OnInit {
     private imageservice: ImagesService) { }
 
   ngOnInit() {
-    var extra = this.navExtras.getExtras();
+    const extra = this.navExtras.getExtras();
     this.order = extra.order;
     this.isorder = extra.isorder;
 
     this.storageservice.getContacts().then(contactList => {
-      this.contact = contactList.find(contact => contact.id == this.order.order.contact_id)
+      this.contact = contactList.find(contact => contact.id == this.order.order.contact_id);
     });
 
     this.storageservice.getStatus().then(statusList => {
-      this.status = statusList.find(status => status.id == this.order.order.order_status_id)
+      this.status = statusList.find(status => status.id == this.order.order.order_status_id);
     });
 
     this.storageservice.getPagos().then(pagosList => {
-      this.pago = pagosList.find(pago => pago.id == this.order.order.pago_id)
+      this.pago = pagosList.find(pago => pago.id == this.order.order.pago_id);
     });
 
     this.storageservice.getRutas().then(rutasList => {
-      this.ruta = rutasList.find(ruta => ruta.id == this.order.order.ruta_id)
+      this.ruta = rutasList.find(ruta => ruta.id == this.order.order.ruta_id);
     });
 
     this.storageservice.getDocuments().then(documentsList => {
-      this.documento = documentsList.find(documento => documento.id == this.order.order.documento_id)
+      this.documento = documentsList.find(documento => documento.id == this.order.order.documento_id);
     });
 
     this.storageservice.getCurrency().then(currencyList => {
-      this.currency = currencyList.find(currency => currency.id == this.order.order.currency_id)
+      this.currency = currencyList.find(currency => currency.id == this.order.order.currency_id);
     });
 
     this.storageservice.getHoras().then(horasList => {
-      this.hora_antes = horasList.find(hora_antes => hora_antes.id == this.order.order.id_hora_antes)
-      this.hora_despues = horasList.find(hora_despues => hora_despues.id == this.order.order.id_hora_despues)
+      this.hora_antes = horasList.find(hora_antes => hora_antes.id == this.order.order.id_hora_antes);
+      this.hora_despues = horasList.find(hora_despues => hora_despues.id == this.order.order.id_hora_despues);
     });
 
 
     if (this.order.order.currency_id == 62) {
-      for (var i = 0; i < this.order.rows.length; i++) {
-        if (this.order.rows[i].moneda == "MN") {
+      for (let i = 0; i < this.order.rows.length; i++) {
+        if (this.order.rows[i].moneda == 'MN') {
           this.subtotal += this.order.rows[i].price * this.order.rows[i].quantity;
         } else {
           this.subtotal += this.order.rows[i].price * this.order.rows[i].quantity * this.order.order.tipo_cambio;
         }
       }
     } else if (this.order.order.currency_id == 96) {
-      for (var i = 0; i < this.order.rows.length; i++) {
-        if (this.order.rows[i].moneda == "DL") {
+      for (let i = 0; i < this.order.rows.length; i++) {
+        if (this.order.rows[i].moneda == 'DL') {
           this.subtotal += this.order.rows[i].price * this.order.rows[i].quantity;
         } else {
           this.subtotal += this.order.rows[i].price * this.order.rows[i].quantity / this.order.order.tipo_cambio;
@@ -92,7 +92,7 @@ export class DetailPage implements OnInit {
     }
     this.impuestos = this.order.order.total_order - this.subtotal;
 
-    this.total = this.order.order.total_order
+    this.total = this.order.order.total_order;
   }
 
   crearPedido() {
@@ -102,29 +102,29 @@ export class DetailPage implements OnInit {
 
   borrarCotizacion() {
     this.storageservice.getCotizaciones().then(cotizacionesList => {
-      var cotizaciones_list = cotizacionesList;
+      let cotizaciones_list = cotizacionesList;
       cotizaciones_list.splice(cotizaciones_list.indexOf(this.order), 1);
-      this.storageservice.setCotizaciones(cotizaciones_list)
-    })
-    this.presentToast('Cotizacion Eliminada.')
+      this.storageservice.setCotizaciones(cotizaciones_list);
+    });
+    this.presentToast('Cotizacion Eliminada.');
     this.router.navigate(['dashboard']);
 
   }
 
   async presentToast(data: any) {
     const toast = await this.toastController.create({
-      message: data,//'Dispositivo Conectado a Internet. Ordenes Registradas.',
+      message: data, // 'Dispositivo Conectado a Internet. Ordenes Registradas.',
       duration: 5000
     });
     toast.present();
   }
 
   public getPath(name) {
-    return this.imageservice.getPath(name)
+    return this.imageservice.getPath(name);
   }
 
   showImage(name) {
-    this.imageservice.showImage(name)
+    this.imageservice.showImage(name);
   }
 
 }

@@ -6,9 +6,9 @@ const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   {
     path: 'dashboard', canActivate: [AuthGuard],
-    loadChildren: './landing/dashboard/dashboard.module#DashboardPageModule'
+    loadChildren: './dashboard/dashboard.module#DashboardPageModule'
   },
-  { path: 'login', loadChildren: './public/login/login.module#LoginPageModule' },
+  { path: 'login', loadChildren: './login/login.module#LoginPageModule' },
   { path: 'contacts', loadChildren: './pages/contacts/contacts.module#ContactsPageModule' },
   { path: 'generate-pedido', loadChildren: './pages/generate-pedido/generate-pedido.module#GeneratePedidoPageModule' },
   { path: 'entrega-pedido', loadChildren: './pages/entrega-pedido/entrega-pedido.module#EntregaPedidoPageModule' },

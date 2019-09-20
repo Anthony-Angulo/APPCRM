@@ -17,7 +17,7 @@
   <ion-list *ngIf="contactListsearchBar?.length">
     <ion-virtual-scroll [items]="contactListsearchBar">
       <ion-item *virtualItem="let contact" color="light" (click)="addContact(contact)" detail>
-        {{contact.nombre_reducido}}
+        -{{contact.nombre_reducido}}<br>-{{contact.full_name}}
       </ion-item>
     </ion-virtual-scroll>
   </ion-list>
@@ -67,55 +67,22 @@
     </ion-virtual-scroll>
   </ion-list>
   <ion-list>
-    <ion-row *ngFor="let product of datos.products">
-      <ion-col size="3" size-lg>
-        <ion-thumbnail>
-          <img src="../../../assets/img/placeholder-product.png">
-        </ion-thumbnail>
-      </ion-col>
+    <ion-row *ngFor="let product of datos.products;let index=index" (click)="presentModal(product)">
       <ion-col size="9" size-lg size="12" size-sm>
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>
-              {{product.codigoProtevs}}
-              <ion-icon name="trash" style="font-size: 30px;float: right;" (click)="eliminarProducto(product)">
-              </ion-icon>
-            </ion-card-subtitle>
-            <ion-card-title>
+              <ion-icon name="trash" style="font-size: 30px;float: right;" (click)="eliminarProducto(index)"></ion-icon>
+              {{product.codigoProtevs}} <br>
               {{product.product_name}}
-            </ion-card-title>
+            </ion-card-subtitle>
           </ion-card-header>
           <ion-card-content>
-            <ion-icon style="font-size: 40px;float: right;" name="add-circle" (click)="increment(product)"></ion-icon>
-            <ion-icon style="font-size: 40px;float: right;" name="remove-circle" (click)="decrement(product)">
-            </ion-icon>
-            Price: {{product.price}} {{product.moneda}}<br>
-            Stock: {{product.product_stock}}<br>
-            Cantidad:
-            <ion-item>
-              <ion-input type="number" [(ngModel)]="product.quantity" (ngModelChange)="quantityChange(product)"
-                (ionBlur)="productQuantity(product)"></ion-input> {{product.unidad_medida}}
-            </ion-item>
-            <ion-item *ngIf="product.conv!=0 && product.conv!=1">
-              <ion-input type="number" [(ngModel)]="product.quantity_dos" (ngModelChange)="quantity2Change(product)"
-                (ionBlur)="productQuantity(product)"></ion-input> {{product.unidad_medida_dos}}
-            </ion-item>
-            Subtotal: ${{product.subtotal.toFixed(2)}} {{product.pago_tipo}}<br>
-            Impuestos: ${{product.impuestos_total.toFixed(2)}} {{product.pago_tipo}}<br>
-            Total: ${{product.total.toFixed(2)}} {{product.pago_tipo}}<br>
-            <ion-radio-group [(ngModel)]="product.pago_tipo" (ngModelChange)="productChange(product)">
-              <ion-list-header>
-                <ion-label>Pago</ion-label>
-              </ion-list-header>
-              <ion-item>
-                <ion-label>Pesos</ion-label>
-                <ion-radio slot="start" value="MN" checked></ion-radio>
-              </ion-item>
-              <ion-item>
-                <ion-label>Dolares</ion-label>
-                <ion-radio slot="start" value="DL"></ion-radio>
-              </ion-item>
-            </ion-radio-group>
+            Cantidad:<br>
+            {{product.quantity.toFixed(2)}} {{product.unidad_medida}}<br>
+            <div *ngIf="product.conv!=0 && product.conv!=1">
+              {{product.quantity_dos.toFixed(2)}} {{product.unidad_medida_dos}}<br>
+            </div>
           </ion-card-content>
         </ion-card>
       </ion-col>

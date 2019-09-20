@@ -1,20 +1,87 @@
-import { Component, OnInit } from '@angular/core';
-import { IonSearchbar } from '@ionic/angular';
-import { ViewChild } from '@angular/core';
-import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
+import { Component, OnInit, ViewChild, OnDestroy, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
-import { AlertController } from '@ionic/angular';
-import { StorageService } from 'src/app/services/storage.service';
+import { AlertController, IonSearchbar } from '@ionic/angular';
 import { ImagesService } from 'src/app/services/images.service';
+import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
+import { StorageService } from 'src/app/services/storage.service';
+import { ModalController } from '@ionic/angular';
+// import { ModalPage } from '../modal/modal.page';
+
+@Component({
+  selector: 'modal-page',
+  templateUrl : './modal.component.html'
+})
+export class ModalPage {
+
+  @Input() product: any;
+  @Input() tipo_de_cambio: number;
+
+  constructor(public modalCtrl: ModalController) {
+
+  }
+
+  dismiss() {
+    this.modalCtrl.dismiss({
+      'dismissed': true
+    });
+  }
+
+  public increment(product) {
+    product.quantity++;
+    this.productChange(product);
+  }
+
+  public decrement(product) {
+    if (product.quantity > 1) {
+      product.quantity--;
+      this.productChange(product);
+    }
+  }
+
+  productQuantity(product) {
+    if (product.quantity <= 0) {
+      product.quantity = 1;
+    }
+  }
+
+  quantityChange(product) {
+    product.quantity_dos = product.quantity * product.conv;
+    // if (!Number.isInteger(product.quantity_dos)) {
+    //   product.quantity_dos = Math.round(product.quantity_dos)
+    // }
+    this.productChange(product);
+  }
+
+  quantityChange2(product) {
+    product.quantity = product.quantity_dos / product.conv;
+    this.productChange(product);
+  }
+
+  productChange(product) {
+
+    if (product.moneda == product.pago_tipo) {
+      product.subtotal = product.price * product.quantity;
+      product.impuestos_total = product.subtotal * product.impuesto_cal;
+      product.total = product.impuestos_total + product.subtotal;
+    } else if (product.moneda == 'DL' && product.pago_tipo == 'MN') {
+      product.subtotal = product.price * product.quantity * this.tipo_de_cambio;
+      product.impuestos_total = product.subtotal * product.impuesto_cal;
+      product.total = product.impuestos_total + product.subtotal;
+    }
+
+    // this.updateTotal();
+  }
+
+
+}
 
 @Component({
   selector: 'app-generate-pedido',
   templateUrl: './generate-pedido.page.html',
   styleUrls: ['./generate-pedido.page.scss'],
 })
-
-export class GeneratePedidoPage implements OnInit {
+export class GeneratePedidoPage implements OnInit, OnDestroy {
   @ViewChild('clientSearchBar') clientSearchBar: IonSearchbar;
   @ViewChild('productSearchBar') productSearchBar: IonSearchbar;
 
@@ -22,7 +89,7 @@ export class GeneratePedidoPage implements OnInit {
   contactListsearchBar: any = [];
 
   productListAll: any = [];
-  productListSucursal: any = []
+  productListSucursal: any = [];
   productListsearchBar: any = [];
 
   sucursalList: any = [];
@@ -30,67 +97,66 @@ export class GeneratePedidoPage implements OnInit {
   impuestosList: any = [];
   tesList: any = [];
 
-  impuestos: number = 0;
-  subtotal: number = 0;
-  total: number = 0;
+  impuestos = 0;
+  subtotal = 0;
+  total = 0;
   totalDolares = 0;
-  subtotalDolares: number = 0;
-  impuestosDolares: number = 0;
+  subtotalDolares = 0;
+  impuestosDolares = 0;
 
-  tipo_de_cambio: number = 0;
+  tipo_de_cambio = 0;
 
   datos: any;
 
-  dolaresCard: boolean = false;
+  dolaresCard = false;
 
-  constructor(
+  constructor (
     public alertController: AlertController,
     private storageservice: StorageService,
     private router: Router,
     private imageservice: ImagesService,
     private navExtras: NavExtrasServiceService,
-    private barcodeScanner: BarcodeScanner
+    private barcodeScanner: BarcodeScanner,
+    public modalController: ModalController
   ) { }
 
   ngOnInit() {
     this.datos = this.navExtras.getExtras();
 
-    this.storageservice.getContacts().then(contactList => {
+    Promise.all([
+      this.storageservice.getContacts(),
+      this.storageservice.getImpuestos(),
+      this.storageservice.getTes(),
+      this.storageservice.getProducts(),
+      this.storageservice.getSucursales(),
+      this.storageservice.getCambio()
+    ]).then(([contactList, impuestosList, tesList, productList, sucursalList, tipo_de_cambio]) => {
+
       this.contactList = contactList;
-    });
-
-    this.storageservice.getImpuestos().then(impuestosList => {
       this.impuestosList = impuestosList;
-    });
-
-    this.storageservice.getTes().then(tesList => {
       this.tesList = tesList;
-    });
-
-    this.storageservice.getProducts().then(productList => {
       this.productListAll = productList;
       this.productListSucursal = this.productListAll.filter(product => product.sucursal_id == '1');
-    });
-
-    this.storageservice.getSucursales().then(sucursalList => {
       this.sucursalList = sucursalList;
+      this.tipo_de_cambio = tipo_de_cambio;
+
+    }).catch(error => {
+      console.error(error);
     });
 
-    this.storageservice.getCambio().then(tipo_de_cambio => {
-      this.tipo_de_cambio = tipo_de_cambio;
-    });
   }
 
   ngOnDestroy() {
-    this.navExtras.setExtras(null)
+    this.navExtras.setExtras(null);
   }
 
   public searchContacts(val: any) {
     let valor = val.target.value;
     if (valor && valor.trim() != '') {
       this.contactListsearchBar = this.contactList.filter((item) => {
-        return (item.nombre_reducido.toLowerCase().indexOf(valor.toLowerCase()) > -1) || (item.codigo_protevs.toLowerCase().indexOf(valor.toLowerCase()) > -1);
-      })
+        return (item.nombre_reducido.toLowerCase().indexOf(valor.toLowerCase()) > -1) ||
+          (item.codigo_protevs.toLowerCase().indexOf(valor.toLowerCase()) > -1);
+      });
     } else {
       this.contactListsearchBar = [];
     }
@@ -98,17 +164,17 @@ export class GeneratePedidoPage implements OnInit {
 
   public scanQr() {
     this.barcodeScanner.scan().then(barcodeData => {
-      var id = parseInt(barcodeData.text)
+      const id = parseInt(barcodeData.text);
       if (id == null) {
-        this.presentAlert('Formato QR invalido')
+        this.presentAlert('Formato QR invalido');
       } else {
         this.datos.contact = this.contactList.find(contact => contact.id == id);
         if (this.datos.contact == undefined) {
-          this.presentAlert('Identificador no encontrado')
+          this.presentAlert('Identificador no encontrado');
         }
       }
     }).catch(err => {
-      this.presentAlert(err)
+      this.presentAlert(err);
     });
   }
 
@@ -116,9 +182,10 @@ export class GeneratePedidoPage implements OnInit {
     let valor2 = val.target.value;
     if (valor2.length > 1 && valor2.trim() != '') {
       this.productListsearchBar = this.productListSucursal.filter((item) => {
-        let in_list = this.datos.products.some(product => product.product_name == item.name)
-        return (item.name.toLowerCase().indexOf(valor2.toLowerCase()) > -1) && !in_list;
-      })
+        const in_list = this.datos.products.some(product => product.product_name == item.name);
+        return ((item.name.toLowerCase().indexOf(valor2.toLowerCase()) > -1) ||
+          (item.codigoProtevs.toLowerCase().indexOf(valor2.toLowerCase()) > -1)) && !in_list;
+      });
     } else {
       this.productListsearchBar = [];
     }
@@ -130,15 +197,29 @@ export class GeneratePedidoPage implements OnInit {
     this.clientSearchBar.value = '';
   }
 
+  async presentModal(product) {
+    const modal = await this.modalController.create({
+      component: ModalPage,
+      componentProps: {
+        'product': product,
+        'tipo_de_cambio' : this.tipo_de_cambio
+      }
+    });
+    modal.onDidDismiss().then(() => {
+      this.updateTotal();
+    });
+    return await modal.present();
+  }
+
   public addProduct(product: any) {
     let imp = 1.00;
-    var test_lit = this.tesList.filter(tes => tes.tes == product.tes);
-    for (var i = 0; i < test_lit.length; i++) {
-      imp *= 1 + this.impuestosList.find(imp => imp.codigo == test_lit[i].cod_impuesto).importe / 100
-    };
-    imp -= 1
+    const test_lit = this.tesList.filter(tes => tes.tes == product.tes);
+    for (let i = 0; i < test_lit.length; i++) {
+      imp *= 1 + this.impuestosList.find(imp => imp.codigo == test_lit[i].cod_impuesto).importe / 100;
+    }
+    imp -= 1;
 
-    var product_order = {
+    let product_order = {
       codigoProtevs: product.codigoProtevs,
       product_name: product.name,
       price: product.price,
@@ -154,14 +235,14 @@ export class GeneratePedidoPage implements OnInit {
       total: 0,
       pago_tipo: product.moneda_mayoreo,
       conv: Number(product.b1_conv),
-    }
+    };
 
-    console.log(product_order)
+    console.log(product_order);
 
     product_order.impuestos_total = product_order.subtotal * product_order.impuesto_cal;
-    product_order.total = product_order.impuestos_total + product_order.subtotal
+    product_order.total = product_order.impuestos_total + product_order.subtotal;
 
-    this.datos.products.unshift(product_order)
+    this.datos.products.unshift(product_order);
 
     this.productListsearchBar = [];
     this.productSearchBar.value = '';
@@ -169,8 +250,8 @@ export class GeneratePedidoPage implements OnInit {
 
   }
 
-  eliminarProducto(product) {
-    this.datos.products.splice(this.datos.products.indexOf(product), 1);
+  eliminarProducto(index) {
+    this.datos.products.splice(index, 1);
     this.updateTotal();
   }
 
@@ -178,8 +259,8 @@ export class GeneratePedidoPage implements OnInit {
     this.total = this.impuestos = this.subtotal = 0;
     this.totalDolares = this.impuestosDolares = this.subtotalDolares = 0;
 
-    for (var i = 0; i < this.datos.products.length; i++) {
-      if (this.datos.products[i].pago_tipo == "MN") {
+    for (let i = 0; i < this.datos.products.length; i++) {
+      if (this.datos.products[i].pago_tipo == 'MN') {
 
         this.subtotal += this.datos.products[i].subtotal;
         this.impuestos += this.datos.products[i].impuestos_total;
@@ -196,65 +277,17 @@ export class GeneratePedidoPage implements OnInit {
 
   }
 
-  private increment(product) {
-    if (product.quantity < product.product_stock) {
-      product.quantity++;
-      this.productChange(product)
-    }
-  }
-
-  private decrement(product) {
-    if (product.quantity > 1) {
-      product.quantity--;
-      this.productChange(product)
-    }
-  }
-
-  quantityChange(product){
-    product.quantity_dos = product.quantity * product.conv
-    if(!Number.isInteger(product.quantity_dos)){
-      product.quantity_dos = Math.round(product.quantity_dos)
-    }
-    this.productChange(product)
-  }
-
-  quantity2Change(product){
-    product.quantity = product.quantity_dos / product.conv
-    this.productChange(product)
-  }
-
-  productQuantity(product) {
-    if (product.quantity > product.product_stock) {
-      product.quantity = product.product_stock * 1
-    } else if (product.quantity <= 0) {
-      product.quantity = 1
-    }
-  }
-
-  productChange(product) {
-
-    if (product.moneda == product.pago_tipo) {
-      product.subtotal = product.price * product.quantity;
-      product.impuestos_total = product.subtotal * product.impuesto_cal;
-      product.total = product.impuestos_total + product.subtotal
-    } else if (product.moneda == "MN" && product.pago_tipo == "DL") {
-      product.subtotal = product.price * product.quantity / this.tipo_de_cambio;
-      product.impuestos_total = product.subtotal * product.impuesto_cal / this.tipo_de_cambio;
-      product.total = product.impuestos_total + product.subtotal
-    } else if (product.moneda == "DL" && product.pago_tipo == "MN") {
-      product.subtotal = product.price * product.quantity * this.tipo_de_cambio;
-      product.impuestos_total = product.subtotal * product.impuesto_cal * this.tipo_de_cambio;
-      product.total = product.impuestos_total + product.subtotal
-    }
-
-    this.updateTotal()
-  }
+  // quantityChange(product) {
+  //   product.quantity = Math.round(product.quantity);
+  //   product.quantity_dos = product.quantity * product.conv;
+  //   this.productChange(product);
+  // }
 
   cambioSucursal(event) {
     this.datos.products = this.productListsearchBar = [];
     this.productSearchBar.value = '';
     this.productListSucursal = this.productListAll.filter(product => product.sucursal_id == event.detail.value);
-    this.updateTotal()
+    this.updateTotal();
   }
 
   entregaPedido() {
@@ -273,11 +306,11 @@ export class GeneratePedidoPage implements OnInit {
   }
 
   public getPath(name) {
-    return this.imageservice.getPath(name)
+    return this.imageservice.getPath(name);
   }
 
   showImage(name) {
-    this.imageservice.showImage(name)
+    this.imageservice.showImage(name);
   }
 
 }

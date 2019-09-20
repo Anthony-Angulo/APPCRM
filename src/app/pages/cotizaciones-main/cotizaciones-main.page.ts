@@ -14,10 +14,10 @@ export class CotizacionesMainPage implements OnInit {
   button_size: string;
   screen_width: number;
   notificationCounts: number;
-  title: string = 'Cotizaciones CCFN'
-  allTitle: string = 'Todas las Cotizaciones'
-  allLink: string = 'cotizaciones'
-  imageLink: string = '../../../assets/img/pedidos-phone.png'
+  title = 'Cotizaciones CCFN';
+  allTitle = 'Todas las Cotizaciones';
+  allLink = 'cotizaciones';
+  imageLink = '../../../assets/img/pedidos-phone.png';
 
   constructor(
     public plt: Platform,
@@ -31,18 +31,17 @@ export class CotizacionesMainPage implements OnInit {
 
   ngOnInit() {
     if (this.screen_width < 550) {
-      this.button_size = 'default'
-    }
-    else {
-      this.button_size = 'large'
+      this.button_size = 'default';
+    } else {
+      this.button_size = 'large';
     }
   }
 
   ionViewWillEnter() {
     this.storageservice.getNotifications().then(notificationList => {
-      let notifications = notificationList.filter(Notification => Notification.vista == false)
-      this.notificationCounts = notifications.length
-    })
+      const notifications = notificationList.filter(Notification => Notification.vista == false);
+      this.notificationCounts = notifications.length;
+    });
   }
 
   goTo() {

@@ -1,0 +1,57 @@
+<ion-header translucent>
+    <ion-toolbar>
+        <ion-title>Modal Content</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="dismiss()">Close</ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content fullscreen>
+    <ion-col size="9" size-lg size="12" size-sm>
+        <ion-card>
+            <ion-card-header>
+                <ion-card-subtitle>
+                    {{product.codigoProtevs}}
+                </ion-card-subtitle>
+                <ion-card-title>
+                    {{product.product_name}}
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <ion-icon style="font-size: 40px;float: right;" name="add-circle" (click)="increment(product)">
+                </ion-icon>
+                <ion-icon style="font-size: 40px;float: right;" name="remove-circle" (click)="decrement(product)">
+                </ion-icon>
+                Price: {{product.price}} {{product.moneda}}<br>
+                Stock: {{product.product_stock}}<br>
+                Cantidad:
+                <ion-item>
+                    <ion-input type="number" [(ngModel)]="product.quantity" (ngModelChange)="quantityChange(product)"
+                        (ionBlur)="productQuantity(product)"></ion-input> {{product.unidad_medida}}
+                </ion-item>
+                <ion-item *ngIf="product.conv!=0 && product.conv!=1">
+                    <ion-input type="number" [(ngModel)]="product.quantity_dos"
+                        (ngModelChange)="quantityChange2(product)" (ionBlur)="productQuantity(product)"></ion-input>
+                    {{product.unidad_medida_dos}}
+                </ion-item>
+                Subtotal: ${{product.subtotal.toFixed(2)}} {{product.pago_tipo}}<br>
+                Impuestos: ${{product.impuestos_total.toFixed(2)}} {{product.pago_tipo}}<br>
+                Total: ${{product.total.toFixed(2)}} {{product.pago_tipo}}<br>
+                <ion-radio-group *ngIf="product.moneda=='DL'" [(ngModel)]="product.pago_tipo"
+                    (ngModelChange)="productChange(product)">
+                    <ion-list-header>
+                        <ion-label>Pago</ion-label>
+                    </ion-list-header>
+                    <ion-item>
+                        <ion-label>Pesos</ion-label>
+                        <ion-radio slot="start" value="MN" checked></ion-radio>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>Dolares</ion-label>
+                        <ion-radio slot="start" value="DL"></ion-radio>
+                    </ion-item>
+                </ion-radio-group>
+            </ion-card-content>
+        </ion-card>
+    </ion-col>
+</ion-content>

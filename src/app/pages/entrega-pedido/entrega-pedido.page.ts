@@ -1,24 +1,17 @@
-import { Component } from '@angular/core';
-import { Platform } from '@ionic/angular';
-import {
-  GoogleMaps,
-  GoogleMap,
-  GoogleMapOptions,
-  Marker,
-  GoogleMapsEvent,
-  Environment
-} from '@ionic-native/google-maps/ngx';
-import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SaveDataService } from 'src/app/services/save-data.service';
+import { GoogleMap, GoogleMapOptions, GoogleMaps, GoogleMapsEvent, Marker } from '@ionic-native/google-maps/ngx';
+import { Platform } from '@ionic/angular';
 import { ImagesService } from 'src/app/services/images.service';
+import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
+import { SaveDataService } from 'src/app/services/save-data.service';
 
 @Component({
   selector: 'app-entrega-pedido',
   templateUrl: './entrega-pedido.page.html',
   styleUrls: ['./entrega-pedido.page.scss'],
 })
-export class EntregaPedidoPage {
+export class EntregaPedidoPage implements OnInit, AfterViewInit {
   map: GoogleMap;
   datos: any;
 

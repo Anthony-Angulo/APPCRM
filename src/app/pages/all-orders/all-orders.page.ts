@@ -24,7 +24,7 @@ export class AllOrdersPage implements OnInit {
     private navExtras: NavExtrasServiceService) { }
 
   ngOnInit() {
-    this.getOrders()
+    this.getOrders();
   }
 
 
@@ -56,15 +56,15 @@ export class AllOrdersPage implements OnInit {
 
           let orders_list = [];
           data[0].forEach(order => {
-            let rows = data[1].filter(row => row.order_id == order.id)
-            orders_list.push({ order: order, rows: rows })
+            let rows = data[1].filter(row => row.order_id == order.id);
+            orders_list.push({ order: order, rows: rows });
           });
           this.storageservice.setOrders(orders_list);
-          this.getOrders()
+          this.getOrders();
 
         }, (err: any) => {
 
-          this.presentToast('Error Al actualizar.')
+          this.presentToast('Error Al actualizar.');
 
         });
 
@@ -75,7 +75,7 @@ export class AllOrdersPage implements OnInit {
 
   async presentToast(data: any) {
     const toast = await this.toastController.create({
-      message: data,//'Dispositivo Conectado a Internet. Ordenes Registradas.',
+      message: data, // 'Dispositivo Conectado a Internet. Ordenes Registradas.',
       duration: 5000
     });
     toast.present();

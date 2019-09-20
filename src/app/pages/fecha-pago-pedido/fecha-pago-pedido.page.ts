@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { LoadingController } from '@ionic/angular';
 import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
 import { SaveDataService } from 'src/app/services/save-data.service';
 import { StorageService } from 'src/app/services/storage.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-fecha-pago-pedido',
@@ -10,7 +13,7 @@ import { StorageService } from 'src/app/services/storage.service';
 })
 export class FechaPagoPedidoPage implements OnInit {
 
-  //Formulario a Enviar para el registro del Pedido
+  // Formulario a Enviar para el registro del Pedido
   orderData = {
     customer_no: '', contact_id: 0,
     owned_by_id: 0,
@@ -38,53 +41,47 @@ export class FechaPagoPedidoPage implements OnInit {
   documentList: any = [];
   horasList: any = [];
 
-  impuestos: number = 0;
-  subtotal: number = 0;
-  total: number = 0;
+  impuestos = 0;
+  subtotal = 0;
+  total = 0;
   totalDolares = 0;
-  subtotalDolares: number = 0;
-  impuestosDolares: number = 0;
+  subtotalDolares = 0;
+  impuestosDolares = 0;
 
 
   disableButton = false;
   min_date = new Date();
-  max_date = new Date(this.min_date.getFullYear() + 2, this.min_date.getMonth(), this.min_date.getDate())
+  max_date = new Date(this.min_date.getFullYear() + 2, this.min_date.getMonth(), this.min_date.getDate());
 
   constructor(
     private naxExtras: NavExtrasServiceService,
     private storageservice: StorageService,
-    private savedataservice: SaveDataService) { }
+    private savedataservice: SaveDataService,
+    private router: Router,
+    private loadingController: LoadingController) { }
 
   ngOnInit() {
 
     this.datos = this.naxExtras.getExtras();
 
-    this.storageservice.getPagos().then(pagosList => {
+    Promise.all([
+      this.storageservice.getPagos(),
+      this.storageservice.getRutas(),
+      this.storageservice.getDocuments(),
+      this.storageservice.getHoras(),
+      this.storageservice.getUsername(),
+      this.storageservice.getUserID(),
+      this.storageservice.getCambio()
+    ]).then(([pagosList, rutasList, documentsList, horasList, username, id, tipo_cambio]) => {
       this.pagoList = pagosList;
-    });
-
-    this.storageservice.getRutas().then(rutasList => {
       this.rutasList = rutasList;
-    });
-
-    this.storageservice.getDocuments().then(documentsList => {
       this.documentList = documentsList;
-    });
-
-    this.storageservice.getHoras().then(horasList => {
       this.horasList = horasList;
-    });
-
-    this.storageservice.getUsername().then(username => {
       this.orderData.owned_by_name = username;
-    });
-
-    this.storageservice.getUserID().then(id => {
       this.orderData.owned_by_id = id;
-    });
-
-    this.storageservice.getCambio().then(tipo_cambio => {
       this.orderData.tipo_cambio = tipo_cambio;
+    }).catch(error => {
+      console.error(error);
     });
 
     this.orderData.tienda_id = this.datos.contact.tienda;
@@ -105,13 +102,13 @@ export class FechaPagoPedidoPage implements OnInit {
     this.orderData.ship_to = this.datos.contact.full_name;
     this.orderData.ship_tax_number = this.datos.contact.colonia;
     this.orderData.sucursal_id = this.datos.sucursal_id;
-    this.calcularTotalSelect()
+    this.calcularTotalSelect();
   }
 
   calcularTotalSelect() {
 
-    for (var i = 0; i < this.datos.products.length; i++) {
-      if (this.datos.products[i].pago_tipo == "MN") {
+    for (let i = 0; i < this.datos.products.length; i++) {
+      if (this.datos.products[i].pago_tipo == 'MN') {
         this.subtotal += this.datos.products[i].subtotal;
         this.impuestos += this.datos.products[i].impuestos_total;
         this.total += this.datos.products[i].total;
@@ -123,29 +120,71 @@ export class FechaPagoPedidoPage implements OnInit {
     }
   }
 
-  public generarPedido() {
+  async generarPedido() {
+
+    const loading = await this.loadingController.create({
+      message: 'Guardando Orden...',
+    });
+    await loading.present();
+
+
+    let result;
+
     if (this.total != 0 && this.totalDolares == 0) {
-      this.orderData.currency_id = 62
-      this.orderData.total_order = this.total
-      this.savedataservice.generateOrder(this.orderData, this.datos.products, this.datos.pedido);
+      this.orderData.currency_id = 62;
+      this.orderData.total_order = this.total;
+      result = this.savedataservice.generateOrder(this.orderData, this.datos.products, this.datos.pedido);
     } else if (this.total == 0 && this.totalDolares != 0) {
-      this.orderData.currency_id = 96
-      this.orderData.total_order = this.totalDolares
-      this.savedataservice.generateOrder(this.orderData, this.datos.products, this.datos.pedido);
+      this.orderData.currency_id = 96;
+      this.orderData.total_order = this.totalDolares;
+      result = this.savedataservice.generateOrder(this.orderData, this.datos.products, this.datos.pedido);
     } else {
 
       let orderPesos = Object.assign({}, this.orderData);
-      orderPesos.currency_id = 62
-      orderPesos.total_order = this.total
-      let productospesos = this.datos.products.filter(product => product.pago_tipo == "MN")
-      this.savedataservice.generateOrder(orderPesos, productospesos, this.datos.pedido);
+      orderPesos.currency_id = 62;
+      orderPesos.total_order = this.total;
+      const productospesos = this.datos.products.filter(product => product.pago_tipo == 'MN');
 
       let orderDolares = Object.assign({}, this.orderData);
-      orderDolares.currency_id = 96
-      orderDolares.total_order = this.totalDolares
-      let productosDolares = this.datos.products.filter(product => product.pago_tipo == "DL")
-      this.savedataservice.generateOrder(orderDolares, productosDolares, this.datos.pedido);
+      orderDolares.currency_id = 96;
+      orderDolares.total_order = this.totalDolares;
+      const productosDolares = this.datos.products.filter(product => product.pago_tipo == 'DL');
+
+      result = Promise.all([
+        this.savedataservice.generateOrder(orderPesos, productospesos, this.datos.pedido),
+        this.savedataservice.generateOrder(orderDolares, productosDolares, this.datos.pedido),
+      ]);
     }
+
+    let message = '';
+    result.then(val => {
+      if (typeof (val) == 'boolean') {
+        if (val) {
+          message = 'Pedido Guardado Con Exito.';
+        } else {
+          message = 'Pedido Guardado En Almacenamiento. Esperando Conexion.';
+        }
+      } else if (Array.isArray(val)) {
+        if (val.find(value => value == false)) {
+          message = 'Pedido Guardado En Almacenamiento. Esperando Conexion.';
+        } else {
+          message = 'Pedido Guardado Con Exito.';
+        }
+      }
+    }).finally(() => {
+      loading.dismiss();
+      Swal.fire({
+
+        title: message,
+        type: 'success',
+        confirmButtonText: 'Enterado.'
+
+      }).then((result) => {
+        if (result.value) {
+          this.router.navigate(['dashboard']);
+        }
+      });
+    });
 
   }
 

@@ -1,13 +1,14 @@
 // import { HttpClient } from '@angular/common/http';
-import { /*ChangeDetectorRef,*/ Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Camera, CameraOptions, PictureSourceType } from '@ionic-native/Camera/ngx';
 import { FilePath } from '@ionic-native/file-path/ngx';
 import { File } from '@ionic-native/File/ngx';
 import { ActionSheetController, LoadingController, Platform, ToastController } from '@ionic/angular';
+import { Contact } from 'src/app/models/contact';
 import { ImagesService } from 'src/app/services/images.service';
 import { SaveDataService } from 'src/app/services/save-data.service';
 import { StorageService } from 'src/app/services/storage.service';
-import { Contact } from 'src/app/models/contact';
+
 // import { load } from '@angular/core/src/render3';
 
 @Component({
@@ -38,23 +39,24 @@ export class ContactsPage implements OnInit {
     this.storageservice.getContacts().then(contactList => {
       this.contactList = contactList;
       this.list = contactList;
-    })
+    });
   }
 
   public getPath(name) {
-    return this.imageservice.getPath(name)
+    return this.imageservice.getPath(name);
   }
 
   showImage(name) {
-    this.imageservice.showImage(name)
+    this.imageservice.showImage(name);
   }
 
   searchContacts(val: any) {
     let valor = val.target.value;
     if (valor && valor.trim() != '') {
       this.list = this.contactList.filter((item) => {
-        return (item.nombre_reducido.toLowerCase().indexOf(valor.toLowerCase()) > -1) || (item.codigo_protevs.toLowerCase().indexOf(valor.toLowerCase()) > -1);
-      })
+        return (item.nombre_reducido.toLowerCase().indexOf(valor.toLowerCase()) > -1) ||
+          (item.codigo_protevs.toLowerCase().indexOf(valor.toLowerCase()) > -1);
+      });
     } else {
       this.list = this.contactList;
     }
@@ -69,11 +71,11 @@ export class ContactsPage implements OnInit {
 
     this.savedataservice.updateGeolocation(contact.id).then(formData => {
       contact.latitud = formData.latitude;
-      contact.longitud = formData.longitude;      
-    }).catch(err =>{
-      console.log(err)
-    }).finally(() =>{
-      loading.dismiss()
+      contact.longitud = formData.longitude;
+    }).catch(err => {
+      console.log(err);
+    }).finally(() => {
+      loading.dismiss();
     });
 
   }
@@ -89,7 +91,7 @@ export class ContactsPage implements OnInit {
 
   async addPhoto(id: number) {
     const actionSheet = await this.actionSheetController.create({
-      header: "Selececcionar Origen de la Imagen",
+      header: 'Selececcionar Origen de la Imagen',
       buttons: [
         {
           text: 'Cargar desde Libreria',
@@ -138,9 +140,9 @@ export class ContactsPage implements OnInit {
   }
 
   createFileName() {
-    var d = new Date(),
+    const d = new Date(),
       n = d.getTime(),
-      newFileName = n + ".jpg";
+      newFileName = n + '.jpg';
     return newFileName;
   }
 
@@ -154,12 +156,12 @@ export class ContactsPage implements OnInit {
 
   updateStoredImages(name, id: number) {
 
-    var contact_index = this.contactList.findIndex(contact => contact.id == id)
+    const contact_index = this.contactList.findIndex(contact => contact.id == id);
 
     if (this.contactList[contact_index].img != undefined) {
 
-      let filePath = this.file.dataDirectory + this.contactList[contact_index].img;
-      var correctPath = filePath.substr(0, filePath.lastIndexOf('/') + 1);
+      const filePath = this.file.dataDirectory + this.contactList[contact_index].img;
+      const correctPath = filePath.substr(0, filePath.lastIndexOf('/') + 1);
       this.file.removeFile(correctPath, this.contactList[contact_index].img).then(res => {
         this.presentToast('File removed.');
       });
@@ -168,14 +170,14 @@ export class ContactsPage implements OnInit {
 
     this.contactList[contact_index].img = name;
 
-    this.storageservice.setContacts(this.contactList)
+    this.storageservice.setContacts(this.contactList);
 
   }
 
   // deleteImage(imgEntry, position) {
   //   this.images.splice(position, 1);
 
-  //   
+  //
   // }
 
   // startUpload(imgEntry) {

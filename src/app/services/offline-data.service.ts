@@ -1,10 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { LoadingController } from '@ionic/angular';
-import { finalize } from 'rxjs/operators';
-import { StorageService } from 'src/app/services/storage.service';
+import { Injectable } from '@angular/core';
 import { Network } from '@ionic-native/network/ngx';
-import { AlertController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
+import { StorageService } from 'src/app/services/storage.service';
 import { environment as ENV } from 'src/environments/environment';
 
 @Injectable({
@@ -28,7 +26,7 @@ export class OfflineDataService {
         buttons: ['OK']
       });
       alert.present();
-      return
+      return;
     }
 
     const loading = await this.loadingController.create({
@@ -38,36 +36,42 @@ export class OfflineDataService {
 
     this.storageservice.getUserID().then((val) => {
 
-      this.http.get(ENV.BASE_URL + '/contact/' + val).subscribe((data: any) => {
+      this.http.get(ENV.BASE_URL + '/contact/' + val).toPromise().then((data: any) => {
         this.storageservice.setContacts(data);
-      })
+      }).catch(error => {
+        console.error(error);
+      });
 
-      this.http.get(ENV.BASE_URL + '/events/' + val).subscribe((data: any) => {
+      this.http.get(ENV.BASE_URL + '/events/' + val).toPromise().then((data: any) => {
         data.events.forEach(element => {
-          element.endTime = new Date(Date.parse(element.endTime))
-          element.startTime = new Date(Date.parse(element.startTime))
-          element.allDay = (element.allDay) ? true : false
+          element.endTime = new Date(Date.parse(element.endTime));
+          element.startTime = new Date(Date.parse(element.startTime));
+          element.allDay = (element.allDay) ? true : false;
         });
         this.storageservice.setEvents(data.events);
-        this.storageservice.setEventsPriority(data.priority)
-      })
+        this.storageservice.setEventsPriority(data.priority);
+      }).catch(error => {
+        console.error(error);
+      });
 
-      this.http.get(ENV.BASE_URL + '/orders_by_owner/' + val).subscribe((data: any) => {
+      this.http.get(ENV.BASE_URL + '/orders_by_owner/' + val).toPromise().then((data: any) => {
 
         let orders_list = [];
         data[0].forEach(order => {
-          let rows = data[1].filter(row => row.order_id == order.id)
-          orders_list.push({ order: order, rows: rows })
+          let rows = data[1].filter(row => row.order_id == order.id);
+          orders_list.push({ order: order, rows: rows });
         });
         this.storageservice.setOrders(orders_list);
+      }).catch(error => {
+        console.error(error);
       });
 
-      this.storageservice.setNotifications([])
+      this.storageservice.setNotifications([]);
 
     });
 
-    this.http.get(ENV.BASE_URL + '/info').subscribe((data: any) => {
-      this.storageservice.setStatus(data.status)
+    this.http.get(ENV.BASE_URL + '/info').toPromise().then((data: any) => {
+      this.storageservice.setStatus(data.status);
       this.storageservice.setSucursales(data.sucursal);
       this.storageservice.setPagos(data.pagos);
       this.storageservice.setRutas(data.rutas);
@@ -77,18 +81,17 @@ export class OfflineDataService {
       this.storageservice.setTes(data.tes);
       this.storageservice.setImpuestos(data.impuestos);
       this.storageservice.setCambio(data.cambio[0].moneda_venta);
-      
+    }).catch(error => {
+      console.error(error);
     });
 
-    this.http.get(ENV.BASE_URL + '/products/' + 1)
-      .pipe(
-        finalize(() => {
-          loading.dismiss();
-        })
-      )
-      .subscribe((data: any) => {
-        this.storageservice.setProducts(data);
-      })
+    this.http.get(ENV.BASE_URL + '/products/' + 1).toPromise().then((data: any) => {
+      this.storageservice.setProducts(data);
+    }).catch(error => {
+      console.error(error);
+    }).finally(() => {
+      loading.dismiss();
+    });
 
   }
 

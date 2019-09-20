@@ -17,8 +17,8 @@ import { StorageService } from './storage.service';
 export class LocationTrackerService {
 
 
-  // formData = { 
-  //   user_id: '', 
+  // formData = {
+  //   user_id: '',
   //   movimiento_id: 0,
   //   latitud: 0,
   //   longitud: 0,
@@ -26,16 +26,16 @@ export class LocationTrackerService {
   // };
 
   public watch: any;
-  public lat: number = 0;
-  public lng: number = 0;
+  public lat = 0;
+  public lng = 0;
 
   constructor(
     private storageservice: StorageService,
     private saveData: SaveDataService,
     private geolocation: Geolocation,
     private http: HttpClient,
-    // private backgroundGeolocation: BackgroundGeolocation, 
-    ) {
+    // private backgroundGeolocation: BackgroundGeolocation,
+  ) {
 
   }
 
@@ -43,22 +43,22 @@ export class LocationTrackerService {
 
     this.geolocation.getCurrentPosition().then(resp => {
       this.storageservice.getUserID().then((id: any) => {
-        
-        let formData = {
+
+        const formData = {
           user_id: id,
           movimiento_id: 1,
           latitud: resp.coords.latitude,
           longitud: resp.coords.longitude
-        }
+        };
 
         this.http.post(ENV.BASE_URL + '/usertrck', formData).subscribe((resp: any) => {
           console.log(resp);
-        })
+        });
 
-      })
-    }).catch(error=>{
-      console.log(error)
-    })
+      });
+    }).catch(error => {
+      console.log(error);
+    });
 
 
     // let config = {
@@ -98,7 +98,7 @@ export class LocationTrackerService {
     // Foreground Tracking
 
     // let options = {
-    //   frequency: 3000, 
+    //   frequency: 3000,
     //   enableHighAccuracy: true
     // };
 
@@ -139,22 +139,22 @@ export class LocationTrackerService {
 
     this.geolocation.getCurrentPosition().then(resp => {
       this.storageservice.getUserID().then((id: any) => {
-        
-        let formData = {
+
+        const formData = {
           user_id: id,
           movimiento_id: 2,
           latitud: resp.coords.latitude,
           longitud: resp.coords.longitude
-        }
+        };
 
         this.http.post(ENV.BASE_URL + '/usertrck', formData).subscribe((resp: any) => {
           console.log(resp);
-        })
+        });
 
-      })
-    }).catch(error=>{
-      console.log(error)
-    })
+      });
+    }).catch(error => {
+      console.log(error);
+    });
 
   }
 

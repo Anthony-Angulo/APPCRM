@@ -16,7 +16,7 @@ export class ProductsPage implements OnInit {
   productListsearchBar: any = [];
 
   sucursalList: any = [];
-  sucursal_id: string = '1';
+  sucursal_id = '1';
 
   constructor(private storageservice: StorageService) { }
 
@@ -35,11 +35,12 @@ export class ProductsPage implements OnInit {
   }
 
   searchProducts(val: any) {
-    let valor = val.target.value;
+    const valor = val.target.value;
     if (valor && valor.trim() != '') {
       this.productListsearchBar = this.productListSucursal.filter((item) => {
-        return (item.name.toLowerCase().indexOf(valor.toLowerCase()) > -1) || (item.codigoProtevs.toLowerCase().indexOf(valor.toLowerCase()) > -1);
-      })
+        return (item.name.toLowerCase().indexOf(valor.toLowerCase()) > -1) ||
+          (item.codigoProtevs.toLowerCase().indexOf(valor.toLowerCase()) > -1);
+      });
     } else {
       this.productListsearchBar = this.productListSucursal;
     }

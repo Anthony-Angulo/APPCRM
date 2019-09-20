@@ -14,10 +14,10 @@ export class PedidosMainPage implements OnInit {
   button_size: string;
   screen_width: number;
   notificationCounts: number;
-  title: string = 'Pedidos CCFN'
-  allTitle: string = 'Todas los Pedidos'
-  allLink: string = 'all-orders'
-  imageLink: string = '../../../assets/icon/Bag.png'
+  title = 'Pedidos CCFN';
+  allTitle = 'Todas los Pedidos';
+  allLink = 'all-orders';
+  imageLink = '../../../assets/icon/Bag.png';
 
   constructor(
     public plt: Platform,
@@ -31,18 +31,17 @@ export class PedidosMainPage implements OnInit {
 
   ngOnInit() {
     if (this.screen_width < 550) {
-      this.button_size = 'default'
-    }
-    else {
-      this.button_size = 'large'
+      this.button_size = 'default';
+    } else {
+      this.button_size = 'large';
     }
   }
 
   ionViewWillEnter() {
     this.storageservice.getNotifications().then(notificationList => {
-      let notifications = notificationList.filter(Notification => Notification.vista == false)
-      this.notificationCounts = notifications.length
-    })
+      const notifications = notificationList.filter(Notification => Notification.vista == false);
+      this.notificationCounts = notifications.length;
+    });
   }
 
   goTo() {

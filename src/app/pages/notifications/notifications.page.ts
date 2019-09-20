@@ -25,15 +25,15 @@ export class NotificationsPage implements OnInit {
 
     this.storageservice.getOrders().then(orderList =>{
       this.orders = orderList;
-    })
+    });
   }
 
   goToDetail(notification) {
-    notification.vista = true
-    let order = this.orders.find(order => order.order.id == notification.id)
+    notification.vista = true;
+    let order = this.orders.find(order => order.order.id == notification.id);
     this.navExtras.setExtras({ order: order, isorder: true });
     this.router.navigate(['detail']);
-    this.storageservice.setNotifications(this.notifications)
+    this.storageservice.setNotifications(this.notifications);
   }
 
 }

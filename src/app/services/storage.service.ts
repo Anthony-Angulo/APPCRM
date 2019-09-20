@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { Contact } from '../models/contact';
-import { Event, EventPriority } from '../models/event'
+import { Event, EventPriority } from '../models/event';
 
 const ORDERS_KEY = 'orders';
 const CONTACTS_KEY = 'contacts';
@@ -38,7 +38,7 @@ export class StorageService {
   constructor(private storage: Storage) { }
 
   getStatus(): Promise<any[]> {
-    return this.storage.get(STATUS_KEY)
+    return this.storage.get(STATUS_KEY);
   }
 
   setStatus(status: any[]) {
@@ -46,7 +46,7 @@ export class StorageService {
   }
 
   getEvents(): Promise<Event[]> {
-    return this.storage.get(EVENTS_KEY)
+    return this.storage.get(EVENTS_KEY);
   }
 
   setEvents(events: Event[]) {
@@ -54,7 +54,7 @@ export class StorageService {
   }
 
   getEventsPriority(): Promise<EventPriority[]> {
-    return this.storage.get(PRIORITY_EVENTS_KEY)
+    return this.storage.get(PRIORITY_EVENTS_KEY);
   }
 
   setEventsPriority(priority: EventPriority[]) {
@@ -62,131 +62,131 @@ export class StorageService {
   }
 
   async getOrders(): Promise<any[]> {
-    return await this.storage.get(ORDERS_KEY)
+    return await this.storage.get(ORDERS_KEY);
   }
 
   async setOrders(orders: any) {
-    return await this.storage.set(ORDERS_KEY, orders)
+    return await this.storage.set(ORDERS_KEY, orders);
   }
 
   getContacts(): Promise<Contact[]> {
-    return this.storage.get(CONTACTS_KEY)
+    return this.storage.get(CONTACTS_KEY);
   }
 
   setContacts(contacts: Contact[]) {
-    this.storage.set(CONTACTS_KEY, contacts)
+    this.storage.set(CONTACTS_KEY, contacts);
   }
 
   getNotifications(): Promise<any[]> {
-    return this.storage.get(NOTIFICATIONS_KEY)
+    return this.storage.get(NOTIFICATIONS_KEY);
   }
 
   setNotifications(notifications: any[]) {
-    this.storage.set(NOTIFICATIONS_KEY, notifications)
+    this.storage.set(NOTIFICATIONS_KEY, notifications);
   }
 
   getCheckIn(): Promise<any> {
-    return this.storage.get(CHECK_IN)
+    return this.storage.get(CHECK_IN);
   }
 
   setCheckIn(status: boolean) {
-    this.storage.set(CHECK_IN, status)
+    this.storage.set(CHECK_IN, status);
   }
 
   getRegisterOneSignal(): Promise<any> {
-    return this.storage.get(ONESIGNAL_REGISTER)
+    return this.storage.get(ONESIGNAL_REGISTER);
   }
 
   setRegisterOneSignal(register: any) {
-    this.storage.set(ONESIGNAL_REGISTER, register)
+    this.storage.set(ONESIGNAL_REGISTER, register);
   }
 
   getCotizaciones(): Promise<any[]> {
-    return this.storage.get(COTIZACIONES_KEY)
+    return this.storage.get(COTIZACIONES_KEY);
   }
 
   setCotizaciones(cotizaciones: any[]) {
-    this.storage.set(COTIZACIONES_KEY, cotizaciones)
+    this.storage.set(COTIZACIONES_KEY, cotizaciones);
   }
 
   getProducts(): Promise<any[]> {
-    return this.storage.get(PRODUCTS_KEY)
+    return this.storage.get(PRODUCTS_KEY);
   }
 
   setProducts(products: any[]) {
-    this.storage.set(PRODUCTS_KEY, products)
+    this.storage.set(PRODUCTS_KEY, products);
   }
 
   getSucursales(): Promise<any[]> {
-    return this.storage.get(SUCURSAL_KEY)
+    return this.storage.get(SUCURSAL_KEY);
   }
 
   setSucursales(sucursales: any[]) {
-    this.storage.set(SUCURSAL_KEY, sucursales)
+    this.storage.set(SUCURSAL_KEY, sucursales);
   }
 
   getCambio(): Promise<number> {
-    return this.storage.get(CAMBIO_KEY)
+    return this.storage.get(CAMBIO_KEY);
   }
 
   setCambio(cambio: number) {
-    this.storage.set(CAMBIO_KEY, cambio)
+    this.storage.set(CAMBIO_KEY, cambio);
   }
 
   getTes(): Promise<any[]> {
-    return this.storage.get(TES_KEY)
+    return this.storage.get(TES_KEY);
   }
 
   setTes(tes: any[]) {
-    this.storage.set(TES_KEY, tes)
+    this.storage.set(TES_KEY, tes);
   }
 
   getImpuestos(): Promise<any[]> {
-    return this.storage.get(IMPUESTOS_KEY)
+    return this.storage.get(IMPUESTOS_KEY);
   }
 
   setImpuestos(impuestos: any[]) {
-    this.storage.set(IMPUESTOS_KEY, impuestos)
+    this.storage.set(IMPUESTOS_KEY, impuestos);
   }
 
   getHoras(): Promise<any[]> {
-    return this.storage.get(HORAS_KEY)
+    return this.storage.get(HORAS_KEY);
   }
 
   setHoras(horas: any[]) {
-    this.storage.set(HORAS_KEY, horas)
+    this.storage.set(HORAS_KEY, horas);
   }
 
   getCurrency(): Promise<any[]> {
-    return this.storage.get(CURRENCY_KEY)
+    return this.storage.get(CURRENCY_KEY);
   }
 
   setCurrency(currency: any[]) {
-    this.storage.set(CURRENCY_KEY, currency)
+    this.storage.set(CURRENCY_KEY, currency);
   }
 
   getDocuments(): Promise<any[]> {
-    return this.storage.get(DOCUMENTS_KEY)
+    return this.storage.get(DOCUMENTS_KEY);
   }
 
   setDocuments(documents: any[]) {
-    this.storage.set(DOCUMENTS_KEY, documents)
+    this.storage.set(DOCUMENTS_KEY, documents);
   }
 
   getRutas(): Promise<any[]> {
-    return this.storage.get(RUTAS_KEY)
+    return this.storage.get(RUTAS_KEY);
   }
 
   setRutas(rutas: any[]) {
-    this.storage.set(RUTAS_KEY, rutas)
+    this.storage.set(RUTAS_KEY, rutas);
   }
 
   getPagos(): Promise<any[]> {
-    return this.storage.get(PAGO_KEY)
+    return this.storage.get(PAGO_KEY);
   }
 
   setPagos(pagos: any[]) {
-    this.storage.set(PAGO_KEY, pagos)
+    this.storage.set(PAGO_KEY, pagos);
   }
 
   getUserID() {

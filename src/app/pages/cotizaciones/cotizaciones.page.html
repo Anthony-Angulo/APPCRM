@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content>
-  <div *ngIf="cotizaciones">
+  <div *ngIf="!cotizaciones">
     <ion-card>
       <ion-card-header>
         <ion-card-title>
@@ -23,7 +23,7 @@
         <img src="../../../assets/img/placeholder-image.png">
         <ion-card-header>
           <ion-card-title>
-            <p>Contact: {{contact(cotizacion.order.contact_id)}}</p>
+            <p>Contact: {{ cotizacion.nombre_reducido}}</p>
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>

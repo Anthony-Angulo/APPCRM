@@ -18,12 +18,14 @@ export class LoginPage implements OnInit {
 
   ngOnInit() {
     this.storage.get('last_user').then(email => {
-      if (email) this.formData.email = email
-    })
+      if (email) {
+        this.formData.email = email;
+      }
+    });
   }
 
   login() {
-    this.authService.login(this.formData)
+    this.authService.login(this.formData);
   }
 
 }
