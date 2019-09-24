@@ -53,7 +53,7 @@ export class FechaPagoPedidoPage implements OnInit {
   min_date = new Date();
   max_date = new Date(this.min_date.getFullYear() + 2, this.min_date.getMonth(), this.min_date.getDate());
 
-  constructor(
+  constructor (
     private naxExtras: NavExtrasServiceService,
     private storageservice: StorageService,
     private savedataservice: SaveDataService,
@@ -150,40 +150,39 @@ export class FechaPagoPedidoPage implements OnInit {
       orderDolares.total_order = this.totalDolares;
       const productosDolares = this.datos.products.filter(product => product.pago_tipo == 'DL');
 
-      result = Promise.all([
-        this.savedataservice.generateOrder(orderPesos, productospesos, this.datos.pedido),
-        this.savedataservice.generateOrder(orderDolares, productosDolares, this.datos.pedido),
-      ]);
+      result = [];
+      result[0] = await this.savedataservice.generateOrder(orderPesos, productospesos, this.datos.pedido);
+      result[1] = await this.savedataservice.generateOrder(orderDolares, productosDolares, this.datos.pedido);
     }
 
     let message = '';
-    result.then(val => {
-      if (typeof (val) == 'boolean') {
-        if (val) {
-          message = 'Pedido Guardado Con Exito.';
-        } else {
-          message = 'Pedido Guardado En Almacenamiento. Esperando Conexion.';
-        }
-      } else if (Array.isArray(val)) {
-        if (val.find(value => value == false)) {
-          message = 'Pedido Guardado En Almacenamiento. Esperando Conexion.';
-        } else {
-          message = 'Pedido Guardado Con Exito.';
-        }
+    if (Array.isArray(result)) {
+      if (result.find(value => value == false)) {
+        message = 'Pedido Guardado En Almacenamiento. Esperando Conexion.';
+      } else {
+        message = 'Pedido Guardado Con Exito.';
       }
-    }).finally(() => {
-      loading.dismiss();
-      Swal.fire({
-
-        title: message,
-        type: 'success',
-        confirmButtonText: 'Enterado.'
-
-      }).then((result) => {
-        if (result.value) {
-          this.router.navigate(['dashboard']);
+    } else {
+      message = await result.then(val => {
+        if (val) {
+          return 'Pedido Guardado Con Exito.';
+        } else {
+          return 'Pedido Guardado En Almacenamiento. Esperando Conexion.';
         }
       });
+    }
+
+    loading.dismiss();
+    Swal.fire({
+
+      title: message,
+      type: 'success',
+      confirmButtonText: 'Enterado.'
+
+    }).then((result) => {
+      if (result.value) {
+        this.router.navigate(['dashboard']);
+      }
     });
 
   }
