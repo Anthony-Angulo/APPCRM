@@ -278,35 +278,8 @@ export class SaveDataService {
       rows: form.rows,
     };
 
+    console.log(order)
     return this.http.post(ENV.BASE_URL + '/generarPedido', form).toPromise().then((data: any) => {
-
-      order.rows.map(row => {
-        delete row.codigoProtevs;
-        delete row.conv;
-      });
-
-      delete order.order.sucursal_id;
-      delete order.order.bill_city;
-      delete order.order.bill_country;
-      delete order.order.bill_state;
-      delete order.order.bill_street;
-      delete order.order.bill_tax_number;
-      delete order.order.bill_to;
-      delete order.order.bill_zip_code;
-      delete order.order.customer_no;
-      delete order.order.observacion_pago;
-      delete order.order.observacion_recepcion;
-      delete order.order.order_date;
-      delete order.order.owned_by_id;
-      delete order.order.owned_by_name;
-      delete order.order.ship_city;
-      delete order.order.ship_country;
-      delete order.order.ship_state;
-      delete order.order.ship_street;
-      delete order.order.ship_tax_number;
-      delete order.order.ship_zip_code;
-      delete order.order.tienda_id;
-      delete order.order.UM_mayoreo;
 
       order.order.order_number = data.token;
       order.order.order_status_id = data.status;
@@ -327,11 +300,11 @@ export class SaveDataService {
 
       console.error(error);
 
-      this.storageservice.getPendingOrders().then(ordenes_pendientes => {
+      this.storageservice.getPendingOrders().then(ordenesPendientes => {
 
-        if (ordenes_pendientes) {
-          ordenes_pendientes.push(form);
-          this.storageservice.setPendingOrders(ordenes_pendientes);
+        if (ordenesPendientes) {
+          ordenesPendientes.push(form);
+          this.storageservice.setPendingOrders(ordenesPendientes);
         } else {
           this.storageservice.setPendingOrders([form]);
         }
