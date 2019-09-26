@@ -211,30 +211,30 @@ export class SaveDataService {
 
   async generateOrder(order, products, pedido) {
 
-    let coordenada = {
-      coords: {
-        latitude: 0,
-        longitude: 0
-      }
-    };
+    // let coordenada = {
+    //   coords: {
+    //     latitude: 0,
+    //     longitude: 0
+    //   }
+    // };
 
-    try {
-      coordenada = await this.geolocation.getCurrentPosition({ timeout: 600000, enableHighAccuracy: true });
-    } catch (error) {
-      console.log('Error getting location', error);
-    }
+    // try {
+    //   coordenada = await this.geolocation.getCurrentPosition({ timeout: 20000, enableHighAccuracy: true });
+    // } catch (error) {
+    //   console.log('Error getting location', error);
+    // }
 
-    const formDataTrack = {
-      user_id: order.owned_by_id,
-      movimiento_id: 3,
-      latitud: coordenada.coords.latitude,
-      longitud: coordenada.coords.longitude,
-    };
+    // const formDataTrack = {
+    //   user_id: order.owned_by_id,
+    //   movimiento_id: 3,
+    //   // latitud: coordenada.coords.latitude,
+    //   // longitud: coordenada.coords.longitude,
+    // };
 
     const form = {
       order: order,
       rows: this.generateOrderRows(products),
-      usertrack: formDataTrack
+      // use4rtrack: formDataTrack
     };
 
     if (pedido) {
