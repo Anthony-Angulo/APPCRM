@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform, ToastController } from '@ionic/angular';
-import { ImagesService } from 'src/app/services/images.service';
+// import { ImagesService } from 'src/app/services/images.service';
 import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
 import { SaveDataService } from 'src/app/services/save-data.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -19,7 +19,6 @@ export class DetailPage implements OnInit {
   hora_despues: any;
   pago: any;
   ruta: any;
-  contact: any = { full_name: '' };
   currency: any;
   status: any;
 
@@ -36,16 +35,13 @@ export class DetailPage implements OnInit {
     private storageservice: StorageService,
     public toastController: ToastController,
     private savedataservice: SaveDataService,
-    private imageservice: ImagesService) { }
+    /*private imageservice: ImagesService*/) { }
 
   ngOnInit() {
     const extra = this.navExtras.getExtras();
     this.order = extra.order;
+    console.log(this.order)
     this.isorder = extra.isorder;
-
-    this.storageservice.getContacts().then(contactList => {
-      this.contact = contactList.find(contact => contact.id == this.order.order.contact_id);
-    });
 
     this.storageservice.getStatus().then(statusList => {
       this.status = statusList.find(status => status.id == this.order.order.order_status_id);
@@ -113,18 +109,18 @@ export class DetailPage implements OnInit {
 
   async presentToast(data: any) {
     const toast = await this.toastController.create({
-      message: data, // 'Dispositivo Conectado a Internet. Ordenes Registradas.',
+      message: data,
       duration: 5000
     });
     toast.present();
   }
 
-  public getPath(name) {
-    return this.imageservice.getPath(name);
-  }
+  // public getPath(name) {
+  //   return this.imageservice.getPath(name);
+  // }
 
-  showImage(name) {
-    this.imageservice.showImage(name);
-  }
+  // showImage(name) {
+  //   this.imageservice.showImage(name);
+  // }
 
 }

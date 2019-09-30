@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { finalize } from 'rxjs/operators';
 import { NavExtrasServiceService } from 'src/app/services/nav-extras-service.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { environment as ENV } from 'src/environments/environment';
@@ -14,7 +13,7 @@ import { environment as ENV } from 'src/environments/environment';
 })
 export class AllOrdersPage implements OnInit {
 
-  orderData: any = [];
+  orderData = [];
 
   constructor(
     private router: Router,
@@ -27,10 +26,13 @@ export class AllOrdersPage implements OnInit {
     this.getOrders();
   }
 
-
-  getOrders() {
-    this.storageservice.getOrders().then(orderList => {
+  async getOrders() {
+    await Promise.all([
+      this.storageservice.getOrders(),
+      this.storageservice.getContacts(),
+    ]).then(([orderList, contactList]: any[]) => {
       this.orderData = orderList;
+      this.orderData.map(order => order.order.contact = contactList.find(contact => contact.id == order.order.contact_id));
     });
   }
 
@@ -41,41 +43,31 @@ export class AllOrdersPage implements OnInit {
 
   doRefresh(event) {
 
-    console.log('Begin async operation');
-
     this.storageservice.getUserID().then((val) => {
+      return this.http.get(ENV.BASE_URL + '/orders_by_owner/' + val).toPromise();
+    }).then(async (data: any) => {
 
-      this.http.get(ENV.BASE_URL + '/orders_by_owner/' + val)
-        .pipe(
-          finalize(() => {
-            console.log('Async operation has ended');
-            event.target.complete();
-          })
-        )
-        .subscribe((data: any) => {
+      let orders_list = [];
+      data[0].forEach(order => {
+        let rows = data[1].filter(row => row.order_id == order.id);
+        orders_list.push({ order: order, rows: rows });
+      });
+      this.storageservice.setOrders(orders_list);
+      await this.getOrders();
 
-          let orders_list = [];
-          data[0].forEach(order => {
-            let rows = data[1].filter(row => row.order_id == order.id);
-            orders_list.push({ order: order, rows: rows });
-          });
-          this.storageservice.setOrders(orders_list);
-          this.getOrders();
+    }).catch((error) => {
 
-        }, (err: any) => {
+      this.presentToast('Error al Actualizar.');
 
-          this.presentToast('Error Al actualizar.');
-
-        });
-
+    }).finally(() => {
+      event.target.complete();
     });
-
 
   }
 
   async presentToast(data: any) {
     const toast = await this.toastController.create({
-      message: data, // 'Dispositivo Conectado a Internet. Ordenes Registradas.',
+      message: data,
       duration: 5000
     });
     toast.present();

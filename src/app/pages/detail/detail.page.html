@@ -77,11 +77,11 @@
   </ion-row>
   <ion-list>
     <ion-row *ngFor="let product of order.rows">
-      <ion-col size="3" size-lg>
+      <!-- <ion-col size="3" size-lg>
         <ion-thumbnail>
           <img src="../../../assets/img/placeholder-product.png">
         </ion-thumbnail>
-      </ion-col>
+      </ion-col> -->
       <ion-col size="9" size-lg size="12" size-sm>
         <ion-card>
           <ion-card-header>
@@ -106,25 +106,28 @@
     <ion-col>
       <h1>Direccion de Envio</h1>
       <ion-card>
-        <div *ngIf="contact.img">
+        <!-- <div *ngIf="contact.img">
           <ion-img style="height: 180px;width: auto;" [src]="getPath(contact.img)" (click)="showImage(contact.img)">
           </ion-img>
         </div>
         <div *ngIf="contact.img==undefined">
           <img src="../../../assets/img/placeholder-image.png">
-        </div>
+        </div> -->
         <ion-card-header>
+          <ion-card-subtitle>
+            {{order.order.contact.full_name}}
+          </ion-card-subtitle>
           <ion-card-title>
-            {{contact.full_name}}
+            {{order.order.contact.nombre_reducido}}
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          Calle: {{contact.street}}<br>
-          Colonia: {{contact.colonia}}<br>
-          Cuidad: {{contact.city}} <br>
-          Estado: {{contact.state}} <br>
-          Pais: {{contact.country}} <br>
-          Codigo Postal: {{contact.zip_code}}
+          Calle: {{order.order.contact.street}}<br>
+          Colonia: {{order.order.contact.colonia}}<br>
+          Cuidad: {{order.order.contact.city}} <br>
+          Estado: {{order.order.contact.state}} <br>
+          Pais: {{order.order.contact.country}} <br>
+          Codigo Postal: {{order.order.contact.zip_code}}
         </ion-card-content>
       </ion-card>
     </ion-col>

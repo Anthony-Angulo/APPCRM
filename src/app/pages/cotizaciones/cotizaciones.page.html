@@ -19,8 +19,8 @@
   </div>
   <ion-virtual-scroll [items]="cotizaciones">
     <ion-item *virtualItem="let cotizacion" (click)="goToDetail(cotizacion)">
-      <ion-card>
-        <img src="../../../assets/img/placeholder-image.png">
+      <ion-card style="width: 100%">
+        <!-- <img src="../../../assets/img/placeholder-image.png"> -->
         <ion-card-header>
           <ion-card-title>
             <p>Contact: {{ cotizacion.nombre_reducido}}</p>
@@ -28,7 +28,7 @@
         </ion-card-header>
         <ion-card-content>
           <p>Fecha de recepcion: {{cotizacion.order.fecha_de_recepcion| date: "yyyy/MM/dd"}}</p>
-          <p>Enviar a: {{cotizacion.order.ship_to}}</p>
+          <p>Enviar a: {{cotizacion.order.contact.nombre_reducido}}</p>
         </ion-card-content>
       </ion-card>
     </ion-item>
