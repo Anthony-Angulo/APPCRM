@@ -1,7 +1,10 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar class="tool-bar">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="pedidos-main"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+        <ion-button class="qr" (click)="scanQr()">QR</ion-button>
     </ion-buttons>
     <ion-title *ngIf="datos.pedido">Pedidos CCFN</ion-title>
     <ion-title *ngIf="!datos.pedido">Cotizaciones CCFN</ion-title>
@@ -9,28 +12,30 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-item>
-    <ion-searchbar #clientSearchBar placeholder="Buscar Cliente" debounce="500" (ionInput)="searchContacts($event);"
-      clear-icon></ion-searchbar>
-    <ion-button (click)="scanQr()">QR</ion-button>
-  </ion-item>
+  <h6>Cliente</h6>
+
+        <ion-searchbar #clientSearchBar placeholder="Buscar Cliente" debounce="500" (ionInput)="searchContacts($event);"
+        clear-icon></ion-searchbar>
+      
+   
   <ion-list *ngIf="contactListsearchBar?.length">
     <ion-virtual-scroll [items]="contactListsearchBar">
-      <ion-item *virtualItem="let contact" color="light" (click)="addContact(contact)" detail>
-        -{{contact.nombre_reducido}}<br>-{{contact.full_name}}
+      <ion-item *virtualItem="let contact"  (click)="addContact(contact)" detail>
+        {{contact.nombre_reducido}} - {{contact.full_name}}
       </ion-item>
     </ion-virtual-scroll>
   </ion-list>
+
   <ion-list *ngIf="datos.contact">
-    <ion-card color="light">
-      <div *ngIf="datos.contact.img">
+    <ion-card color="light" class="cBord">
+      <!-- <div *ngIf="datos.contact.img" class="img-H">
         <ion-img style="height: 180px;width: auto;" [src]="getPath(datos.contact.img)"
           (click)="showImage(datos.contact.img)"></ion-img>
       </div>
-      <div *ngIf="datos.contact.img==undefined">
+      <div *ngIf="datos.contact.img==undefined" class="img-H">
         <img src="../../../assets/img/placeholder-image.png">
-      </div>
-      <ion-card-header>
+      </div> -->
+      <ion-card-header class="cardH">
         <ion-card-subtitle>{{datos.contact.full_name}}</ion-card-subtitle>
         <ion-card-title>{{datos.contact.nombre_reducido}}</ion-card-title>
       </ion-card-header>
@@ -43,9 +48,10 @@
       </ion-card-content>
     </ion-card>
   </ion-list>
+<h6>Sucursal</h6>
   <ion-row>
     <ion-col>
-      <ion-item>
+      <ion-item class="sucItem">
         <ion-label>Sucursal</ion-label>
         <ion-select [(ngModel)]="datos.sucursal_id" okText="Aceptar" cancelText="Cancelar" name="sucursal_id"
           placeholder="Select One" (ionChange)="cambioSucursal($event)">
@@ -56,9 +62,10 @@
       </ion-item>
     </ion-col>
   </ion-row>
-  <ion-item>
+
+<h6>Productos</h6>
     <ion-searchbar #productSearchBar placeholder="Buscar Producto" (ionInput)="searchProducts($event);"></ion-searchbar>
-  </ion-item>
+
   <ion-list *ngIf="productListsearchBar?.length">
     <ion-virtual-scroll [items]="productListsearchBar">
       <ion-item *virtualItem="let product" color="light" (click)="addProduct(product)" detail>
@@ -67,27 +74,79 @@
     </ion-virtual-scroll>
   </ion-list>
   <ion-list>
+
     <ion-row *ngFor="let product of datos.products;let index=index" (click)="presentModal(product)">
       <ion-col size="9" size-lg size="12" size-sm>
-        <ion-card>
-          <ion-card-header>
+        <ion-card class="cardProd">
+          <ion-card-header class="cardHProd">
             <ion-card-subtitle>
-              <ion-icon name="trash" style="font-size: 30px;float: right;" (click)="eliminarProducto(index)"></ion-icon>
-              {{product.codigoProtevs}} <br>
-              {{product.product_name}}
+             Codigo Protevs:  {{product.codigoProtevs}} <br>
+            Descripcion: {{product.product_name}}
             </ion-card-subtitle>
           </ion-card-header>
-          <ion-card-content>
-            Cantidad:<br>
+          <ion-card-content >
+            Cantidad<br>
             {{product.quantity.toFixed(2)}} {{product.unidad_medida}}<br>
             <div *ngIf="product.conv!=0 && product.conv!=1">
               {{product.quantity_dos.toFixed(2)}} {{product.unidad_medida_dos}}<br>
             </div>
+            <ion-button class="prodCont" color="danger" (click)="eliminarProducto(index)">
+              <ion-icon name="trash" slot="icon-only"></ion-icon>
+            </ion-button>
           </ion-card-content>
         </ion-card>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf="total">
+
+    <h6>Totales</h6>
+    <div *ngIf="total || totalDolares" style="border: 1px solid #000000; border-radius: 3px;">
+      <ion-list>
+        <ion-item *ngIf="total" lines="none" style="border-bottom: 1px solid #000000">
+          <h2>Pesos</h2>
+        </ion-item>
+        <ion-item *ngIf="total" lines="none">
+          Sub Total: ${{subtotal.toFixed(2)}}
+        </ion-item>
+        <ion-item *ngIf="total" lines="none">
+            Impuestos: ${{impuestos.toFixed(2)}}
+        </ion-item>
+        <ion-item *ngIf="total"  lines="none" style="border-top: 1px solid #000000; color: green">
+            Total: ${{total.toFixed(2)}}
+        </ion-item>
+        <br>
+        <ion-item *ngIf="totalDolares" lines="none" style="border-bottom: 1px solid #000000;">
+            <h2>Dolares</h2>
+          </ion-item>
+          <ion-item  *ngIf="totalDolares" lines="none">
+            Sub Total: ${{subtotalDolares.toFixed(2)}}
+          </ion-item>
+          <ion-item *ngIf="totalDolares"  lines="none">
+              Impuestos: ${{impuestosDolares.toFixed(2)}}
+          </ion-item>
+          <ion-item *ngIf="totalDolares" lines="none" style="border-top: 1px solid #000000; color: green">
+              Total: ${{totalDolares.toFixed(2)}}
+          </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- <div *ngIf="totalDolares" style="border: 1px solid #000000; border-radius: 3px;">
+        <ion-list >
+          <ion-item lines="none" style="border-bottom: 1px solid #000000">
+            <h6>Dolares</h6>
+          </ion-item>
+          <ion-item lines="none">
+            Sub Total: ${{subtotalDolares.toFixed(2)}}
+          </ion-item>
+          <ion-item lines="none">
+              Impuestos: ${{impuestosDolares.toFixed(2)}}
+          </ion-item>
+          <ion-item lines="none" style="border-top: 1px solid #000000; color: red">
+              Total: ${{totalDolares.toFixed(2)}}
+          </ion-item>
+        </ion-list>
+      </div> -->
+
+    <!-- <ion-row *ngIf="total">
       <ion-col>
         <ion-card>
           <ion-card-header>
@@ -108,8 +167,8 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
-    </ion-row>
-    <ion-row *ngIf="totalDolares">
+    </ion-row> -->
+    <!-- <ion-row *ngIf="totalDolares">
       <ion-col>
         <ion-card>
           <ion-card-header>
@@ -130,8 +189,8 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
-    </ion-row>
-    <ion-button [disabled]="!datos.contact || !datos.products?.length " expand="block" style="height: 50px"
+    </ion-row> -->
+    <ion-button class="contB" [disabled]="!datos.contact || !datos.products?.length " expand="full" shape="round" style="height: 50px"
       (click)="entregaPedido()">Continuar</ion-button>
   </ion-list>
 </ion-content>

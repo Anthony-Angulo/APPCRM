@@ -1,3 +1,6 @@
+ion-content{
+    // --background: linear-gradient(to top, #ffffff 0%, #6699ff 100%);
+}
 ion-thumbnail {
     min-width: 10rem;    
     min-height: 10rem;
@@ -6,3 +9,50 @@ ion-thumbnail {
         min-width: 10rem;
     }
 }
+
+ion-toolbar.tool-bar{
+    --background: #1B1BFC;
+    color: #ffffff;
+  }
+
+  ion-button.qr{
+    border: 1px solid;
+    border-radius: 5px;
+  }
+
+  div.img-H{
+    border-bottom: 1px solid;
+  }
+
+  ion-card-header.cardH{
+    border-bottom: 1px solid;
+  }
+
+  ion-card-header.cardHProd{
+    border-bottom: 2px solid;
+  }
+
+  ion-card.cBord{
+    border-radius: 30px;
+  }
+
+  ion-card.cardProd{
+    border: 2px solid;
+    border-radius: 5px;
+  }
+
+  ion-button.prodCont{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    inline-size: min-content;
+  }
+
+  ion-button.contB{
+    --background: #1B1BFC;
+  }
+
+  ion-item.sucItem{
+    border: 1px solid;
+    border-radius: 5px
+  }

@@ -1,5 +1,6 @@
 ion-content {
     --overflow: hidden;
+    
 }
 
 ion-col {
@@ -10,4 +11,26 @@ ion-content {
     background-image: url('../../../assets/icon/City.png');
     background-repeat: no-repeat;
     background-size: cover;
+  }
+
+  ion-button.allPedidos{
+    --border-radius: 60px;
+    font-size: medium;
+    --background: #4393E9;
+  }
+
+  ion-button.foot-but{
+    --border-radius: 20px;
+    --background: #4393E9;
+    color: #ffffff;
+    --border-color: #4393E9;
+  }
+  ion-toolbar.tool-bar{
+    --background: #1B1BFC;
+    color: #ffffff;
+  }
+
+  ion-toolbar.foo-tool{
+    --background: linear-gradient(to left, #000066 0%, #0066ff 100%);
+    min-height: -webkit-fill-available;
   }

@@ -1,3 +1,25 @@
 ion-content {
   --background: url(../../assets/img/BG.png) no-repeat center;
 }
+
+ion-input.email{
+  border: 1px solid #ffffff;
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+ion-input.pass{
+  border: 1px solid #ffffff;
+    background-color: #ffffff;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+ion-button.logIn{
+  margin-left: auto;
+    margin-right: auto;
+    display: table;
+    margin-top: 15px;
+    color: #ffffff;
+    --background: #1B1BFC;
+}

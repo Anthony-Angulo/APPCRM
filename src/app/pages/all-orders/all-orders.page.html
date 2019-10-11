@@ -26,4 +26,20 @@
       </ion-card>
     </ion-item>
   </ion-virtual-scroll>
+  Ordenes Pendientes
+  <ion-virtual-scroll [items]="pendingData">
+    <ion-item *virtualItem="let order" (click)="goToDetail(order)">
+      <ion-card style="width: 100%">
+        <!-- <img src="../../../assets/img/placeholder-image.png"> -->
+        <ion-card-header>
+          <ion-card-title>
+            <p>Numero Pedido: {{order.order.order_number}}</p>
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Enviar a: {{order.order.contact.nombre_reducido}}</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-item>
+  </ion-virtual-scroll>
 </ion-content>

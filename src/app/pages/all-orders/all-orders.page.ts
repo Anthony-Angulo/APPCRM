@@ -14,6 +14,7 @@ import { environment as ENV } from 'src/environments/environment';
 export class AllOrdersPage implements OnInit {
 
   orderData = [];
+  pendingData = [];
 
   constructor(
     private router: Router,
@@ -30,9 +31,12 @@ export class AllOrdersPage implements OnInit {
     await Promise.all([
       this.storageservice.getOrders(),
       this.storageservice.getContacts(),
-    ]).then(([orderList, contactList]: any[]) => {
+      this.storageservice.getPendingOrders(),
+    ]).then(([orderList, contactList, pendingList]: any[]) => {
       this.orderData = orderList;
       this.orderData.map(order => order.order.contact = contactList.find(contact => contact.id == order.order.contact_id));
+      this.pendingData = pendingList;
+      this.pendingData.map(order => order.order.contact = contactList.find(contact => contact.id == order.order.contact_id));
     });
   }
 

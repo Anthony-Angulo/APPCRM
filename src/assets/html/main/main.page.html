@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-toolbar color="primary">
+  <ion-toolbar class="tool-bar">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="dashboard"></ion-back-button>
     </ion-buttons>
@@ -22,33 +22,33 @@
 </ion-content>
 
 <ion-footer no-shadow style="height:20%;">
-  <ion-toolbar position="bottom" no-padding>
-    <div style="position:absolute;z-index:1">
+  <ion-toolbar position="bottom" class="foo-tool" no-padding>
+    <!-- <div style="position:absolute;z-index:1">
       <img style="height: max-content;" src="../../../assets/img/pedidos-footer.png" alt="">
-    </div>
+    </div> -->
     <div style="position:relative;z-index:2;">
       <ion-row style="padding-top: 3%">
         <ion-col>
-          <ion-button size="{{button_size}}" color="light" [routerLink]="['/', allLink]">
-            <ion-icon name="clipboard"></ion-icon>{{allTitle}}
+          <ion-button class="allPedidos" [routerLink]="['/', allLink]">
+            <ion-icon name="clipboard"></ion-icon>Todos los Pedidos
           </ion-button>
         </ion-col>
       </ion-row>
       <ion-row style="height: -webkit-fill-available">
         <ion-col>
-          <ion-button style="--border-radius: 20px;" size="{{button_size}}" fill="outline" color="light"
+          <ion-button class="foot-but" size="{{button_size}}" 
             routerLink="/dashboard">
             <ion-icon name="apps"></ion-icon>
           </ion-button>
         </ion-col>
         <ion-col>
-          <ion-button style="--border-radius: 20px;" size="{{button_size}}" color="light" fill="outline"
+          <ion-button class="foot-but" size="{{button_size}}"  
             (click)="goTo()">
             <ion-icon slot="icon-only" name="add-circle"></ion-icon>
           </ion-button>
         </ion-col>
         <ion-col>
-          <ion-button style="--border-radius: 20px;" size="{{button_size}}" color="light" fill="outline" routerLink="/notifications">
+          <ion-button class="foot-but" size="{{button_size}}"  routerLink="/notifications">
             <ion-icon slot="icon-only" name="notifications"></ion-icon>
             <ion-badge color="danger">{{notificationCounts}}</ion-badge>
           </ion-button>
