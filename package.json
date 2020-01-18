@@ -130,7 +130,8 @@
       }
     },
     "platforms": [
-      "browser"
+      "browser",
+      "android"
     ]
   }
 }

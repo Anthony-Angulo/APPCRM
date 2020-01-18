@@ -16,7 +16,7 @@ export class SaveDataService {
 
   networksub: any;
 
-  constructor(private http: HttpClient,
+  constructor (private http: HttpClient,
     private storageservice: StorageService,
     private router: Router,
     private network: Network,
@@ -36,7 +36,8 @@ export class SaveDataService {
       this.saveStorage();
     }
     this.networksub = this.network.onConnect().subscribe(() => {
-      this.saveStorage();
+      setTimeout(this.saveStorage, 3000);
+      // this.saveStorage();
     });
   }
 
@@ -45,44 +46,53 @@ export class SaveDataService {
   }
 
   public saveStorage() {
-    this.storageservice.getPendingOrders().then(val => {
-      if (val) {
-        if (val.length > 0) {
-          for (let i = val.length - 1; i >= 0; i--) {
-            this.http.post(ENV.BASE_URL + '/generarPedido', val[i]).subscribe((data: any) => {
-              val.splice(i, 1);
-              this.storageservice.setPendingOrders(val);
+
+    if (this.network.type != 'none') {
+      this.storageservice.getPendingOrders().then(async val => {
+        this.storageservice.setPendingOrders(null);
+        if (val) {
+          if (val.length > 0) {
+            const noSend = [];
+            const pr = val.map(order => {
+              return this.http.post(ENV.BASE_URL + '/generarPedido', order).toPromise().then((data: any) => {
+                console.log(data);
+              }).catch(error => {
+                noSend.push(order);
+              });
             });
+            await Promise.all(pr);
+            this.storageservice.setPendingOrders(noSend);
+
           }
         }
-      }
-    });
+      });
+    }
 
-    this.storageservice.getPendingGeoUpdate().then(val => {
-      if (val) {
-        if (val.length > 0) {
-          this.http.post(ENV.BASE_URL + '/updateGeolocationContacts', val).subscribe(data => {
-            this.storageservice.setPendingGeoUpdate(null);
-            this.presentToast('Geolocalizacion Guardada');
-          }, (err: any) => {
-            this.presentToast('a' + err.error);
-          });
-        }
-      }
-    });
+    // this.storageservice.getPendingGeoUpdate().then(val => {
+    //   if (val) {
+    //     if (val.length > 0) {
+    //       this.http.post(ENV.BASE_URL + '/updateGeolocationContacts', val).subscribe(data => {
+    //         this.storageservice.setPendingGeoUpdate(null);
+    //         this.presentToast('Geolocalizacion Guardada');
+    //       }, (err: any) => {
+    //         this.presentToast('a' + err.error);
+    //       });
+    //     }
+    //   }
+    // });
 
-    this.storageservice.getPendingEvents().then(val => {
-      if (val) {
-        if (val.length > 0) {
-          this.http.post(ENV.BASE_URL + '/addEvent', val).subscribe((data: any) => {
-            this.storageservice.setPendingEvents(null);
-            this.presentToast('Eventos Guardados');
-          }, (err: any) => {
-            this.presentToast('a' + err.error);
-          });
-        }
-      }
-    });
+    // this.storageservice.getPendingEvents().then(val => {
+    //   if (val) {
+    //     if (val.length > 0) {
+    //       this.http.post(ENV.BASE_URL + '/addEvent', val).subscribe((data: any) => {
+    //         this.storageservice.setPendingEvents(null);
+    //         this.presentToast('Eventos Guardados');
+    //       }, (err: any) => {
+    //         this.presentToast('a' + err.error);
+    //       });
+    //     }
+    //   }
+    // });
 
   }
 

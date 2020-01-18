@@ -34,9 +34,13 @@ export class AllOrdersPage implements OnInit {
       this.storageservice.getPendingOrders(),
     ]).then(([orderList, contactList, pendingList]: any[]) => {
       this.orderData = orderList;
-      this.orderData.map(order => order.order.contact = contactList.find(contact => contact.id == order.order.contact_id));
+      if (this.orderData) {
+        this.orderData.map(order => order.order.contact = contactList.find(contact => contact.id == order.order.contact_id));
+      }
       this.pendingData = pendingList;
-      this.pendingData.map(order => order.order.contact = contactList.find(contact => contact.id == order.order.contact_id));
+      if (this.pendingData) {
+        this.pendingData.map(order => order.order.contact = contactList.find(contact => contact.id == order.order.contact_id));
+      }
     });
   }
 

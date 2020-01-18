@@ -57,7 +57,7 @@
         </ion-col>
       </ion-row>
   </ion-list>
-  
+  <ion-button expand="block" shape="round" style="height: 50px" (click)="navMetodoPedidos()">Continuar</ion-button>
   <ion-row class="map">
     <ion-col>
       <div [hidden]="!datos.contact.longitud" id="map_canvas"
@@ -69,6 +69,5 @@
       </div>
     </ion-col>
   </ion-row>
-  <ion-button expand="block" shape="round" style="height: 50px" (click)="navMetodoPedidos()"> <!--[hidden]="!datos.contact.longitud"--> 
-    Continuar</ion-button>
+  
 </ion-content>
